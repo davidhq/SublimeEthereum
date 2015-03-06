@@ -6,26 +6,26 @@ fileTypes: [sol]
 uuid: ad87d2cd-8575-4afe-984e-9421a3788933
 
 patterns:
-- match: \b(event)\s+([A-Za-z][A-Za-z0-9_]+)\b
+- match: \b(event)\s+([A-Za-z][A-Za-z0-9_]*)\b
   name: keyword.control
   captures:
     '2': {name: support.function}
   comment: Events
-- match: \b(contract|struct|function)\s+([A-Za-z][A-Za-z0-9_]+)\b
+- match: \b(contract|struct|function)\s+([A-Za-z][A-Za-z0-9_]*)\b
   name: keyword.control
   captures:
     '2': {name: entity.name.function}
   comment: Main keywords
-- match: \b([A-Za-z][A-Za-z0-9_]+)\s+([A-Za-z][A-Za-z0-9_]+)\;
+- match: \b([A-Za-z][A-Za-z0-9_]+)\s+([A-Za-z][A-Za-z0-9_]*)\;
   captures:
     '1': {name: constant.language}
   comment: Variable definitions
-- match: \b(address|string\d+|bytes|int\d+|uint\d+|bool|hash\d+)\s+([A-Za-z][A-Za-z0-9_]+)\b
+- match: \b(address|string\d*|bytes|int\d*|uint\d*|bool|hash\d*)\s+([A-Za-z][A-Za-z0-9_]*)\b
   name: constant.language
   captures:
     '2': {name: variable.parameter}
   comment: Built-in types
-- match: \b(mapping)\s+\((.*)\s+=>\s+(.*)\)\s+([A-Za-z][A-Za-z0-9_]+)\b
+- match: \b(mapping)\s+\((.*)\s+=>\s+(.*)\)\s+([A-Za-z][A-Za-z0-9_]*)\b
   captures:
     '1': {name: constant.language}
     '2': {name: constant.language}
@@ -40,12 +40,12 @@ patterns:
 - match: (=|!=|>|<)
   name: keyword.control
   comment: Operators
-- match: \b(msg|block)\.([A-Za-z][A-Za-z0-9_]+)\b
+- match: \b(msg|block)\.([A-Za-z][A-Za-z0-9_]*)\b
   captures:
     '1': {name: constant.numeric}
     '2': {name: constant.numeric}
   comment: msg and block special usage
-- match: \b([A-Za-z][A-Za-z0-9_]+)\s*\(.*\)
+- match: \b([A-Za-z][A-Za-z0-9_]*)\s*\(.*\)
   captures:
     '1': {name: support.type}
   comment: Function call
