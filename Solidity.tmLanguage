@@ -22,7 +22,7 @@
 			<key>comment</key>
 			<string>Events</string>
 			<key>match</key>
-			<string>\b(event)\s+([A-Za-z][A-Za-z0-9_]*)\b</string>
+			<string>\b(event)\s+([A-Za-z_][A-Za-z0-9_]*)\b</string>
 			<key>name</key>
 			<string>keyword.control</string>
 		</dict>
@@ -38,7 +38,7 @@
 			<key>comment</key>
 			<string>Main keywords</string>
 			<key>match</key>
-			<string>\b(contract|struct|function)\s+([A-Za-z][A-Za-z0-9_]*)\b</string>
+			<string>\b(contract|struct|function|modifier)\s+([A-Za-z_][A-Za-z0-9_]*)\b</string>
 			<key>name</key>
 			<string>keyword.control</string>
 		</dict>
@@ -50,15 +50,25 @@
 					<key>name</key>
 					<string>constant.language</string>
 				</dict>
+				<key>2</key>
+				<dict>
+					<key>name</key>
+					<string>keyword.control</string>
+				</dict>
 			</dict>
 			<key>comment</key>
 			<string>Variable definitions</string>
 			<key>match</key>
-			<string>\b([A-Za-z][A-Za-z0-9_]+)\s+([A-Za-z][A-Za-z0-9_]*)\;</string>
+			<string>\b([A-Za-z_][A-Za-z0-9_]+)(\s+(?:private|public|external|inherited))?\s+([A-Za-z_][A-Za-z0-9_]*)\;</string>
 		</dict>
 		<dict>
 			<key>captures</key>
 			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>constant.language</string>
+				</dict>
 				<key>2</key>
 				<dict>
 					<key>name</key>
@@ -68,9 +78,7 @@
 			<key>comment</key>
 			<string>Built-in types</string>
 			<key>match</key>
-			<string>\b(address|string\d*|bytes|int\d*|uint\d*|bool|hash\d*)\s+([A-Za-z][A-Za-z0-9_]*)\b</string>
-			<key>name</key>
-			<string>constant.language</string>
+			<string>\b(address|string\d*|bytes|int\d*|uint\d*|bool|hash\d*)(?:\s+(?:indexed\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*[,\)])?</string>
 		</dict>
 		<dict>
 			<key>captures</key>
@@ -90,11 +98,16 @@
 					<key>name</key>
 					<string>constant.language</string>
 				</dict>
+				<key>4</key>
+				<dict>
+					<key>name</key>
+					<string>keyword.control</string>
+				</dict>
 			</dict>
 			<key>comment</key>
 			<string>Mapping definition</string>
 			<key>match</key>
-			<string>\b(mapping)\s+\((.*)\s+=&gt;\s+(.*)\)\s+([A-Za-z][A-Za-z0-9_]*)\b</string>
+			<string>\b(mapping)\s*\((.*)\s+=&gt;\s+(.*)\)(\s+(?:private|public|external|inherited))?\s+([A-Za-z_][A-Za-z0-9_]*)\b</string>
 		</dict>
 		<dict>
 			<key>comment</key>
@@ -108,7 +121,7 @@
 			<key>comment</key>
 			<string>Langauge keywords</string>
 			<key>match</key>
-			<string>\b(var|if|else|for|while|do|returns?|private|public|this)\b</string>
+			<string>\b(var|function|if|else|for|while|do|break|continue|returns?|private|public|external|inherited|this|suicide|new|is|\_)\b</string>
 			<key>name</key>
 			<string>keyword.control</string>
 		</dict>
@@ -116,7 +129,7 @@
 			<key>comment</key>
 			<string>Operators</string>
 			<key>match</key>
-			<string>(=|!=|&gt;|&lt;)</string>
+			<string>(=|!|&gt;|&lt;|\||&amp;)</string>
 			<key>name</key>
 			<string>keyword.control</string>
 		</dict>
@@ -126,18 +139,18 @@
 				<key>1</key>
 				<dict>
 					<key>name</key>
-					<string>constant.numeric</string>
+					<string>constant.language</string>
 				</dict>
 				<key>2</key>
 				<dict>
 					<key>name</key>
-					<string>constant.numeric</string>
+					<string>constant.language</string>
 				</dict>
 			</dict>
 			<key>comment</key>
 			<string>msg and block special usage</string>
 			<key>match</key>
-			<string>\b(msg|block)\.([A-Za-z][A-Za-z0-9_]*)\b</string>
+			<string>\b(msg|block|tx)\.([A-Za-z_][A-Za-z0-9_]*)\b</string>
 		</dict>
 		<dict>
 			<key>captures</key>
@@ -151,7 +164,7 @@
 			<key>comment</key>
 			<string>Function call</string>
 			<key>match</key>
-			<string>\b([A-Za-z][A-Za-z0-9_]+)\s*\(.*\)</string>
+			<string>\b([A-Za-z_][A-Za-z0-9_]*)\s*\(</string>
 		</dict>
 		<dict>
 			<key>comment</key>
@@ -182,6 +195,16 @@
 			<string>Comments</string>
 			<key>match</key>
 			<string>\/\/.*</string>
+			<key>name</key>
+			<string>comment</string>
+		</dict>
+		<dict>
+			<key>begin</key>
+			<string>(\/\*)</string>
+			<key>comment</key>
+			<string>Multiline comments</string>
+			<key>end</key>
+			<string>(\*\/)</string>
 			<key>name</key>
 			<string>comment</string>
 		</dict>
