@@ -6,23 +6,23 @@ fileTypes: [sol]
 uuid: ad87d2cd-8575-4afe-984e-9421a3788933
 
 patterns:
-- match: \b(event|enum)\s+([A-Za-z_][A-Za-z0-9_]*)\b
+- match: \b(event|enum)\s+([A-Za-z_]\w*)\b
   name: keyword.control
   captures:
     '2': {name: support.function}
   comment: Events
-- match: \b(contract|struct|function|modifier)\s+([A-Za-z_][A-Za-z0-9_]*)(?:\s+is\s+([A-Za-z_][A-Za-z0-9_]*))?\b
+- match: \b(contract|struct|function|modifier)\s+([A-Za-z_]\w*)(?:\s+is\s+((?:[A-Za-z_][\,\s]*)*))?\b
   name: keyword.control
   captures:
     '2': {name: entity.name.function}
     '3': {name: entity.name.function}
   comment: Main keywords
-- match: \b(address|string\d*|bytes\d*|int\d*|uint\d*|bool|hash\d*)(?:\s+(?:indexed\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*[,\)])?
+- match: \b(address|string\d*|bytes\d*|int\d*|uint\d*|bool|hash\d*)(?:\s+(?:indexed\s+)?([A-Za-z_]\w*)\s*[,\)])?
   captures:
     '1': {name: constant.language}
     '2': {name: variable.parameter}
   comment: Built-in types
-- match: \b(mapping)\s*\((.*)\s+=>\s+(.*)\)(\s+(?:private|public|external|inherited))?\s+([A-Za-z_][A-Za-z0-9_]*)\b
+- match: \b(mapping)\s*\((.*)\s+=>\s+(.*)\)(\s+(?:private|public|external|inherited))?\s+([A-Za-z_]\w*)\b
   captures:
     '1': {name: constant.language}
     '2': {name: constant.language}
@@ -35,7 +35,7 @@ patterns:
 - match: \b(var|import|function|constant|if|else|for|while|do|break|continue|returns?|private|public|external|inherited|this|suicide|new|is|\_)\b
   name: keyword.control
   comment: Langauge keywords
-- match: \b([A-Za-z_][A-Za-z0-9_]+)(\s+(?:private|public|external|inherited))?\s+([A-Za-z_][A-Za-z0-9_]*)\;
+- match: \b([A-Za-z_]\w+)(\s+(?:private|public|external|inherited))?\s+([A-Za-z_]\w*)\;
   captures:
     '1': {name: constant.language}
     '2': {name: keyword.control}
@@ -43,12 +43,12 @@ patterns:
 - match: (=|!|>|<|\||&)
   name: keyword.control
   comment: Operators
-- match: \b(msg|block|tx)\.([A-Za-z_][A-Za-z0-9_]*)\b
+- match: \b(msg|block|tx)\.([A-Za-z_]\w*)\b
   captures:
     '1': {name: constant.language}
     '2': {name: constant.language}
   comment: msg and block special usage
-- match: \b([A-Za-z_][A-Za-z0-9_]*)\s*\(
+- match: \b([A-Za-z_]\w*)\s*\(
   captures:
     '1': {name: support.type}
   comment: Function call

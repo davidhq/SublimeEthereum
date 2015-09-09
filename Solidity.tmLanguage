@@ -22,7 +22,7 @@
 			<key>comment</key>
 			<string>Events</string>
 			<key>match</key>
-			<string>\b(event|enum)\s+([A-Za-z_][A-Za-z0-9_]*)\b</string>
+			<string>\b(event|enum)\s+([A-Za-z_]\w*)\b</string>
 			<key>name</key>
 			<string>keyword.control</string>
 		</dict>
@@ -43,7 +43,7 @@
 			<key>comment</key>
 			<string>Main keywords</string>
 			<key>match</key>
-			<string>\b(contract|struct|function|modifier)\s+([A-Za-z_][A-Za-z0-9_]*)(?:\s+is\s+([A-Za-z_][A-Za-z0-9_]*))?\b</string>
+			<string>\b(contract|struct|function|modifier)\s+([A-Za-z_]\w*)(?:\s+is\s+((?:[A-Za-z_][\,\s]*)*))?\b</string>
 			<key>name</key>
 			<string>keyword.control</string>
 		</dict>
@@ -64,7 +64,7 @@
 			<key>comment</key>
 			<string>Built-in types</string>
 			<key>match</key>
-			<string>\b(address|string\d*|bytes\d*|int\d*|uint\d*|bool|hash\d*)(?:\s+(?:indexed\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*[,\)])?</string>
+			<string>\b(address|string\d*|bytes\d*|int\d*|uint\d*|bool|hash\d*)(?:\s+(?:indexed\s+)?([A-Za-z_]\w*)\s*[,\)])?</string>
 		</dict>
 		<dict>
 			<key>captures</key>
@@ -93,7 +93,7 @@
 			<key>comment</key>
 			<string>Mapping definition</string>
 			<key>match</key>
-			<string>\b(mapping)\s*\((.*)\s+=&gt;\s+(.*)\)(\s+(?:private|public|external|inherited))?\s+([A-Za-z_][A-Za-z0-9_]*)\b</string>
+			<string>\b(mapping)\s*\((.*)\s+=&gt;\s+(.*)\)(\s+(?:private|public|external|inherited))?\s+([A-Za-z_]\w*)\b</string>
 		</dict>
 		<dict>
 			<key>comment</key>
@@ -128,7 +128,7 @@
 			<key>comment</key>
 			<string>Variable definitions</string>
 			<key>match</key>
-			<string>\b([A-Za-z_][A-Za-z0-9_]+)(\s+(?:private|public|external|inherited))?\s+([A-Za-z_][A-Za-z0-9_]*)\;</string>
+			<string>\b([A-Za-z_]\w+)(\s+(?:private|public|external|inherited))?\s+([A-Za-z_]\w*)\;</string>
 		</dict>
 		<dict>
 			<key>comment</key>
@@ -155,7 +155,7 @@
 			<key>comment</key>
 			<string>msg and block special usage</string>
 			<key>match</key>
-			<string>\b(msg|block|tx)\.([A-Za-z_][A-Za-z0-9_]*)\b</string>
+			<string>\b(msg|block|tx)\.([A-Za-z_]\w*)\b</string>
 		</dict>
 		<dict>
 			<key>captures</key>
@@ -169,7 +169,7 @@
 			<key>comment</key>
 			<string>Function call</string>
 			<key>match</key>
-			<string>\b([A-Za-z_][A-Za-z0-9_]*)\s*\(</string>
+			<string>\b([A-Za-z_]\w*)\s*\(</string>
 		</dict>
 		<dict>
 			<key>comment</key>
