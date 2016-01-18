@@ -107,7 +107,7 @@
 			<key>comment</key>
 			<string>Mapping definition</string>
 			<key>match</key>
-			<string>\b(mapping)\s*\((.*)\s+=&gt;\s+(.*)\)(\s+(?:private|public|external|inherited))?\s+([A-Za-z_]\w*)\b</string>
+			<string>\b(mapping)\s*\((.*)\s+=&gt;\s+(.*)\)(\s+(?:private|public|internal|external|inherited))?\s+([A-Za-z_]\w*)\b</string>
 		</dict>
 		<dict>
 			<key>comment</key>
@@ -121,7 +121,7 @@
 			<key>comment</key>
 			<string>Langauge keywords</string>
 			<key>match</key>
-			<string>\b(var|import|function|constant|if|else|for|while|do|break|continue|returns?|private|public|external|inherited|this|suicide|new|is|\_)\b</string>
+			<string>\b(var|import|function|constant|if|else|for|while|do|break|continue|returns?|private|public|internal|external|inherited|this|suicide|new|is|\_)\b</string>
 			<key>name</key>
 			<string>keyword.control</string>
 		</dict>
@@ -142,7 +142,7 @@
 			<key>comment</key>
 			<string>Variable definitions</string>
 			<key>match</key>
-			<string>\b([A-Za-z_]\w+)(\s+(?:private|public|external|inherited))?\s+([A-Za-z_]\w*)\;</string>
+			<string>\b([A-Za-z_]\w+)(\s+(?:private|public|internal|external|inherited))?\s+([A-Za-z_]\w*)\;</string>
 		</dict>
 		<dict>
 			<key>comment</key>
