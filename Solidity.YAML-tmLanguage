@@ -52,7 +52,7 @@ patterns:
   captures:
     '1': {name: support.type}
   comment: Function call
-- match: ([\"\'].*[\"\'])
+- match: ([\"\'].*?[\"\'])
   name: string.quoted
   comment: Strings
 - match: \b(\d+)\b

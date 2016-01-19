@@ -189,7 +189,7 @@
 			<key>comment</key>
 			<string>Strings</string>
 			<key>match</key>
-			<string>([\"\'].*[\"\'])</string>
+			<string>([\"\'].*?[\"\'])</string>
 			<key>name</key>
 			<string>string.quoted</string>
 		</dict>
