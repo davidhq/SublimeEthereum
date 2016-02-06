@@ -78,7 +78,7 @@
 			<key>comment</key>
 			<string>Built-in types</string>
 			<key>match</key>
-			<string>\b(address|string\d*|bytes\d*|int\d*|uint\d*|bool|hash\d*)(?:\s+(?:indexed\s+)?([A-Za-z_]\w*)\s*[,\)])?</string>
+			<string>\b(address|string\d*|bytes\d*|int\d*|uint\d*|bool|hash\d*)\b(?:\s+(?:indexed\s+)?([A-Za-z_]\w*)\s*[,\)])?</string>
 		</dict>
 		<dict>
 			<key>captures</key>
