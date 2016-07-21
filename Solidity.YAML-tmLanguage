@@ -17,7 +17,7 @@ patterns:
     '2': {name: entity.name.function}
     '3': {name: entity.name.function}
   comment: Main keywords
-- match: \b(address|string\d*|bytes\d*|int\d*|uint\d*|bool|hash\d*)\b(?:\s+(?:indexed\s+)?([A-Za-z_]\w*)\s*[,\)])?
+- match: \b(address|string|bytes\d*|int\d*|uint\d*|bool)\b(?:\s+(?:indexed\s+)?([A-Za-z_]\w*)\s*[,\)])?
   captures:
     '1': {name: constant.language}
     '2': {name: variable.parameter}
