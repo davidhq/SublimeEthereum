@@ -40,7 +40,7 @@ patterns:
     '1': {name: constant.language}
     '2': {name: keyword.control}
   comment: Variable definitions
-- match: (=|!|>|<|\||&|\?|:)
+- match: (=|!|>|<|\||&|\?|:|\^|~)
   name: keyword.control
   comment: Operators
 - match: \b(msg|block|tx)\.([A-Za-z_]\w*)\b

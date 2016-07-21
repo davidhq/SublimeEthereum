@@ -134,7 +134,7 @@
 			<key>comment</key>
 			<string>Operators</string>
 			<key>match</key>
-			<string>(=|!|&gt;|&lt;|\||&amp;|\?|:)</string>
+			<string>(=|!|&gt;|&lt;|\||&amp;|\?|:|\^|~)</string>
 			<key>name</key>
 			<string>keyword.control</string>
 		</dict>
