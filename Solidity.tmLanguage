@@ -11,20 +11,6 @@
 	<key>patterns</key>
 	<array>
 		<dict>
-			<key>name</key>
-			<string>comment.line.solidity</string>
-			<key>match</key>
-			<string>(?&lt;!tp:)//.*?$</string>  <!-- exclude tp:  at the begining to avoid http:// and ftp:// -->
-		</dict>
-		<dict>
-			<key>name</key>
-			<string>comment.block.solidity</string>
-			<key>begin</key>
-			<string>/\*</string>
-			<key>end</key>
-			<string>\*/</string>
-		</dict>
-		<dict>
 			<key>captures</key>
 			<dict>
 				<key>2</key>
@@ -148,7 +134,7 @@
 			<key>comment</key>
 			<string>Operators</string>
 			<key>match</key>
-			<string>(=|!|&gt;|&lt;|\||&amp;)</string>
+			<string>(=|!|&gt;|&lt;|\||&amp;|\?|:)</string>
 			<key>name</key>
 			<string>keyword.control</string>
 		</dict>
