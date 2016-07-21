@@ -6,6 +6,13 @@ fileTypes: [sol]
 uuid: ad87d2cd-8575-4afe-984e-9421a3788933
 
 patterns:
+- match: \/\/.*
+  name: comment
+  comment: Comments
+- begin: (\/\*)
+  end: (\*\/)
+  name: comment
+  comment: Multiline comments
 - match: \b(event|enum)\s+([A-Za-z_]\w*)\b
   name: keyword.control
   captures:
@@ -40,7 +47,7 @@ patterns:
     '1': {name: constant.language}
     '2': {name: keyword.control}
   comment: Variable definitions
-- match: (=|!|>|<|\||&|\?|:|\^|~)
+- match: (=|!|>|<|\||&|\?|:|\^|~|\*|\+|-|\/|\%)
   name: keyword.control
   comment: Operators
 - match: \b(msg|block|tx)\.([A-Za-z_]\w*)\b
@@ -61,10 +68,3 @@ patterns:
 - match: \b(0[xX][a-fA-F0-9]+)\b
   name: constant.numeric
   comment: Hexadecimal
-- match: \/\/.*
-  name: comment
-  comment: Comments
-- begin: (\/\*)
-  end: (\*\/)
-  name: comment
-  comment: Multiline comments

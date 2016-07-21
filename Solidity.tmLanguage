@@ -11,6 +11,24 @@
 	<key>patterns</key>
 	<array>
 		<dict>
+			<key>comment</key>
+			<string>Comments</string>
+			<key>match</key>
+			<string>\/\/.*</string>
+			<key>name</key>
+			<string>comment</string>
+		</dict>
+		<dict>
+			<key>begin</key>
+			<string>(\/\*)</string>
+			<key>comment</key>
+			<string>Multiline comments</string>
+			<key>end</key>
+			<string>(\*\/)</string>
+			<key>name</key>
+			<string>comment</string>
+		</dict>
+		<dict>
 			<key>captures</key>
 			<dict>
 				<key>2</key>
@@ -134,7 +152,7 @@
 			<key>comment</key>
 			<string>Operators</string>
 			<key>match</key>
-			<string>(=|!|&gt;|&lt;|\||&amp;|\?|:|\^|~)</string>
+			<string>(=|!|&gt;|&lt;|\||&amp;|\?|:|\^|~|\*|\+|-|\/|\%)</string>
 			<key>name</key>
 			<string>keyword.control</string>
 		</dict>
@@ -194,24 +212,6 @@
 			<string>\b(0[xX][a-fA-F0-9]+)\b</string>
 			<key>name</key>
 			<string>constant.numeric</string>
-		</dict>
-		<dict>
-			<key>comment</key>
-			<string>Comments</string>
-			<key>match</key>
-			<string>\/\/.*</string>
-			<key>name</key>
-			<string>comment</string>
-		</dict>
-		<dict>
-			<key>begin</key>
-			<string>(\/\*)</string>
-			<key>comment</key>
-			<string>Multiline comments</string>
-			<key>end</key>
-			<string>(\*\/)</string>
-			<key>name</key>
-			<string>comment</string>
 		</dict>
 	</array>
 	<key>scopeName</key>
