@@ -39,7 +39,7 @@ patterns:
 - match: \b(true|false)\b
   name: constant.language
   comment: True and false keywords
-- match: \b(var|import|function|constant|view|pure|storage|memory|if|else|for|while|do|break|continue|returns?|private|public|internal|external|inherited|this|suicide|selfdestruct|new|is|throw|revert|assert|require|\_)\b
+- match: \b(var|import|function|constant|view|pure|payable|storage|memory|if|else|for|while|do|break|continue|returns?|private|public|internal|external|inherited|this|suicide|selfdestruct|new|is|throw|revert|assert|require|\_)\b
   name: keyword.control
   comment: Langauge keywords
 - match: \b([A-Za-z_]\w+)(\s+(?:private|public|internal|external|inherited))?\s+([A-Za-z_]\w*)\;
