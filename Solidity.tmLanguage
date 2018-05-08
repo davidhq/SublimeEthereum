@@ -59,9 +59,9 @@
 				</dict>
 			</dict>
 			<key>comment</key>
-			<string>Main keywords</string>
+			<string>Structures, function, event definitions</string>
 			<key>match</key>
-			<string>\b(contract|interface|library|using|struct|function|modifier)\s+([A-Za-z_]\w*)(?:\s+is\s+((?:[A-Za-z_][\,\s]*)*))?\b</string>
+			<string>\b(contract|interface|library|using|struct|function|constructor|modifier)(\s+[A-Za-z_]\w*)?(?:\s+is\s+((?:[A-Za-z_][\,\s]*)*))?\b</string>
 			<key>name</key>
 			<string>keyword.control</string>
 		</dict>
@@ -76,13 +76,67 @@
 				<key>2</key>
 				<dict>
 					<key>name</key>
+					<string>constant.numeric</string>
+				</dict>
+				<key>3</key>
+				<dict>
+					<key>name</key>
+					<string>constant.numeric</string>
+				</dict>
+				<key>4</key>
+				<dict>
+					<key>name</key>
+					<string>keyword.control</string>
+				</dict>
+				<key>5</key>
+				<dict>
+					<key>name</key>
 					<string>variable.parameter</string>
 				</dict>
 			</dict>
 			<key>comment</key>
 			<string>Built-in types</string>
 			<key>match</key>
-			<string>\b(address|string|bytes\d*|int\d*|uint\d*|bool|u?fixed\d+x\d+)\b(?:\s+(?:indexed\s+)?([A-Za-z_]\w*)\s*[,\)])?</string>
+			<string>\b(address|string|bytes?\d*|int\d*|uint\d*|bool|u?fixed\d+x\d+)\s*(?:\[(\d*)\])?\s*(?:\[(\d*)\])?\s*(?:(indexed|memory|storage|calldata)?\s*(\b[A-Za-z_]\w*)\s*)?(?=[,\)])</string>
+		</dict>
+		<dict>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>keyword.control</string>
+				</dict>
+				<key>2</key>
+				<dict>
+					<key>name</key>
+					<string>keyword.control</string>
+				</dict>
+				<key>3</key>
+				<dict>
+					<key>name</key>
+					<string>keyword.control</string>
+				</dict>
+				<key>4</key>
+				<dict>
+					<key>name</key>
+					<string>keyword.control</string>
+				</dict>
+				<key>5</key>
+				<dict>
+					<key>name</key>
+					<string>keyword.control</string>
+				</dict>
+				<key>6</key>
+				<dict>
+					<key>name</key>
+					<string>support.type</string>
+				</dict>
+			</dict>
+			<key>comment</key>
+			<string>modifiers</string>
+			<key>match</key>
+			<string>\)\s*(private|public|pure|view|internal|external)?\s*(private|public|pure|view|internal|external)?\s*(private|public|pure|view|internal|external)?\s*(private|public|pure|view|internal|external)?\s*(private|public|pure|view|internal|external)?\s*(.*?)[\(\{]</string>
 		</dict>
 		<dict>
 			<key>captures</key>
@@ -111,7 +165,7 @@
 			<key>comment</key>
 			<string>Mapping definition</string>
 			<key>match</key>
-			<string>\b(mapping)\s*\((.*)\s+=&gt;\s+(.*)\)(\s+(?:private|public|internal|external|inherited))?\s+([A-Za-z_]\w*)\b</string>
+			<string>\b(mapping)\s*\((.*)\s+=&gt;\s+(.*)\)(\s+(?:private|public|internal|external))?\s+([A-Za-z_]\w*)\b</string>
 		</dict>
 		<dict>
 			<key>comment</key>
@@ -125,7 +179,7 @@
 			<key>comment</key>
 			<string>Langauge keywords</string>
 			<key>match</key>
-			<string>\b(var|import|function|constant|view|pure|storage|memory|if|else|for|while|do|break|continue|returns?|private|public|internal|external|inherited|this|suicide|selfdestruct|emit|new|is|throw|revert|assert|require|\_)\b</string>
+			<string>\b(var|import|constant|pragma|payable|storage|memory|calldata|if|else|for|while|do|break|continue|returns?|private|public|pure|view|internal|external|this|suicide|selfdestruct|emit|new|is|throw|revert|assert|require|\_)\b</string>
 			<key>name</key>
 			<string>keyword.control</string>
 		</dict>
@@ -140,19 +194,43 @@
 				<key>2</key>
 				<dict>
 					<key>name</key>
+					<string>constant.numeric</string>
+				</dict>
+				<key>3</key>
+				<dict>
+					<key>name</key>
+					<string>constant.numeric</string>
+				</dict>
+				<key>4</key>
+				<dict>
+					<key>name</key>
 					<string>keyword.control</string>
 				</dict>
 			</dict>
 			<key>comment</key>
-			<string>Variable definitions</string>
+			<string>Variable definitions - bytes data; | uint x = uint(y);</string>
 			<key>match</key>
-			<string>\b([A-Za-z_]\w+)(\s+(?:private|public|internal|external|inherited))?\s+([A-Za-z_]\w*)\;</string>
+			<string>\b(address|string|bytes?\d*|int\d*|uint\d*|bool|u?fixed\d+x\d+)(?:\s*\[(\d*)\])?(?:\s*\[(\d*)\])?\s*(private|public|internal|external|constant|memory|storage)?\s+(?:[A-Za-z_]\w*)\s*[\;\=]</string>
+		</dict>
+		<dict>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>variable.parameter</string>
+				</dict>
+			</dict>
+			<key>comment</key>
+			<string>Variable definitions - bytes data; | uint x = uint(y);</string>
+			<key>match</key>
+			<string>\b([A-Za-z_]\w*)\s*\:\s*</string>
 		</dict>
 		<dict>
 			<key>comment</key>
 			<string>Operators</string>
 			<key>match</key>
-			<string>(=|!|&gt;|&lt;|\||&amp;|\?|:|\^|~|\*|\+|-|\/|\%)</string>
+			<string>(=|!|&gt;|&lt;|\||&amp;|\?|:|\^|~|\*|\+|\-|\/|\%|\bhex\b)</string>
 			<key>name</key>
 			<string>keyword.control</string>
 		</dict>
@@ -173,7 +251,59 @@
 			<key>comment</key>
 			<string>msg and block special usage</string>
 			<key>match</key>
-			<string>\b(msg|block|tx)\.([A-Za-z_]\w*)\b</string>
+			<string>\b(msg|block|tx|abi)\.([A-Za-z_]\w*)\b</string>
+		</dict>
+		<dict>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>constant.language</string>
+				</dict>
+			</dict>
+			<key>comment</key>
+			<string>Now and delete</string>
+			<key>match</key>
+			<string>\b(now|delete)\b</string>
+		</dict>
+		<dict>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>constant.language</string>
+				</dict>
+			</dict>
+			<key>comment</key>
+			<string>Function call - built-in functions</string>
+			<key>match</key>
+			<string>\b(blockhash|gasleft|addmod|mulmod|keccak256|sha256|sha3|ripemd160|ecrecover)\s*\(</string>
+		</dict>
+		<dict>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>support.type</string>
+				</dict>
+				<key>2</key>
+				<dict>
+					<key>name</key>
+					<string>constant.numeric</string>
+				</dict>
+				<key>3</key>
+				<dict>
+					<key>name</key>
+					<string>constant.numeric</string>
+				</dict>
+			</dict>
+			<key>comment</key>
+			<string>Function call, also for example - uint[] memory a = new uint[332](7); or uint[2][] memory arrayOfPairs = new uint[2][](size);</string>
+			<key>match</key>
+			<string>\b([A-Za-z_]\w*)\s*(?:\[(\d*)\])?\s*(?:\[(\d*)\])?\s*\(</string>
 		</dict>
 		<dict>
 			<key>captures</key>
@@ -185,9 +315,28 @@
 				</dict>
 			</dict>
 			<key>comment</key>
-			<string>Function call</string>
+			<string>Special treatment for length and .selector</string>
 			<key>match</key>
-			<string>\b([A-Za-z_]\w*)\s*\(</string>
+			<string>\b\.(length|selector)\b</string>
+		</dict>
+		<dict>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>constant.numeric</string>
+				</dict>
+				<key>2</key>
+				<dict>
+					<key>name</key>
+					<string>keyword.control</string>
+				</dict>
+			</dict>
+			<key>comment</key>
+			<string>Ether and time units</string>
+			<key>match</key>
+			<string>\b(\d+)\s+(wei|finney|szabo|ether|seconds|minutes|hours|days|weeks|years)\b</string>
 		</dict>
 		<dict>
 			<key>comment</key>
@@ -198,12 +347,23 @@
 			<string>string.quoted</string>
 		</dict>
 		<dict>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>constant.numeric</string>
+				</dict>
+				<key>2</key>
+				<dict>
+					<key>name</key>
+					<string>constant.numeric</string>
+				</dict>
+			</dict>
 			<key>comment</key>
-			<string>Numbers</string>
+			<string>Numbers, possibly with scientific notation</string>
 			<key>match</key>
-			<string>\b(\d+)\b</string>
-			<key>name</key>
-			<string>constant.numeric</string>
+			<string>\b(\d+)(e\d*)?\b</string>
 		</dict>
 		<dict>
 			<key>comment</key>
