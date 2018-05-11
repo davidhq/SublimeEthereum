@@ -32,12 +32,6 @@ patterns:
     '4': {name: keyword.control}
     '5': {name: variable.parameter}
   comment: Built-in types
-#--------------- duplication - bit ugly, but it works, the only place in this file that could use some improvement
-- match: (?<=\))\s*(?:private|public|internal|external|payable|pure|view|returns)?\s*(?:private|public|internal|external|payable|pure|view|returns)?\s*(?:private|public|internal|external|payable|pure|view|returns)?\s*(?:private|public|internal|external|payable|pure|view|returns)?\s*(.*?)(?=[\(\{])
-  name: keyword.control,
-  captures:
-    '1': {name: support.type}
-  comment: modifiers
 - match: \b(mapping)\s*\((.*)\s+=>\s+(.*)\)(\s+(?:private|public|internal|external))?\s+([A-Za-z_]\w*)\b
   captures:
     '1': {name: constant.language}
@@ -79,7 +73,7 @@ patterns:
   captures:
     '1': {name: constant.language}
   comment: Function call - built-in functions
-- match: \b([A-Za-z_]\w*)\s*(?:\[(\d*)\])?\s*(?:\[(\d*)\])?\s*\(
+- match: \b([A-Za-z_]\w*)(?:\[(\d*)\])?(?:\[(\d*)\])?\(
   captures:
     '1': {name: support.type}
     '2': {name: constant.numeric}

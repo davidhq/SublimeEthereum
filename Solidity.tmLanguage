@@ -105,22 +105,6 @@
 				<key>1</key>
 				<dict>
 					<key>name</key>
-					<string>support.type</string>
-				</dict>
-			</dict>
-			<key>comment</key>
-			<string>modifiers</string>
-			<key>match</key>
-			<string>(?&lt;=\))\s*(?:private|public|internal|external|payable|pure|view|returns)?\s*(?:private|public|internal|external|payable|pure|view|returns)?\s*(?:private|public|internal|external|payable|pure|view|returns)?\s*(?:private|public|internal|external|payable|pure|view|returns)?\s*(.*?)(?=[\(\{])</string>
-			<key>name</key>
-			<string>keyword.control,</string>
-		</dict>
-		<dict>
-			<key>captures</key>
-			<dict>
-				<key>1</key>
-				<dict>
-					<key>name</key>
 					<string>constant.language</string>
 				</dict>
 				<key>2</key>
@@ -280,7 +264,7 @@
 			<key>comment</key>
 			<string>Function call, also for example - uint[] memory a = new uint[332](7); or uint[2][] memory arrayOfPairs = new uint[2][](size);</string>
 			<key>match</key>
-			<string>\b([A-Za-z_]\w*)\s*(?:\[(\d*)\])?\s*(?:\[(\d*)\])?\s*\(</string>
+			<string>\b([A-Za-z_]\w*)(?:\[(\d*)\])?(?:\[(\d*)\])?\(</string>
 		</dict>
 		<dict>
 			<key>captures</key>
