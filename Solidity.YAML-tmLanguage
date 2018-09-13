@@ -24,7 +24,7 @@ patterns:
     '2': {name: entity.name.function}
     '3': {name: entity.name.function}
   comment: Structures, function, event definitions
-- match: \b(address|string|bytes?\d*|int\d*|uint\d*|bool|u?fixed\d+x\d+)\s*(?:\[(\d*)\])?\s*(?:\[(\d*)\])?\s*(?:(indexed|memory|storage|calldata)?\s*(\b[A-Za-z_]\w*)\s*)?(?=[,\)])
+- match: \b(address\s*payable|address|string|bytes?\d*|int\d*|uint\d*|bool|u?fixed\d+x\d+)\s*(?:\[(\d*)\])?\s*(?:\[(\d*)\])?\s*(?:(indexed|memory|storage|calldata|payable)?\s*(\b[A-Za-z_]\w*)\s*)?(?=[,\)])
   captures:
     '1': {name: constant.language}
     '2': {name: constant.numeric}
@@ -42,7 +42,7 @@ patterns:
 - match: \b(true|false)\b
   name: constant.language
   comment: True and false keywords
-- match: \b(address|string|bytes?\d*|int\d*|uint\d*|bool|u?fixed\d+x\d+)(?:\s*\[(\d*)\])?(?:\s*\[(\d*)\])?\s*(private|public|internal|external|constant|memory|storage)?\s+(?:[A-Za-z_]\w*)\s*[\;\=]
+- match: \b(address\s*payable|address|string|bytes?\d*|int\d*|uint\d*|bool|u?fixed\d+x\d+)(?:\s*\[(\d*)\])?(?:\s*\[(\d*)\])?\s*(private|public|internal|external|constant|memory|storage)?\s+(?:[A-Za-z_]\w*)\s*[\;\=]
 #- match: \b([A-Za-z_]\w+)(\s+(?:private|public|internal|external|constant))?\s+([A-Za-z_]\w*)[\;(?:\s*\=)]
   captures:
     '1': {name: constant.language}
