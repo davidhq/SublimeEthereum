@@ -2,7 +2,7 @@
 
 ## Description
 
-[Ethereum][ethereum] is a platform for decentralized applications which is ruling the world.
+[Ethereum][ethereum] is a platform for decentralized applications.
 
 This package contains syntax highlighting for Ethereum's language Solidity.
 
@@ -16,22 +16,18 @@ Recommended: install via [Package Control][package-control].
 
 ## Features
 
-* Solidity.tmLanguage: syntax rules made specially for Ethereum Solidity language
+* Solidity.sublime-syntax: syntax rules made specially for Ethereum Solidity language
    * Ethereum plugin automatically uses *Solidity language syntax* when you are in a Solidity file
 
 ## Team
 
-[Ralph Pichler](https://github.com/ralph-pichler)
-
-[David Krmpotic](https://github.com/davidhq)
-
-(In random order)
+uniqpath
 
 ## License
 
 All of Sublime Ethereum is licensed under the MIT license.
 
-  Copyright (c) 2015+ uniqpath
+  Copyright (c) 2019+ uniqpath
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal

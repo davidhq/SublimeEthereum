@@ -1,0 +1,771 @@
+%YAML 1.2
+---
+name: Solidity
+file_extensions: [sol]
+scope: source.solidity
+
+variables:
+  identifier: '(?:[A-Za-z_]\w*)'
+
+  number: '(?:[+-]?\d+(?:\.\d+)?)'
+  hex_number: '(?:[+-]?(0[Xx])[0-9a-fA-F_]*)'
+  math_operator: '(?:\+|\+\+|\-|\-\-|\*|\*\*|\/|\^|\%)'
+  logical_operator: '(?:\!|\&\&|\|\|)'
+  ternary_operator: '(?:\:|\?)'
+  comparison_operator: '(?:\>(?:\=)?|\<(?:\=)?|\=\=|\!\=)' # todo
+
+  ether_units: '(?:wei|finney|szabo|ether)'
+  time_units: '(?:seconds|minutes|hours|days|weeks|years)'
+  type: '(?:address\s*payable|address|string|bytes?\d*|int\d*|uint\d*|bool|u?fixed\d+x\d+)'
+  attribute: '(?:indexed|memory|storage|calldata|payable)'
+  type_modifier: '(?:private|public|internal|external|constant|memory|storage)'
+  func_modifier: '(?:public|private|internal|external|pure|view|payable)'
+  contractlike: '(?:contract|interface|library)'
+
+  expression_keyword_main: '\b(new|this|selfdestruct|delegatecall|selector)\b'
+  expression_keyword_error_handling: '\b(revert|require|assert)\b'
+  expression_keyword_binary_logic: '\b(true|false|null)\b'
+  expression_keyword_other: '\b(now|delete|blockhash|gasleft|addmod|mulmod|sha256|keccak256|ripemd160|ecrecover)\b'
+
+  super_keyword: super
+  special_members_keywords: '\b(length|timestamp)\b'
+  special_variables_and_function: '\b(?:block\.coinbase|block\.difficulty|block\.gaslimit|block\.number|block\.timestamp|msg\.data|msg\.sender|msg\.sig|msg\.value|tx\.gasprice|tx\.origin)\b'
+
+  reserved_keywords: \b(alias|apply|auto|copyof|define|immutable|implements|macro|mutable|override|partial|promise|reference|sealed|sizeof|supports|typedef|unchecked)\b
+
+  opcode: stop|add|mul|sub|div|sdiv|mod|smod|addmod|mulmod|exp|signextend|lt|gt|slt|sgt|eq|iszero|and|or|xor|not|byte|sha3|address|balance|origin|caller|callvalue|calldataload|calldatasize|calldatacopy|codesize|codecopy|gasprice|extcodesize|extcodecopy|blockhash|coinbase|timestamp|number|difficulty|gaslimit|pop|mload|mstore|mstore8|sload|sstore|jump|jumpi|pc|msize|gas|jumpdest|push1|push2|push32|dup1|dup2|dup16|swap1|swap2|swap16|log0|log1|log4|create|call|callcode|return|suicide
+
+contexts:
+  main:
+    - match: (?=\S)
+      push: program
+
+  # helpers
+
+  else-pop:
+    - match: (?=\S)
+      pop: true
+
+  immediately-pop:
+    - match: ''
+      pop: true
+
+  # number
+
+  number:
+    - match: '{{number}}'
+      scope: constant.numeric
+
+  hex_number:
+    - match: '{{hex_number}}'
+      scope: constant.numeric
+
+  # string
+
+  string:
+    - match: ([\"\'].*?[\"\'])
+      scope: string.quoted
+
+  # program structure
+
+  program:
+    - include: statement
+
+  statement:
+    - include: pragma
+    - include: import
+    - include: contract
+
+  # comments
+
+  prototype:
+    - include: comments
+
+  comments:
+    - match: /\*\*(?!/)
+      scope: punctuation.definition.comment.begin
+      push:
+        - meta_include_prototype: false
+        - meta_scope: comment.block.documentation
+        - match: \*/
+          scope: punctuation.definition.comment.end
+          pop: true
+    - match: /\*
+      scope: punctuation.definition.comment.begin
+      push:
+        - meta_include_prototype: false
+        - meta_scope: comment.block
+        - match: \*/
+          scope: punctuation.definition.comment.end
+          pop: true
+    - match: //
+      scope: punctuation.definition.comment
+      push:
+        - meta_include_prototype: false
+        - meta_scope: comment.line.double-slash
+        - match: \n
+          pop: true
+
+  # pragma
+
+  pragma:
+    - include: version_pragma
+    - include: experimental_pragma
+
+  version_pragma:
+    - match: (\bpragma\b)\s+(\bsolidity\b)
+      captures:
+        1: keyword.sol
+        2: keyword.sol
+      push: version_specification
+    - include: version_specification
+
+  version_specification:
+    - match: ([\^><]\=?)(\d+)(\.\d+(\.\d+)?)?
+      captures:
+        1: keyword.sol
+        2: constant.numeric.integer.sol
+        3: constant.numeric.integer.sol
+    - match: \;
+      pop: true
+    - include: else-pop
+
+  experimental_pragma:
+    - match: (\bpragma\b)\s+(\bexperimental\b)
+      captures:
+        1: keyword.other.sol
+        2: keyword.other.sol
+
+  # import
+
+  import:
+    - match: (\bimport\b)
+      scope: keyword
+      push: import-declaration
+
+  import-declaration:
+    - match: \bas\b
+      scope: keyword
+    - match: \bfrom\b
+      scope: keyword
+    - match: \;
+      pop: true
+    - include: string
+    - match: .*?
+      scope: scope
+    - include: else-pop
+
+  # contract
+
+  contract:
+    - match: \b({{contractlike}})(\s+{{identifier}})\s+(is)\b
+      captures:
+        1: keyword
+        2: entity.name.class
+        3: keyword
+      push: contract-parents
+    - match: \b({{contractlike}})(\s+{{identifier}})\b
+      captures:
+        1: keyword
+        2: entity.name.class
+      push: contract-body
+
+  contract-parents:
+    - match: '\{'
+      scope: punctuation.section.block.begin.sol
+      set: contract-body-contents
+    - match: '{{identifier}}'
+      scope: support.type
+    - match: \,
+      scope: scope
+    - match: \S+
+      scope: support.type
+
+  contract-body:
+    - match: '\{'
+      scope: punctuation.section.block.begin.sol
+      set: contract-body-contents
+    - include: else-pop
+
+  contract-body-contents:
+    - match: '\}'
+      scope: punctuation.section.block.end
+      pop: true
+    - include: using
+    - include: variables
+    - include: event
+    - include: constructor
+    - include: function
+    - include: modifier
+    - include: struct
+    - include: enum
+
+  # struct
+
+  struct:
+    - match: \b(struct)\s+({{identifier}})
+      captures:
+        1: keyword
+        2: entity.name.function
+      push:
+        - struct-body
+    - match: \b(struct)\s*
+      captures:
+        1: keyword
+      push:
+        - struct-body
+
+  struct-body:
+    - match: '\{'
+      scope: punctuation.section.block.begin.sol
+      set: struct-body-contents
+    - include: else-pop
+
+  struct-body-contents:
+    - include: variables
+    - match: '\}'
+      scope: punctuation.section.block.end
+      pop: true
+
+  # enum
+
+  enum:
+    - match: \b(enum)\s+({{identifier}})
+      captures:
+        1: keyword
+        2: entity.name.function
+      push:
+        - enum-body
+    - match: \b(struct)\s*
+      captures:
+        1: keyword
+      push:
+        - enum-body
+
+  enum-body:
+    - match: '\{'
+      scope: punctuation.section.block.begin.sol
+      set: enum-body-contents
+    - include: else-pop
+
+  enum-body-contents:
+    - include: variables
+    - match: '\}'
+      scope: punctuation.section.block.end
+      pop: true
+
+  # using
+
+  using:
+    - match: using
+      scope: keyword
+      push:
+        - match: \;
+          pop: true
+        - match: \b(for)\s+(\w+)
+          captures:
+            1: keyword
+            2: scope
+        - match: '{{identifier}}'
+        - include: else-pop
+
+  # variables
+
+  variables:
+    - include: variable-declaration-with-assignment
+    - include: variable-declaration
+    - include: variable-assignment
+
+  # variable-assignment
+
+  variable-assignment:
+    - match: \b({{identifier}})\s+(\-?\+?\*?\/?\=)
+      captures:
+        1: variable.language
+        2: keyword.operator.assignment
+      push: expression
+    - match: \(
+      scope: punctuation.definition.start.sol
+      push: tuple-content
+
+  # mapping
+
+  mapping:
+    - match: mapping
+      scope: storage.type
+      push: mapping-declaration
+
+  mapping-declaration:
+    - match: \(
+      scope: punctuation.section.block.begin.sol
+      push:
+        - match: '{{type}}'
+          scope: constant.language
+        - match: '{{identifier}}(?:{{identifier}})?'
+          scope: constant.language
+        - match: \=\>
+          scope: keyword
+        - match: \)
+          scope: punctuation.section.block.end.sol
+          pop: true
+    - include: function-modifiers
+    - include: '{{identifier}}'
+    - match: \;
+      pop: true
+    - include: else-pop
+
+  # variable declaration
+
+  variable-declaration:
+    - include: mapping
+    - match: \b({{type}})(?:\[\])?\s+((?:{{type_modifier}})(?:\s+(?:{{type_modifier}}))?)\s+({{identifier}})
+      captures:
+        1: constant.language
+        2: storage.modifier
+        3: variable.language
+    - match: \b({{type_modifier}})+\s+({{identifier}}) # ex: BigInt.bigint memory x = BigInt.fromUint(7);
+      captures:
+        1: storage.modifier
+        2: variable.language
+    - match: \b({{type}})(?:\[\])?\s+({{identifier}})
+      captures:
+        1: constant.language
+        2: variable.language
+    - match: '\b{{type}}\b' # not valid to have just type in a specific line for example but it's nice to color it immediately, not after identifier is specified as well
+      scope: constant.language
+
+  # variable declaration with assignment
+
+  variable-declaration-with-assignment:
+    - include: variable-declaration
+    - include: try-assignment
+
+  try-assignment:
+    - match: \=
+      scope: keyword.operator.assignment
+      push: expression
+
+  # tuple
+
+  tuple:
+    - match: '\('
+      scope: punctuation.definition.start.sol
+      push: tuple-content
+    - include: else-pop
+
+  tuple-content:
+    - match: '\)'
+      scope: punctuation.definition.end.sol
+      pop: true
+    - match: ','
+    - include: variable-declaration
+    - include: expression-include
+    - include: else-pop
+
+  # control-structure
+
+  control-structure:
+    - include: if-statement
+    - include: while-loop
+    - include: for-loop
+
+  # while loop
+
+  while-loop:
+    - match: \bwhile\b
+      scope: keyword
+      push:
+        - curly-brackets-body
+        - expression
+
+  # if statement
+
+  if-statement:
+    - include: else-statement
+    - match: \bif\b
+      scope: keyword
+      push:
+        - curly-brackets-body
+        - expression
+
+  else-statement:
+    - match: \b(else)(\s+if)?\b
+      captures:
+        1: keyword
+        2: keyword
+      push:
+        - curly-brackets-body
+        - expression
+
+  if-body:
+    - include: curly-brackets-body
+    - include: expression-include
+
+  # for loop
+
+  for-loop:
+    - match: \bfor\b
+      scope: keyword
+      push:
+        - curly-brackets-body
+        - for-loop-arguments
+
+  for-loop-arguments:
+    - match: '\('
+      scope: punctuation.section.block.begin.sol
+      push:
+        - expression
+        - expression
+        - variables-push
+    - match: '\)'
+      scope: punctuation.section.block.end.sol
+      pop: true
+    - include: else-pop
+
+  variables-push:
+    - include: variables
+    - include: else-pop
+
+  # expression
+
+  expression-keyword:
+    - match: '{{expression_keyword_main}}'
+      scope: keyword
+    - match: '{{expression_keyword_other}}'
+      scope: keyword
+    - match: '{{expression_keyword_error_handling}}'
+      scope: constant.numeric
+    - match: '{{expression_keyword_binary_logic}}'
+      scope: constant.language
+    - match: '{{reserved_keywords}}'
+      scope: keyword.sol.reserved
+    - match: '{{special_members_keywords}}'
+      scope: support.type
+    - match: '{{special_variables_and_function}}'
+      scope: support.type
+
+  expression-include:
+    - include: function-call
+    - include: expression-keyword
+    - include: '{{expression_keyword_main}}'
+      scope: variable.parameter
+    - match: \b(\d+)\s+({{ether_units}}|{{time_units}})\b
+      captures:
+        1: constant.numeric
+        2: keyword.control
+    - match: \[
+      scope: punctuation.section.block.begin.expr
+      push:
+        - include: expression
+    - match: \]
+      scope: punctuation.section.block.end.expr
+      pop: true
+    - match: \(
+      scope: punctuation.section.block.begin.sol
+      push: expression
+    - match: \)
+      scope: punctuation.section.block.end.sol
+      pop: true
+    - match: '{{math_operator}}'
+      scope: keyword.operator.arithmetic
+    - include: hex_number
+    - include: number
+    - include: string
+    - match: '{{identifier}}'
+    - match: '{{expression_keyword_main}}'
+      scope: keyword
+    - match: '\.'
+    - match: '{{comparison_operator}}'
+      scope: keyword.operator.logical
+    - match: '{{logical_operator}}'
+      scope: keyword.operator.logical
+    - match: '{{ternary_operator}}'
+      scope: keyword
+
+  expression:
+    - match: \(
+      scope: punctuation.definition.start.sol
+      push: tuple-content
+    - include: expression-include
+    - match: \;
+      pop: true
+    - include: else-pop
+
+  # function call
+
+  function-call:
+    - match: '({{type}})\s*(\()' # type conversion, ex: uint(-1)
+      captures:
+        1: constant.language
+        2: punctuation.section.block.begin.sol
+      push: function-call-arguments
+    - match: '({{expression_keyword_error_handling}})\s*(\()'
+      captures:
+        1: keyword
+        2: punctuation.section.block.begin.sol
+      push: function-call-arguments
+    - match: '({{super_keyword}})\.({{identifier}})\s*(\()'
+      captures:
+        1: keyword
+        2: support.function
+        3: punctuation.section.block.end.sol
+      push: function-call-arguments
+    - match: '({{identifier}})\.({{identifier}})\s*(\()'
+      captures:
+        1: support.function
+        2: support.function
+        3: punctuation.section.block.end.sol
+      push: function-call-arguments
+    - match: '({{identifier}})\s*(\()'
+      captures:
+        1: support.function
+        2: punctuation.section.block.begin.sol
+      push: function-call-arguments
+
+  function-call-arguments:
+    - include: expression-include
+    - match: ','
+    - match: '\)'
+      scope: punctuation.section.block.end.sol
+      pop: true
+    - match: \;
+      pop: true
+
+  function-call-argument:
+    - include: expression
+
+  # function, constructor, modifier
+
+  function:
+    - match: \b(function)\s+({{identifier}})
+      captures:
+        1: storage.type.function
+        2: entity.name.function
+      push:
+        - curly-brackets-body
+        - function-returns-declaration
+        - function-modifiers
+        - function-arguments
+    - match: \b(function)\s*
+      captures:
+        1: storage.type.function
+      push:
+        - curly-brackets-body
+        - function-returns-declaration
+        - function-modifiers
+        - function-arguments
+
+  constructor:
+    - match: \b(constructor)
+      scope: entity.name.function.sol
+      push:
+        - curly-brackets-body
+        - function-modifiers
+        - function-arguments
+
+  modifier: # modifier as in "keyword", not as various function modifiers like: public, private etc.
+    - match: \b(modifier)\s+({{identifier}})
+      captures:
+        1: storage.type.function
+        2: entity.name.function
+      push:
+        - curly-brackets-body
+        - function-returns-declaration
+        - function-modifiers
+        - function-arguments-try
+
+  function-arguments-try:
+    - include: function-arguments
+    - include: else-pop
+
+    ## function-arguments
+
+  function-arguments:
+    - match: '\('
+      scope: punctuation.section.block.begin.sol
+      push: function-argument
+    - match: ','
+      push:
+        - include: function-argument
+        - include: function-arguments
+    - match: '\)'
+      scope: punctuation.section.block.end.sol
+      pop: true
+
+  function-argument:
+    - match: '\b({{type}})(?:\[\])?\s+(\b{{attribute}})\s+(\b{{identifier}}\b)'
+      captures:
+        1: constant.language
+        2: storage.modifier
+        3: variable.parameter.function
+      pop: true
+    - match: '\b({{type}})(?:\[\])?\s+(\b{{identifier}}\b)'
+      captures:
+        1: constant.language
+        2: variable.parameter.function
+      pop: true
+    - match: '\b({{type}})(?:\[\])?\b'
+      captures:
+        1: constant.language
+      pop: true
+    - match: '(\b{{identifier}})\s+(\b{{identifier}}\b)'
+      captures:
+        1: source
+        2: variable.parameter.function
+      pop: true
+    - include: else-pop
+
+    ## function-modifiers
+
+  function-modifiers:
+    - match: '\b{{func_modifier}}\b'
+      scope: storage.modifier
+    - match: returns
+      scope: keyword
+      push: function-returns-arguments
+    - include: function-call
+    - match: '\b{{identifier}}\b'
+    - include: else-pop
+
+  function-modifiers-recursive:
+    - include: function-modifier
+    - include: function-modifiers
+
+    ## function-returns
+
+  function-returns-declaration:
+    - match: \breturns\b
+      scope: keyword
+      push: tuple
+    - include: else-pop
+
+  function-returns-arguments:
+    - match: '\('
+      scope: punctuation.section.block.begin.sol
+      push: function-returns-argument
+    - match: ','
+      push: function-returns-arguments-recursive
+    - match: '\)'
+      scope: punctuation.section.block.end.sol
+      pop: true
+
+  function-returns-arguments-recursive:
+    - include: function-returns-argument
+    - include: function-returns-arguments
+
+  function-returns-argument:
+    - match: '({{type}})(?:\[\])?\s*({{identifier}})?'
+      captures:
+        1: constant.language
+        2: variable.parameter
+      pop: true
+    - include: mapping
+    - include: else-pop
+
+    ## curly-brackets-body
+
+  curly-brackets-body:
+    - match: '\{'
+      scope: punctuation.section.block.begin.sol
+      set: curly-brackets-body-contents
+    - include: else-pop
+
+  curly-brackets-body-contents:
+    - match: '\}'
+      scope: punctuation.section.block.end
+      pop: true
+    - match: \b_; # _; is used inside modifiers and is replaced by actual function
+      scope: keyword
+    - include: return-statement
+    - include: lvalue-statement
+    - include: control-structure
+    - include: function-call
+    - include: variables
+    - include: emit-event
+    - include: assembly
+    - match: \bcontinue|break\b # only actually applies inside control structures (which use this syntax context as well)
+      scope: keyword
+    - include: expression-include
+
+  return-statement:
+    - match: return
+      scope: keyword
+      push:
+        - expression
+        - tuple
+
+  lvalue-statement:
+    - match: \bdelete\b
+      scope: keyword
+      push: expression
+
+  # event
+
+  event:
+    - match: (event)\s+({{identifier}})
+      captures:
+        1: storage.type
+      push: function-arguments
+
+  emit-event:
+    - match: (emit)
+      scope: keyword
+      push:
+        - include: function-call
+        - include: else-pop
+
+  # assembly
+
+  assembly:
+    - match: \b(assembly)\s*
+      captures:
+        1: storage.type.function
+      push: assembly-body
+
+  assembly-body:
+    - match: '\{'
+      scope: punctuation.section.block.begin.sol
+      push:
+        - assembly-end-bracket
+        - assembly-body-contents-wrap
+    - include: else-pop
+
+  assembly-end-bracket:
+    - match: '\}'
+      scope: punctuation.section.block.end
+      pop: true
+    - include: else-pop
+
+  assembly-body-contents-wrap:
+    - match: '\{' # just pretend blocks doesn't really exist, push to another reflexive context and pretend we're in a new assembly block
+      push:
+        - assembly-end-bracket
+        - assembly-body-contents-wrap
+    - include: assembly-body-contents
+
+  assembly-body-contents: # todo: bring-in all the opcodes!
+    - match: '\:\='
+      scope: keyword
+    - match: 'self'
+      scope: keyword
+    - match: '[\(\)\,\.]' # ignore there, but try to list all that are relevant
+    - match: \b(let|for)\b
+      scope: keyword
+    - match: '\b({{opcode}})\b'
+      scope: support.function
+    - match: '{{math_operator}}'
+      scope: keyword.operator.arithmetic
+    - include: hex_number
+    - include: number
+    - include: string
+    - match: '{{identifier}}'
+    - match: '{{expression_keyword_main}}'
+      scope: keyword
+    - match: '\.'
+    - match: '{{comparison_operator}}'
+      scope: keyword.operator.logical
+    - match: '{{logical_operator}}'
+      scope: keyword.operator.logical
+    - match: '{{ternary_operator}}'
+      scope: keyword
+    - include: else-pop
