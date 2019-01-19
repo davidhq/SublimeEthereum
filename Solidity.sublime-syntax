@@ -46,10 +46,6 @@ contexts:
     - match: (?=\S)
       pop: true
 
-  immediately-pop:
-    - match: ''
-      pop: true
-
   # number
 
   number:
@@ -424,6 +420,7 @@ contexts:
 
   variables-push:
     - include: variables
+    - match: ';'
     - include: else-pop
 
   # expression
@@ -737,13 +734,13 @@ contexts:
     - include: else-pop
 
   assembly-body-contents-wrap:
-    - match: '\{' # just pretend blocks doesn't really exist, push to another reflexive context and pretend we're in a new assembly block
+    - match: '\{'
       push:
         - assembly-end-bracket
         - assembly-body-contents-wrap
     - include: assembly-body-contents
 
-  assembly-body-contents: # todo: bring-in all the opcodes!
+  assembly-body-contents:
     - match: '\:\='
       scope: keyword
     - match: 'self'
