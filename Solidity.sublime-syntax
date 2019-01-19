@@ -25,11 +25,12 @@ variables:
   expression_keyword_main: '\b(new|this|selfdestruct|delegatecall|selector)\b'
   expression_keyword_error_handling: '\b(revert|require|assert)\b'
   expression_keyword_binary_logic: '\b(true|false|null)\b'
-  expression_keyword_other: '\b(now|delete|blockhash|gasleft|addmod|mulmod|sha256|keccak256|ripemd160|ecrecover)\b'
+  expression_keyword_other: '\b(now|delete|addmod|mulmod|sha256|keccak256|ripemd160|ecrecover)\b'
 
   super_keyword: super
   special_members_keywords: '\b(length|timestamp)\b'
-  special_variables_and_function: '\b(?:block\.coinbase|block\.difficulty|block\.gaslimit|block\.number|block\.timestamp|msg\.data|msg\.sender|msg\.sig|msg\.value|tx\.gasprice|tx\.origin)\b'
+  special_functions: '\b(?:blockhash|gasleft|abi\.decode|abi\.encode|abi\.encodePacked|abi\.encodeWithSelector|abi\.encodeWithSignature)\b'
+  special_properties: '\b(?:block\.coinbase|block\.difficulty|block\.gaslimit|block\.number|block\.timestamp|msg\.data|msg\.sender|msg\.sig|msg\.value|tx\.gasprice|tx\.origin)\b'
 
   reserved_keywords: \b(alias|apply|auto|copyof|define|immutable|implements|macro|mutable|override|partial|promise|reference|sealed|sizeof|supports|typedef|unchecked)\b
 
@@ -312,23 +313,33 @@ contexts:
 
   # variable declaration
 
+  # var keyword was deprecated in solidity 0.4.20 but we still highlight it for older contracts!
   variable-declaration:
     - include: mapping
-    - match: \b({{type}})(?:\[\])?\s+((?:{{type_modifier}})(?:\s+(?:{{type_modifier}}))?)\s+({{identifier}})
+    - match: \b(var\s+)?({{type}})(?:\[\])?\s+((?:{{type_modifier}}\s+)*)({{identifier}})
       captures:
-        1: constant.language
+        1: keyword
+        2: constant.language
+        3: storage.modifier
+        4: variable.language
+    - match: \b(var\s+)?\s+({{type_modifier}})+\s+({{identifier}}) # ex: BigInt.bigint memory x = BigInt.fromUint(7);
+      captures:
+        1: keyword
         2: storage.modifier
         3: variable.language
-    - match: \b({{type_modifier}})+\s+({{identifier}}) # ex: BigInt.bigint memory x = BigInt.fromUint(7);
+    - match: \b(var\s+)?({{type}})(?:\[\])?\s+({{identifier}})
       captures:
-        1: storage.modifier
-        2: variable.language
-    - match: \b({{type}})(?:\[\])?\s+({{identifier}})
+        1: keyword
+        2: constant.language
+        3: variable.language
+    - match: \b(var\s+)?({{type}})\b # not valid to have just type in a specific line for example but it's nice to color it immediately, not after identifier is specified as well
       captures:
-        1: constant.language
+        1: keyword
+        2: constant.language
+    - match: \b(var)\s+({{identifier}})\b # not valid to have just type in a specific line for example but it's nice to color it immediately, not after identifier is specified as well
+      captures:
+        1: keyword
         2: variable.language
-    - match: '\b{{type}}\b' # not valid to have just type in a specific line for example but it's nice to color it immediately, not after identifier is specified as well
-      scope: constant.language
 
   # variable declaration with assignment
 
@@ -438,10 +449,18 @@ contexts:
       scope: keyword.sol.reserved
     - match: '{{special_members_keywords}}'
       scope: support.type
-    - match: '{{special_variables_and_function}}'
-      scope: support.type
+    - match: '{{special_properties}}'
+      scope: constant.numeric
+
 
   expression-include:
+    - match: \[
+      scope: punctuation.section.block.begin.expr
+      push:
+        - match: \]
+          scope: punctuation.section.block.end.expr
+          pop: true
+        - include: expression
     - include: function-call
     - include: expression-keyword
     - include: '{{expression_keyword_main}}'
@@ -450,13 +469,6 @@ contexts:
       captures:
         1: constant.numeric
         2: keyword.control
-    - match: \[
-      scope: punctuation.section.block.begin.expr
-      push:
-        - include: expression
-    - match: \]
-      scope: punctuation.section.block.end.expr
-      pop: true
     - match: \(
       scope: punctuation.section.block.begin.sol
       push: expression
@@ -496,6 +508,9 @@ contexts:
         1: constant.language
         2: punctuation.section.block.begin.sol
       push: function-call-arguments
+    - match: '({{special_functions}})\s*(\()'
+      scope: support.function
+      push: function-call-arguments
     - match: '({{expression_keyword_error_handling}})\s*(\()'
       captures:
         1: keyword
@@ -504,18 +519,18 @@ contexts:
     - match: '({{super_keyword}})\.({{identifier}})\s*(\()'
       captures:
         1: keyword
-        2: support.function
+        2: support.type
         3: punctuation.section.block.end.sol
       push: function-call-arguments
     - match: '({{identifier}})\.({{identifier}})\s*(\()'
       captures:
-        1: support.function
-        2: support.function
+        1: scope
+        2: support.type
         3: punctuation.section.block.end.sol
       push: function-call-arguments
     - match: '({{identifier}})\s*(\()'
       captures:
-        1: support.function
+        1: support.type
         2: punctuation.section.block.begin.sol
       push: function-call-arguments
 
@@ -590,13 +605,13 @@ contexts:
       pop: true
 
   function-argument:
-    - match: '\b({{type}})(?:\[\])?\s+(\b{{attribute}})\s+(\b{{identifier}}\b)'
+    - match: '\b({{type}})(?:\[\])?\s+({{attribute}})\s+({{identifier}}\b)'
       captures:
         1: constant.language
         2: storage.modifier
         3: variable.parameter.function
       pop: true
-    - match: '\b({{type}})(?:\[\])?\s+(\b{{identifier}}\b)'
+    - match: '\b({{type}})(?:\[\])?\s+({{identifier}})'
       captures:
         1: constant.language
         2: variable.parameter.function
@@ -605,10 +620,11 @@ contexts:
       captures:
         1: constant.language
       pop: true
-    - match: '(\b{{identifier}})\s+(\b{{identifier}}\b)'
+    - match: '(\b{{identifier}})\s+({{attribute}}\s+)?({{identifier}})'
       captures:
         1: source
-        2: variable.parameter.function
+        2: storage.modifier
+        3: variable.parameter.function
       pop: true
     - include: else-pop
 
