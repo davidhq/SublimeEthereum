@@ -278,7 +278,7 @@ contexts:
   variable-assignment:
     - match: \b({{identifier}})\s+(\-?\+?\*?\/?\=)
       captures:
-        1: variable.language
+        1: scope
         2: keyword.operator.assignment
       push: expression
     - match: \(
@@ -321,17 +321,17 @@ contexts:
         1: keyword
         2: constant.language
         3: storage.modifier
-        4: variable.language
+        4: scope
     - match: \b(var\s+)?\s+({{type_modifier}})+\s+({{identifier}}) # ex: BigInt.bigint memory x = BigInt.fromUint(7);
       captures:
         1: keyword
         2: storage.modifier
-        3: variable.language
+        3: scope
     - match: \b(var\s+)?({{type}})(?:\[\])?\s+({{identifier}})
       captures:
         1: keyword
         2: constant.language
-        3: variable.language
+        3: scope
     - match: \b(var\s+)?({{type}})\b # not valid to have just type in a specific line for example but it's nice to color it immediately, not after identifier is specified as well
       captures:
         1: keyword
@@ -339,7 +339,7 @@ contexts:
     - match: \b(var)\s+({{identifier}})\b # not valid to have just type in a specific line for example but it's nice to color it immediately, not after identifier is specified as well
       captures:
         1: keyword
-        2: variable.language
+        2: scope
 
   # variable declaration with assignment
 
