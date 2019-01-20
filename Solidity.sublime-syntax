@@ -452,7 +452,6 @@ contexts:
     - match: '{{special_properties}}'
       scope: constant.numeric
 
-
   expression-include:
     - match: \[
       scope: punctuation.section.block.begin.expr
@@ -519,18 +518,18 @@ contexts:
     - match: '({{super_keyword}})\.({{identifier}})\s*(\()'
       captures:
         1: keyword
-        2: support.type
+        2: support.function
         3: punctuation.section.block.end.sol
       push: function-call-arguments
     - match: '({{identifier}})\.({{identifier}})\s*(\()'
       captures:
         1: scope
-        2: support.type
+        2: support.function
         3: punctuation.section.block.end.sol
       push: function-call-arguments
     - match: '({{identifier}})\s*(\()'
       captures:
-        1: support.type
+        1: support.function
         2: punctuation.section.block.begin.sol
       push: function-call-arguments
 
