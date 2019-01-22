@@ -666,10 +666,17 @@ contexts:
     - include: function-returns-arguments
 
   function-returns-argument:
-    - match: '({{type}})(?:\[\])?\s*({{identifier}})?'
+    - match: '({{type}})(?:\[\])?\s*((?:{{type_modifier}})+\s*)?({{identifier}})?'
       captures:
         1: constant.language
-        2: variable.parameter
+        2: keyword
+        3: variable.parameter
+      pop: true
+    - match: '({{identifier}})(?:\[\])?\s*((?:{{type_modifier}})+\s*)?({{identifier}})?'
+      captures:
+        1: constant.language
+        2: keyword
+        3: variable.parameter
       pop: true
     - include: mapping
     - include: else-pop
