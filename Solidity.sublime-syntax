@@ -34,7 +34,7 @@ variables:
 
   reserved_keywords: \b(alias|apply|auto|copyof|define|immutable|implements|macro|mutable|override|partial|promise|reference|sealed|sizeof|supports|typedef|unchecked)\b
 
-  opcode: stop|add|mul|sub|div|sdiv|mod|smod|addmod|mulmod|exp|signextend|lt|gt|slt|sgt|eq|iszero|and|or|xor|not|byte|sha3|address|balance|origin|caller|callvalue|calldataload|calldatasize|calldatacopy|codesize|codecopy|gasprice|extcodesize|extcodecopy|blockhash|coinbase|timestamp|number|difficulty|gaslimit|pop|mload|mstore|mstore8|sload|sstore|jump|jumpi|pc|msize|gas|jumpdest|push1|push2|push32|dup1|dup2|dup16|swap1|swap2|swap16|log0|log1|log4|create|call|callcode|return|suicide
+  opcode: stop|add|mul|sub|div|sdiv|mod|smod|addmod|mulmod|exp|signextend|lt|gt|slt|sgt|eq|iszero|and|or|xor|not|byte|sha3|address|balance|origin|caller|callvalue|calldataload|calldatasize|calldatacopy|codesize|codecopy|gasprice|extcodesize|extcodecopy|blockhash|coinbase|timestamp|number|difficulty|gaslimit|pop|mload|mstore|mstore8|sload|sstore|jump|jumpi|pc|msize|gas|jumpdest|push1|push2|push32|dup1|dup2|dup16|swap1|swap2|swap16|log0|log1|log4|create|call|callcode|return|suicide|staticcall
 
 contexts:
   main:
@@ -742,27 +742,27 @@ contexts:
       push: assembly-body
 
   assembly-body:
+    - include: assembly-body-include
+    - include: else-pop
+
+  assembly-body-include:
     - match: '\{'
       scope: punctuation.section.block.begin.sol
       push:
-        - assembly-end-bracket
-        - assembly-body-contents-wrap
-    - include: else-pop
+        - include: assembly-end-bracket
+        - include: assembly-body-contents
 
   assembly-end-bracket:
     - match: '\}'
       scope: punctuation.section.block.end
       pop: true
-    - include: else-pop
-
-  assembly-body-contents-wrap:
-    - match: '\{'
-      push:
-        - assembly-end-bracket
-        - assembly-body-contents-wrap
-    - include: assembly-body-contents
 
   assembly-body-contents:
+    - include: assembly-statements
+    - include: assembly-body-include
+    - include: assembly-end-bracket
+
+  assembly-statements:
     - match: '\:\='
       scope: keyword
     - match: 'self'
@@ -787,4 +787,3 @@ contexts:
       scope: keyword.operator.logical
     - match: '{{ternary_operator}}'
       scope: keyword
-    - include: else-pop
