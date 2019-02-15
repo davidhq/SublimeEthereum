@@ -17,6 +17,7 @@ variables:
   ether_units: '(?:wei|finney|szabo|ether)'
   time_units: '(?:seconds|minutes|hours|days|weeks|years)'
   type: '(?:address\s*payable|address|string|bytes?\d*|int\d*|uint\d*|bool|u?fixed\d+x\d+)'
+  custom_type: '(?:[A-Za-z_][\w\.]*)' # ex.: A.MyStruct
   attribute: '(?:indexed|memory|storage|calldata|payable)'
   type_modifier: '(?:private|public|internal|external|constant|memory|storage)'
   func_modifier: '(?:public|private|internal|external|pure|view|payable)'
@@ -296,9 +297,11 @@ contexts:
     - match: \(
       scope: punctuation.section.block.begin.sol
       push:
-        - match: '{{type}}'
-          scope: constant.language
-        - match: '{{identifier}}(?:{{identifier}})?'
+        - match: '(?:({{type}})|({{custom_type}}))'
+          captures:
+            1: constant.language
+            2: scope
+        - match: '{{identifier}}'
           scope: constant.language
         - match: \=\>
           scope: keyword
@@ -604,20 +607,24 @@ contexts:
       pop: true
 
   function-argument:
-    - match: '\b({{type}})(?:\[\])?\s+({{attribute}})\s+({{identifier}}\b)'
+    - match: '\b(?:({{type}})|({{custom_type}}))(?:\[\])?\s+({{attribute}})\s+({{identifier}}\b)'
       captures:
         1: constant.language
-        2: storage.modifier
+        2: scope
+        3: storage.modifier
+        4: variable.parameter.function
+      pop: true
+    - match: '\b(?:({{type}})|({{custom_type}}))(?:\[\])?\s+({{identifier}})'
+      captures:
+        1: constant.language
+        2: scope
         3: variable.parameter.function
       pop: true
-    - match: '\b({{type}})(?:\[\])?\s+({{identifier}})'
+    - match: '\b(?:({{type}})|({{custom_type}}))(?:\[\])?\b'
       captures:
         1: constant.language
-        2: variable.parameter.function
-      pop: true
-    - match: '\b({{type}})(?:\[\])?\b'
-      captures:
-        1: constant.language
+        2: scope
+        3: constant.language
       pop: true
     - match: '(\b{{identifier}})\s+({{attribute}}\s+)?({{identifier}})'
       captures:
@@ -666,11 +673,12 @@ contexts:
     - include: function-returns-arguments
 
   function-returns-argument:
-    - match: '({{type}})(?:\[\])?\s*((?:{{type_modifier}})+\s*)?({{identifier}})?'
+    - match: '(?:({{type}})|({{custom_type}}))(?:\[\])?\s*((?:{{type_modifier}})+\s*)?({{identifier}})?'
       captures:
         1: constant.language
-        2: keyword
-        3: variable.parameter
+        2: scope
+        3: keyword
+        4: variable.parameter
       pop: true
     - match: '({{identifier}})(?:\[\])?\s*((?:{{type_modifier}})+\s*)?({{identifier}})?'
       captures:
