@@ -255,7 +255,7 @@ contexts:
   # using
 
   using:
-    - match: using
+    - match: \busing\b
       scope: keyword
       push:
         - match: \;
@@ -289,7 +289,7 @@ contexts:
   # mapping
 
   mapping:
-    - match: mapping
+    - match: \bmapping\b
       scope: storage.type
       push: mapping-declaration
 
@@ -639,7 +639,7 @@ contexts:
   function-modifiers:
     - match: '\b{{func_modifier}}\b'
       scope: storage.modifier
-    - match: returns
+    - match: \breturns\b
       scope: keyword
       push: function-returns-arguments
     - include: function-call
@@ -715,7 +715,7 @@ contexts:
     - include: expression-include
 
   return-statement:
-    - match: return
+    - match: \breturn\b
       scope: keyword
       push:
         - expression
