@@ -424,7 +424,7 @@ contexts:
     - match: '\('
       scope: punctuation.section.block.begin.sol
       push:
-        - expression
+        - variables-or-expression
         - expression
         - variables-push
     - match: '\)'
@@ -436,6 +436,10 @@ contexts:
     - include: variables
     - match: ';'
     - include: else-pop
+
+  variables-or-expression:
+    - include: variables
+    - include: expression
 
   # expression
 
