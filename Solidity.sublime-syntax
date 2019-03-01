@@ -7,7 +7,7 @@ scope: source.solidity
 variables:
   identifier: '(?:[A-Za-z_]\w*)'
 
-  number: '(?:[+-]?\d+(?:\.\d+)?)'
+  number: '(?:[+-]?\d[\d_e]*(?:\.\d+)?)'
   hex_number: '(?:[+-]?(0[Xx])[0-9a-fA-F_]*)'
   math_operator: '(?:\+|\+\+|\-|\-\-|\*|\*\*|\/|\^|\%)'
   logical_operator: '(?:\!|\&\&|\|\|)'
@@ -471,7 +471,7 @@ contexts:
     - include: expression-keyword
     - include: '{{expression_keyword_main}}'
       scope: variable.parameter
-    - match: \b(\d+)\s+({{ether_units}}|{{time_units}})\b
+    - match: \b({{number}})\s+({{ether_units}}|{{time_units}})\b
       captures:
         1: constant.numeric
         2: keyword.control
