@@ -611,24 +611,27 @@ contexts:
       pop: true
 
   function-argument:
-    - match: '\b(?:({{type}})|({{custom_type}}))(?:\[\])?\s+({{attribute}})\s+({{identifier}}\b)'
+    - match: '\b(?:({{type}})|({{custom_type}}))(?:\[(\d*)\])?\s+({{attribute}})\s+({{identifier}}\b)'
       captures:
         1: constant.language
         2: scope
-        3: storage.modifier
+        3: constant.numeric
+        4: storage.modifier
+        5: variable.parameter.function
+      pop: true
+    - match: '\b(?:({{type}})|({{custom_type}}))(?:\[(\d*)\])?\s+({{identifier}})'
+      captures:
+        1: constant.language
+        2: scope
+        3: constant.numeric
         4: variable.parameter.function
       pop: true
-    - match: '\b(?:({{type}})|({{custom_type}}))(?:\[\])?\s+({{identifier}})'
+    - match: '\b(?:({{type}})|({{custom_type}}))(?:\[(\d*)\])?\b'
       captures:
         1: constant.language
         2: scope
-        3: variable.parameter.function
-      pop: true
-    - match: '\b(?:({{type}})|({{custom_type}}))(?:\[\])?\b'
-      captures:
-        1: constant.language
-        2: scope
-        3: constant.language
+        3: constant.numeric
+        4: constant.language
       pop: true
     - match: '(\b{{identifier}})\s+({{attribute}}\s+)?({{identifier}})'
       captures:
