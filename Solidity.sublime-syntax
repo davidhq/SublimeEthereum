@@ -467,6 +467,7 @@ contexts:
         - match: \]
           scope: punctuation.section.block.end.expr
           pop: true
+        - match: \, # ... = [0,1,2]
         - include: expression
     - include: function-call
     - include: expression-keyword
