@@ -298,14 +298,15 @@ contexts:
     - match: \(
       scope: punctuation.section.block.begin.sol
       push:
-        - match: '(?:({{type}})|({{custom_type}}))'
-          captures:
-            1: constant.language
-            2: scope
-        - match: '{{identifier}}'
-          scope: constant.language
+        - include: mapping-target
         - match: \=\>
           scope: keyword
+          push:
+            - match: \bmapping\b # mapping of a mapping
+              scope: storage.type
+              push: mapping-declaration
+            - include: mapping-target
+            - include: else-pop
         - match: \)
           scope: punctuation.section.block.end.sol
           pop: true
@@ -314,6 +315,14 @@ contexts:
     - match: \;
       pop: true
     - include: else-pop
+
+  mapping-target:
+    - match: '(?:({{type}})|({{custom_type}}))'
+      captures:
+        1: constant.language
+        2: scope
+    - match: '{{identifier}}'
+      scope: constant.language
 
   # variable declaration
 
