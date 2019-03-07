@@ -31,7 +31,7 @@ variables:
   super_keyword: super
   special_members_keywords: '\b(length|timestamp)\b'
   special_functions: '\b(?:blockhash|gasleft|abi\.decode|abi\.encode|abi\.encodePacked|abi\.encodeWithSelector|abi\.encodeWithSignature)\b'
-  special_properties: '\b(?:block\.coinbase|block\.difficulty|block\.gaslimit|block\.number|block\.timestamp|msg\.data|msg\.sender|msg\.sig|msg\.value|tx\.gasprice|tx\.origin)\b'
+  special_properties: '\b(?:block\.coinbase|block\.difficulty|block\.gaslimit|block\.number|block\.timestamp|msg\.data|msg\.sender|msg\.sig|msg\.value|msg\.gas|tx\.gasprice|tx\.origin)\b'
 
   reserved_keywords: \b(alias|apply|auto|copyof|define|immutable|implements|macro|mutable|override|partial|promise|reference|sealed|sizeof|supports|typedef|unchecked)\b
 
@@ -197,7 +197,6 @@ contexts:
     - include: modifier
     - include: struct
     - include: enum
-    #- include: expression-include
 
   # struct
 
@@ -298,14 +297,14 @@ contexts:
     - match: \(
       scope: punctuation.section.block.begin.sol
       push:
-        - include: mapping-target
+        - include: mapping-contents
         - match: \=\>
           scope: keyword
           push:
             - match: \bmapping\b # mapping of a mapping
               scope: storage.type
               push: mapping-declaration
-            - include: mapping-target
+            - include: mapping-contents
             - include: else-pop
         - match: \)
           scope: punctuation.section.block.end.sol
@@ -316,7 +315,9 @@ contexts:
       pop: true
     - include: else-pop
 
-  mapping-target:
+  # extracted out to be used for nested mappings definitions:
+  # mapping (address => mapping(uint256 => uint256)) internal my_mapping;
+  mapping-contents:
     - match: '(?:({{type}})|({{custom_type}}))'
       captures:
         1: constant.language
@@ -393,41 +394,66 @@ contexts:
 
   while-loop:
     - match: \bwhile\b
-      scope: keyword
+      scope: keyword.control
       push:
-        - curly-brackets-body
-        - expression
+        - control-structure-body
+        - expression-in-brackets
+    - match: \bdo\b
+      scope: keyword.control
+      push:
+        - expression-in-brackets
+        - while-keyword
+        - control-structure-body
+
+  while-keyword:
+    - match: \bwhile\b
+      scope: keyword.control
+      pop: true
 
   # if statement
 
   if-statement:
     - include: else-statement
     - match: \bif\b
-      scope: keyword
+      scope: keyword.control
       push:
-        - curly-brackets-body
-        - expression
+        - control-structure-body
+        - expression-in-brackets
+
+  # Parentheses can *not* be omitted for conditionals, but curly brances can be omitted around single-statement bodies.
+  expression-in-brackets:
+    - match: \(
+      scope: punctuation.definition.start.sol
+      push: expression
+    - match: \)
+      scope: punctuation.section.block.end.sol
+      pop: true
+
+  control-structure-body:
+    - include: curly-brackets-body-contents # statement without curl brackets: ex.: if () return;
+    - match: '\{'
+      scope: punctuation.section.block.begin.sol
+      set: curly-brackets-body-contents # ex.: if () { return };
+    - match: \;
+      pop: true
+    - include: else-pop
 
   else-statement:
     - match: \b(else)(\s+if)?\b
       captures:
-        1: keyword
-        2: keyword
+        1: keyword.control
+        2: keyword.control
       push:
         - curly-brackets-body
         - expression
-
-  if-body:
-    - include: curly-brackets-body
-    - include: expression-include
 
   # for loop
 
   for-loop:
     - match: \bfor\b
-      scope: keyword
+      scope: keyword.control
       push:
-        - curly-brackets-body
+        - control-structure-body
         - for-loop-arguments
 
   for-loop-arguments:
@@ -488,10 +514,7 @@ contexts:
         2: keyword.control
     - match: \(
       scope: punctuation.section.block.begin.sol
-      push: expression
-    - match: \)
-      scope: punctuation.section.block.end.sol
-      pop: true
+      push: tuple-content
     - match: '{{math_operator}}'
       scope: keyword.operator.arithmetic
     - include: hex_number
@@ -509,9 +532,6 @@ contexts:
       scope: keyword
 
   expression:
-    - match: \(
-      scope: punctuation.definition.start.sol
-      push: tuple-content
     - include: expression-include
     - match: \;
       pop: true
@@ -525,8 +545,9 @@ contexts:
         1: constant.language
         2: punctuation.section.block.begin.sol
       push: function-call-arguments
-    - match: '({{special_functions}})\s*(\()'
-      scope: support.function
+    - match: '({{special_functions}})\s*\('
+      captures:
+        1: support.function
       push: function-call-arguments
     - match: '({{expression_keyword_error_handling}})\s*(\()'
       captures:
