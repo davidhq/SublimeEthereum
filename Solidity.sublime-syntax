@@ -413,6 +413,7 @@ contexts:
   # if statement
 
   if-statement:
+    - include: else-if-statement
     - include: else-statement
     - match: \bif\b
       scope: keyword.control
@@ -433,19 +434,29 @@ contexts:
     - include: curly-brackets-body-contents # statement without curl brackets: ex.: if () return;
     - match: '\{'
       scope: punctuation.section.block.begin.sol
-      set: curly-brackets-body-contents # ex.: if () { return };
+      push:
+        - include: curly-brackets-body-contents # ex.: if () { return };
+        - match: '\}'
+          scope: punctuation.section.block.end
+          pop: true
     - match: \;
       pop: true
     - include: else-pop
 
-  else-statement:
-    - match: \b(else)(\s+if)?\b
+  else-if-statement:
+    - match: \b(else)\s+(if)\b
       captures:
         1: keyword.control
         2: keyword.control
       push:
-        - curly-brackets-body
-        - expression
+        - control-structure-body
+        - expression-in-brackets
+
+  else-statement:
+    - match: \b(else)\b
+      scope: keyword.control
+      push:
+        - control-structure-body
 
   # for loop
 
@@ -733,13 +744,14 @@ contexts:
   curly-brackets-body:
     - match: '\{'
       scope: punctuation.section.block.begin.sol
-      set: curly-brackets-body-contents
+      push:
+        - include: curly-brackets-body-contents
+        - match: '\}'
+          scope: punctuation.section.block.end
+          pop: true
     - include: else-pop
 
   curly-brackets-body-contents:
-    - match: '\}'
-      scope: punctuation.section.block.end
-      pop: true
     - match: \b_; # _; is used inside modifiers and is replaced by actual function
       scope: keyword
     - include: return-statement
