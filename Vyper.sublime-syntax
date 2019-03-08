@@ -1,0 +1,303 @@
+%YAML 1.2
+---
+name: Vyper
+file_extensions: [vy]
+scope: source.vyper
+
+variables:
+  identifier: '(?:[A-Za-z_]\w*)'
+
+  number: '(?:[+-]?\d[\d_e]*(?:\.\d+)?)'
+  hex_number: '(?:[+-]?(0[Xx])[0-9a-fA-F_]*)'
+  math_operator: '(?:\+|\+\+|\-|\-\-|\-\=|\+\=|\*\=|\/\=|\*|\*\*|\/|\^|\%)'
+  assignment_operator: '(?:\=)'
+  logical_operator: '(?:\!|\&\&|\|\|)'
+  ternary_operator: '(?:\:|\?)'
+  comparison_operator: '(?:\>(?:\=)?|\<(?:\=)?|\=\=|\!\=)' # todo
+
+  ether_units: '(?:wei|finney|szabo|ether)'
+  time_units: '(?:seconds|minutes|hours|days|weeks|years)'
+  type: '(?:address\s*payable|address|string|bytes?\d*|int\d*|uint\d*|bool|u?fixed\d+x\d+)'
+  custom_type: '(?:[A-Za-z_][\w\.]*)' # ex.: A.MyStruct
+  attribute: '(?:indexed|memory|storage|calldata|payable)'
+  type_modifier: '(?:private|public|internal|external|constant|memory|storage)'
+  func_modifier: '(?:public|private|internal|external|pure|view|payable)'
+  contractlike: '(?:contract|interface|library)'
+
+  language_keyword: \b(if|for|return|or|pass|not|from|import)\b # missing: in, to
+  self_keyword: \b(self)\b # missing: in, to
+
+  expression_keyword_main: '\b(new|this|selfdestruct|delegatecall|selector)\b'
+  expression_keyword_error_handling: '\b(revert|require|assert)\b'
+  expression_keyword_binary_logic: '\b(True|False|null)\b'
+  expression_keyword_other: '\b(now|delete|addmod|mulmod|sha256|keccak256|ripemd160|ecrecover)\b'
+
+  super_keyword: super
+  special_members_keywords: '\b(length|timestamp)\b'
+  special_functions: '\b(?:blockhash|gasleft|abi\.decode|abi\.encode|abi\.encodePacked|abi\.encodeWithSelector|abi\.encodeWithSignature)\b'
+  special_properties: '\b(?:block\.coinbase|block\.difficulty|block\.gaslimit|block\.number|block\.timestamp|msg\.data|msg\.sender|msg\.sig|msg\.value|msg\.gas|tx\.gasprice|tx\.origin)\b'
+
+  reserved_keywords: \b(alias|apply|auto|copyof|define|immutable|implements|macro|mutable|override|partial|promise|reference|sealed|sizeof|supports|typedef|unchecked)\b
+
+  opcode: stop|add|mul|sub|div|sdiv|mod|smod|addmod|mulmod|exp|signextend|lt|gt|slt|sgt|eq|iszero|and|or|xor|not|byte|sha3|address|balance|origin|caller|callvalue|calldataload|calldatasize|calldatacopy|codesize|codecopy|gasprice|extcodesize|extcodecopy|blockhash|coinbase|timestamp|number|difficulty|gaslimit|pop|mload|mstore|mstore8|sload|sstore|jump|jumpi|pc|msize|gas|jumpdest|push1|push2|push32|dup1|dup2|dup16|swap1|swap2|swap16|log0|log1|log4|create|call|callcode|return|suicide|staticcall
+
+contexts:
+  main:
+    - match: (?=\S)
+      push: program
+
+  # helpers
+
+  else-pop:
+    - match: (?=\S)
+      pop: true
+
+  # number
+
+  number:
+    - match: '{{number}}'
+      scope: constant.numeric
+
+  hex_number:
+    - match: '{{hex_number}}'
+      scope: constant.numeric
+
+  # string
+
+  string:
+    - match: ([\"\'].*?[\"\'])
+      scope: string.quoted
+
+  # program structure
+
+  program:
+    - include: statement
+
+  statement:
+    - include: contract
+    - include: struct
+    - include: decorator
+    - include: function
+    #- include: variable-declaration
+    - include: expression-include
+
+  # comments
+
+  prototype:
+    - include: comments
+
+  comments:
+    - match: \"\"\"
+      scope: punctuation.definition.comment.begin
+      push:
+        - meta_include_prototype: false
+        - meta_scope: comment.block.documentation
+        - match: \@{{identifier}}
+          scope: string.quoted.double
+        - match: \"\"\"
+          scope: punctuation.definition.comment.end
+          pop: true
+    - match: \#
+      scope: punctuation.definition.comment
+      push:
+        - meta_include_prototype: false
+        - meta_scope: comment.line.double-slash
+        - match: \n
+          pop: true
+
+  # contract
+
+  contract:
+    - match: \b({{contractlike}})(\s+{{identifier}})\b
+      captures:
+        1: keyword
+        2: entity.name.class
+
+  # struct
+
+  struct:
+    - match: \b(struct)\s+({{identifier}})
+      captures:
+        1: keyword
+        2: entity.name.function
+      push:
+        - struct-body
+    - match: \b(struct)\s*
+      captures:
+        1: keyword
+      push:
+        - struct-body
+
+  struct-body:
+    - match: '\{'
+      scope: punctuation.section.block.begin.sol
+      set: struct-body-contents
+    - include: else-pop
+
+  struct-body-contents:
+    - include: variables
+    - match: '\}'
+      scope: punctuation.section.block.end
+      pop: true
+
+  # attribute
+
+  decorator:
+    - match: \@{{identifier}}
+      scope: storage.modifier
+
+  # method
+
+  function:
+    - match: \b(def)\s+({{identifier}})
+      captures:
+        1: storage.type.function
+        2: entity.name.function
+      push:
+        - function-body
+        - function-return-declaration
+        - function-arguments
+
+  ## function-body
+
+  function-body:
+    - include: else-pop
+
+  ## function-return-declaration
+
+  function-return-declaration:
+    - match: (\-\>)\s*({{type}})|({{custom_type}})
+      captures:
+        1: keyword
+        2: constant.language
+        3: scope
+    - include: else-pop
+
+
+  ## function-arguments
+
+  function-arguments:
+    - match: '\('
+      scope: punctuation.section.block.begin
+      push: function-argument
+    - match: ','
+      push:
+        - include: function-argument
+        - include: function-arguments
+    - match: '\)'
+      scope: punctuation.section.block.end
+      pop: true
+
+  function-argument:
+    - match: '\b({{identifier}}\b)\s*\:\s*(?:({{type}})|({{custom_type}}))(?:\[(\d*)\])?'
+      captures:
+        1: variable.parameter.function
+        2: constant.language
+        3: scope
+        4: constant.numeric
+      pop: true
+    - include: else-pop
+
+  # variable declaration
+
+  variable-declaration:
+    - match: '{{identifier}}\s*\:'
+      scope: variable.parameter
+
+  # expression
+
+  expression-keyword:
+    - match: '\b{{type}}\b'
+      scope: constant.language
+    - match: '{{language_keyword}}'
+      scope: keyword
+    - match: '{{self_keyword}}'
+      scope: storage.type.function
+    - match: '{{expression_keyword_main}}'
+      scope: keyword
+    - match: '{{expression_keyword_other}}'
+      scope: keyword
+    - match: '{{expression_keyword_error_handling}}'
+      scope: keyword
+    - match: '{{expression_keyword_binary_logic}}'
+      scope: constant.language
+    - match: '{{reserved_keywords}}'
+      scope: keyword.sol.reserved
+    - match: '{{special_members_keywords}}'
+      scope: support.type
+    - match: '{{special_properties}}'
+      scope: constant.character
+
+  expression-include:
+    - include: expression-keyword
+    - include: function-call
+    - include: '{{expression_keyword_main}}'
+      scope: variable.parameter
+    - match: \b({{number}})\s+({{ether_units}}|{{time_units}})\b
+      captures:
+        1: constant.numeric
+        2: keyword.control
+    - match: '{{math_operator}}'
+      scope: keyword.operator.arithmetic
+    - match: '{{assignment_operator}}'
+      scope: keyword.operator
+    - include: hex_number
+    - include: number
+    - include: string
+    - match: '{{identifier}}'
+    - match: '{{expression_keyword_main}}'
+      scope: keyword
+    - match: '\.'
+    - match: '{{comparison_operator}}'
+      scope: keyword.operator.logical
+    - match: '{{logical_operator}}'
+      scope: keyword.operator.logical
+    - match: '{{ternary_operator}}'
+      scope: keyword
+
+  # function call
+
+  function-call:
+    - match: '({{type}})\s*(\()' # type conversion, ex: uint(-1)
+      captures:
+        1: constant.language
+        2: punctuation.section.block.begin.sol
+      push: function-call-arguments
+    - match: '({{special_functions}})\s*\('
+      captures:
+        1: support.function
+      push: function-call-arguments
+    - match: '({{expression_keyword_error_handling}})\s*(\()'
+      captures:
+        1: keyword
+        2: punctuation.section.block.begin.sol
+      push: function-call-arguments
+    - match: '({{super_keyword}})\.({{identifier}})\s*(\()'
+      captures:
+        1: keyword
+        2: support.function
+        3: punctuation.section.block.end.sol
+      push: function-call-arguments
+    - match: '({{identifier}})\.({{identifier}})\s*(\()'
+      captures:
+        1: scope
+        2: support.function
+        3: punctuation.section.block.end.sol
+      push: function-call-arguments
+    - match: '({{identifier}})\s*(\()'
+      captures:
+        1: support.function
+        2: punctuation.section.block.begin.sol
+      push: function-call-arguments
+
+  function-call-arguments:
+    - include: expression-include
+    - match: ','
+    - match: '\)'
+      scope: punctuation.section.block.end.sol
+      pop: true
+    - match: \;
+      pop: true
+
+  function-call-argument:
+    - include: expression
