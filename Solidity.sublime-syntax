@@ -260,10 +260,17 @@ contexts:
       push:
         - match: \;
           pop: true
+        - match: \b(for)\s+({{type}})
+          captures:
+            1: keyword
+            2: constant.language
+        - match: \b(for)\s+({{math_operator}}) # using SomeOtherLibrary for *;
+          captures:
+            1: keyword
+            2: keyword.operator.arithmetic
         - match: \b(for)\s+(\w+)
           captures:
             1: keyword
-            2: scope
         - match: '{{identifier}}'
         - include: else-pop
 
