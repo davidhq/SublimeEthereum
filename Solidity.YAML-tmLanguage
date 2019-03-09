@@ -50,7 +50,7 @@ patterns:
     '3': {name: constant.numeric}
     '4': {name: keyword.control}
   comment: Variable definitions - bytes data; | uint x = uint(y);
-- match: \b(var|import|constant|pragma|payable|storage|memory|calldata|if|else|for|while|do|break|continue|returns?|private|public|pure|view|internal|external|this|suicide|selfdestruct|emit|new|is|throw|revert|assert|require|\_)\b
+- match: \b(var|import|constant|pragma|payable|storage|memory|calldata|if|else|for|while|do|break|continue|returns?|private|public|pure|view|internal|external|this|suicide|selfdestruct|delegatecall|emit|new|is|throw|revert|assert|require|\_)\b
   name: keyword.control
   comment: Langauge keywords
 - match: \b([A-Za-z_]\w*)\s*\:\s*
@@ -75,7 +75,7 @@ patterns:
   comment: Function call - built-in functions
 - match: \b([A-Za-z_]\w*)(?:\[(\d*)\])?(?:\[(\d*)\])?\(
   captures:
-    '1': {name: support.type}
+    '1': {name: support.function}
     '2': {name: constant.numeric}
     '3': {name: constant.numeric}
   comment: Function call, also for example - uint[] memory a = new uint[332](7); or uint[2][] memory arrayOfPairs = new uint[2][](size);
