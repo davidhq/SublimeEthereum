@@ -20,11 +20,11 @@
 		</dict>
 		<dict>
 			<key>begin</key>
-			<string>(\/\*)</string>
+			<string>(\"\"\")</string>
 			<key>comment</key>
 			<string>Multiline comments</string>
 			<key>end</key>
-			<string>(\*\/)</string>
+			<string>(\"\"\")</string>
 			<key>name</key>
 			<string>comment</string>
 		</dict>

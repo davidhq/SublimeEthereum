@@ -9,8 +9,8 @@ patterns:
 - match: \#.*
   name: comment
   comment: Comments
-- begin: (\/\*)
-  end: (\*\/)
+- begin: (\"\"\")
+  end: (\"\"\")
   name: comment
   comment: Multiline comments
 - match: \b(event|enum)\s+([A-Za-z_]\w*)\b
