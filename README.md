@@ -16,8 +16,10 @@ Recommended: install via [Package Control][package-control].
 
 ## Features
 
-* Solidity.sublime-syntax: syntax rules made specially for Ethereum Solidity language
-   * Ethereum plugin automatically uses *Solidity language syntax* when you are in a Solidity file
+* Solidity.sublime-syntax: syntax rules for Ethereum Solidity language
+   * Ethereum plugin automatically uses *Solidity language syntax* when you are in a Solidity (.sol) file
+* Vyper.sublime-syntax: syntax rules for Ethereum Vyper language
+   * Ethereum plugin automatically uses *Vyper language syntax* when you are in a Vyper (.vy) file
 
 ## Team
 

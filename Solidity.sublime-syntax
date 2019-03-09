@@ -503,7 +503,7 @@ contexts:
     - match: '{{expression_keyword_other}}'
       scope: keyword
     - match: '{{expression_keyword_error_handling}}'
-      scope: constant.numeric
+      scope: keyword
     - match: '{{expression_keyword_binary_logic}}'
       scope: constant.language
     - match: '{{reserved_keywords}}'
@@ -511,7 +511,7 @@ contexts:
     - match: '{{special_members_keywords}}'
       scope: support.type
     - match: '{{special_properties}}'
-      scope: constant.numeric
+      scope: constant.character
 
   expression-include:
     - match: \[
@@ -646,7 +646,7 @@ contexts:
     - include: function-arguments
     - include: else-pop
 
-    ## function-arguments
+  ## function-arguments
 
   function-arguments:
     - match: '\('
