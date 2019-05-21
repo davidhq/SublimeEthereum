@@ -49,6 +49,10 @@ contexts:
     - match: (?=\S)
       pop: true
 
+  eol-pop:
+    - match: \n
+      pop: true
+
   # number
 
   number:
@@ -61,9 +65,33 @@ contexts:
 
   # string
 
+  # string:
+  #   - match: ([\"\'].*?[\"\'])
+  #     scope: string.quoted
+
   string:
-    - match: ([\"\'].*?[\"\'])
+    - match: \"
+      push: string-contents-double-quote
       scope: string.quoted
+    - match: \'
+      push: string-contents-single-quote
+      scope: string.quoted
+
+  string-contents-double-quote:
+    - match: \"
+      scope: string.quoted
+      pop: true
+    - match: \S
+      scope: string.quoted
+    - include: eol-pop
+
+  string-contents-single-quote:
+    - match: \'
+      scope: string.quoted
+      pop: true
+    - match: \S
+      scope: string.quoted
+    - include: eol-pop
 
   # program structure
 
