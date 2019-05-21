@@ -7,7 +7,7 @@ scope: source.solidity
 variables:
   identifier: '(?:[A-Za-z_]\w*)'
 
-  number: '(?:[+-]?\d[\d_e]*(?:\.\d+)?)'
+  number: '(?:[+-]?\.?\d[\d_e]*(?:\.[\de]+)?)?'
   hex_number: '(?:[+-]?(0[Xx])[0-9a-fA-F_]*)'
   math_operator: '(?:\+|\+\+|\-|\-\-|\*|\*\*|\/|\^|\%)'
   logical_operator: '(?:\!|\&\&|\|\|)'
@@ -509,8 +509,9 @@ contexts:
       scope: constant.language
     - match: '{{reserved_keywords}}'
       scope: keyword.sol.reserved
-    - match: '{{special_members_keywords}}'
-      scope: support.type
+    - match: '\.({{special_members_keywords}})'
+      captures:
+        1: support.type
     - match: '{{special_properties}}'
       scope: constant.character
 
