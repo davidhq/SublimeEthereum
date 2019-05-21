@@ -663,6 +663,7 @@ contexts:
       pop: true
 
   function-argument:
+    - include: function
     - include: mapping
     - match: '\b(?:({{type}})|({{custom_type}}))(?:\[(\d*)\])?\s+({{attribute}})\s+({{identifier}}\b)'
       captures:
