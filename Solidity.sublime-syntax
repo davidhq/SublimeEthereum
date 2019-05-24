@@ -313,7 +313,7 @@ contexts:
   # variable-assignment
 
   variable-assignment:
-    - match: \b({{identifier}})\s+(\-?\+?\*?\/?\=)
+    - match: \b({{identifier}})\s*(\-?\+?\*?\/?\=)
       captures:
         1: scope
         2: keyword.operator.assignment
@@ -510,6 +510,8 @@ contexts:
         - variables-or-expression
         - expression
         - variables-push
+    - match: '[^\)]' # this is to contain any problems between for loop arguments (...) ... we match any unmatched thing until closing bracket!
+                    # this way the issues (example: for (strinfg i = 0; i < n; i++) { ) don't spread outside of these brackets
     - match: '\)'
       scope: punctuation.section.block.end.sol
       pop: true
