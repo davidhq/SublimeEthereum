@@ -78,6 +78,7 @@ contexts:
       scope: string.quoted
 
   string-contents-double-quote:
+    - meta_include_prototype: false # don't start a comment inside string
     - match: \"
       scope: string.quoted
       pop: true
@@ -86,6 +87,7 @@ contexts:
     - include: eol-pop
 
   string-contents-single-quote:
+    - meta_include_prototype: false # don't start a comment inside string
     - match: \'
       scope: string.quoted
       pop: true
