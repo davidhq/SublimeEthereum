@@ -785,6 +785,10 @@ contexts:
     ## curly-brackets-body
 
   curly-brackets-body:
+    - include: curly-brackets-body-include
+    - include: else-pop
+
+  curly-brackets-body-include:
     - match: '\{'
       scope: punctuation.section.block.begin.sol
       push:
@@ -792,11 +796,11 @@ contexts:
         - match: '\}'
           scope: punctuation.section.block.end
           pop: true
-    - include: else-pop
 
   curly-brackets-body-contents:
     - match: \b_; # _; is used inside modifiers and is replaced by actual function
       scope: keyword
+    - include: curly-brackets-body-include # block inside a block inside a ...
     - include: return-statement
     - include: lvalue-statement
     - include: control-structure
