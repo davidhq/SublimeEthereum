@@ -697,7 +697,8 @@ contexts:
   function-argument:
     - include: function
     - include: mapping
-    - match: '\b(?:({{type}})|({{custom_type}}))(?:\[(\d*)\])?\s+({{attribute}})\s+({{identifier}}\b)'
+    # identifier is optional for cases like this: function bar(bytes memory, ...
+    - match: '\b(?:({{type}})|({{custom_type}}))(?:\[(\d*)\])?\s+({{attribute}})(\s+{{identifier}}\b)?'
       captures:
         1: constant.language
         2: scope
