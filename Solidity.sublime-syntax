@@ -13,9 +13,11 @@ variables:
   ternary_operator: '(?:\:|\?)'
   comparison_operator: '(?:\>(?:\=)?|\<(?:\=)?|\=\=|\!\=)' # todo
 
-  contractlike: '(?:contract|interface|library)'
+  contract: contract
+  abstract_keyword: abstract
+  contract_like: '(?:(?:{{abstract_keyword}}\s+)?{{contract}})|(?:interface|library)'
 
-  func_modifier: '(?:public|private|internal|external|pure|view|payable|virtual)'
+  func_modifier: '(?:public|private|internal|external|pure|view|payable|virtual|override)'
 
   type: '(?:address\s*payable|address|string|bytes?\d*|int\d*|uint\d*|bool|u?fixed\d+x\d+)'
   type_modifier: '(?:private|public|internal|external|constant|memory|storage)'
@@ -32,7 +34,7 @@ variables:
   special_functions: '\b(?:blockhash|gasleft|abi\.decode|abi\.encode|abi\.encodePacked|abi\.encodeWithSelector|abi\.encodeWithSignature)\b'
   special_properties: '\b(?:block\.coinbase|block\.difficulty|block\.gaslimit|block\.number|block\.timestamp|msg\.data|msg\.sender|msg\.sig|msg\.value|msg\.gas|tx\.gasprice|tx\.origin)\b'
 
-  reserved_keywords: \b(alias|apply|auto|copyof|define|immutable|implements|macro|mutable|override|partial|promise|reference|sealed|sizeof|supports|typedef|unchecked|receive|ether)\b
+  reserved_keywords: \b(alias|apply|auto|copyof|define|immutable|implements|macro|mutable|partial|promise|reference|sealed|sizeof|supports|typedef|unchecked|receive|ether)\b
 
   ether_units: '(?:wei|finney|szabo|ether)'
   time_units: '(?:seconds|minutes|hours|days|weeks|years)'
@@ -189,13 +191,13 @@ contexts:
   # contract
 
   contract:
-    - match: \b({{contractlike}})(\s+{{identifier}})\s+(is)\b
+    - match: \b({{contract_like}})(\s+{{identifier}})\s+(is)\b
       captures:
         1: keyword
         2: entity.name.class
         3: keyword
       push: contract-parents
-    - match: \b({{contractlike}})(\s+{{identifier}})\b
+    - match: \b({{contract_like}})(\s+{{identifier}})\b
       captures:
         1: keyword
         2: entity.name.class
@@ -548,7 +550,7 @@ contexts:
         - match: \bError\b # } catch Error(string memory /*reason*/) {
         - include: function-arguments # } catch (bytes memory /*lowLevelData*/) {
         - include: else-pop
-      # curly braces body after catch statement is handled outside of our try-catch parser
+        # curly braces body after catch statement is handled outside of our try-catch parser
 
   # expression
 
