@@ -429,6 +429,7 @@ contexts:
     - include: if-statement
     - include: while-loop
     - include: for-loop
+    - include: try-catch
 
   # while loop
 
@@ -529,6 +530,25 @@ contexts:
   variables-or-expression:
     - include: variables
     - include: expression
+
+  # control structure: try-catch
+
+  try-catch: # Example: https://solidity.readthedocs.io/en/latest/control-structures.html#try-catch
+    - match: \btry\b
+      scope: keyword
+      push:
+        - include: function-returns-declaration-include # try feed.getData(token) returns (uint v) {
+        - include: function-call
+        - include: expression-include # new ContractName()
+        - include: else-pop
+      # curly braces body after try statement is handled outside of our try-catch parser
+    - match: \bcatch\b
+      scope: keyword
+      push:
+        - match: \bError\b # } catch Error(string memory /*reason*/) {
+        - include: function-arguments # } catch (bytes memory /*lowLevelData*/) {
+        - include: else-pop
+      # curly braces body after catch statement is handled outside of our try-catch parser
 
   # expression
 
@@ -749,10 +769,13 @@ contexts:
     ## function-returns
 
   function-returns-declaration:
+    - include: function-returns-declaration-include
+    - include: else-pop
+
+  function-returns-declaration-include:
     - match: \breturns\b
       scope: keyword
       push: tuple
-    - include: else-pop
 
   function-returns-arguments:
     - match: '\('
