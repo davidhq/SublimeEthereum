@@ -6,7 +6,6 @@ scope: source.solidity
 
 variables:
   identifier: '(?:[A-Za-z_]\w*)'
-
   number: '(?:[+-]?\.?\d[\d_e]*(?:\.[\de]+)?)?'
   hex_number: '(?:[+-]?(0[Xx])[0-9a-fA-F_]*)'
   math_operator: '(?:\+|\+\+|\-|\-\-|\*|\*\*|\/|\^|\%)'
@@ -14,14 +13,14 @@ variables:
   ternary_operator: '(?:\:|\?)'
   comparison_operator: '(?:\>(?:\=)?|\<(?:\=)?|\=\=|\!\=)' # todo
 
-  ether_units: '(?:wei|finney|szabo|ether)'
-  time_units: '(?:seconds|minutes|hours|days|weeks|years)'
+  contractlike: '(?:contract|interface|library)'
+
+  func_modifier: '(?:public|private|internal|external|pure|view|payable|virtual)'
+
   type: '(?:address\s*payable|address|string|bytes?\d*|int\d*|uint\d*|bool|u?fixed\d+x\d+)'
+  type_modifier: '(?:private|public|internal|external|constant|memory|storage)'
   custom_type: '(?:[A-Za-z_][\w\.]*)' # ex.: A.MyStruct
   attribute: '(?:indexed|memory|storage|calldata|payable)'
-  type_modifier: '(?:private|public|internal|external|constant|memory|storage)'
-  func_modifier: '(?:public|private|internal|external|pure|view|payable)'
-  contractlike: '(?:contract|interface|library)'
 
   expression_keyword_main: '\b(new|this|selfdestruct|delegatecall|selector)\b'
   expression_keyword_error_handling: '\b(revert|require|assert)\b'
@@ -33,7 +32,10 @@ variables:
   special_functions: '\b(?:blockhash|gasleft|abi\.decode|abi\.encode|abi\.encodePacked|abi\.encodeWithSelector|abi\.encodeWithSignature)\b'
   special_properties: '\b(?:block\.coinbase|block\.difficulty|block\.gaslimit|block\.number|block\.timestamp|msg\.data|msg\.sender|msg\.sig|msg\.value|msg\.gas|tx\.gasprice|tx\.origin)\b'
 
-  reserved_keywords: \b(alias|apply|auto|copyof|define|immutable|implements|macro|mutable|override|partial|promise|reference|sealed|sizeof|supports|typedef|unchecked)\b
+  reserved_keywords: \b(alias|apply|auto|copyof|define|immutable|implements|macro|mutable|override|partial|promise|reference|sealed|sizeof|supports|typedef|unchecked|receive|ether)\b
+
+  ether_units: '(?:wei|finney|szabo|ether)'
+  time_units: '(?:seconds|minutes|hours|days|weeks|years)'
 
   # https://solidity.readthedocs.io/en/v0.5.6/assembly.html
   opcode: stop|add|mul|sub|div|sdiv|mod|smod|addmod|mulmod|exp|signextend|lt|gt|slt|sgt|eq|iszero|and|or|xor|not|byte|sha3|address|balance|origin|caller|callvalue|calldataload|calldatasize|calldatacopy|codesize|codecopy|gasprice|extcodesize|extcodecopy|blockhash|coinbase|timestamp|number|difficulty|gaslimit|pop|mload|mstore|mstore8|sload|sstore|jump|jumpi|pc|msize|gas|jumpdest|push1|push2|push32|dup1|dup2|dup16|swap1|swap2|swap16|log0|log1|log4|create|call|callcode|return|revert|suicide|staticcall|delegatecall|returndatacopy|returndatasize
