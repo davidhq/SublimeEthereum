@@ -169,7 +169,7 @@
 			<key>comment</key>
 			<string>Langauge keywords</string>
 			<key>match</key>
-			<string>\b(var|import|constant|pragma|payable|storage|memory|calldata|if|else|for|while|do|break|continue|returns?|private|public|pure|view|internal|external|this|suicide|selfdestruct|delegatecall|emit|new|is|throw|revert|assert|require|\_)\b</string>
+			<string>\b(var|import|constant|pragma|payable|storage|memory|calldata|if|else|for|while|do|break|continue|returns?|try|catch|private|public|pure|view|internal|external|virtual|override|abstract|this|suicide|selfdestruct|delegatecall|emit|new|is|throw|revert|assert|require|receive|fallback\_)\b</string>
 			<key>name</key>
 			<string>keyword.control</string>
 		</dict>
