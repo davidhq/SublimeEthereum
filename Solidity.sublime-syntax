@@ -17,7 +17,8 @@ variables:
   abstract_keyword: abstract
   contract_like: '(?:(?:{{abstract_keyword}}\s+)?{{contract}})|(?:interface|library)'
 
-  func_modifier: '(?:public|private|internal|external|pure|view|payable|virtual|override)'
+  func_modifier: '(?:public|private|internal|external|pure|view|payable|virtual)'
+  func_modifier_override: override
 
   type: '(?:address\s*payable|address|string|bytes?\d*|int\d*|uint\d*|bool|u?fixed\d+x\d+)'
   type_modifier: '(?:private|public|internal|external|constant|memory|storage)'
@@ -757,6 +758,9 @@ contexts:
   function-modifiers:
     - match: '\b{{func_modifier}}\b'
       scope: storage.modifier
+    - match: '\b({{func_modifier_override}}\b)(?:\((?:{{identifier}}(?:,\s*)?)+\))?' # https://github.com/davidhq/SublimeEthereum/issues/50#issuecomment-611749874, 1) internal override(ERC20, ERC20Pausable) 2) internal override
+      captures:
+        1: storage.modifier
     - match: \breturns\b
       scope: keyword
       push: function-returns-arguments
