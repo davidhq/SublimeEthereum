@@ -35,7 +35,7 @@ variables:
   special_functions: '\b(?:blockhash|gasleft|abi\.decode|abi\.encode|abi\.encodePacked|abi\.encodeWithSelector|abi\.encodeWithSignature)\b'
   special_properties: '\b(?:block\.coinbase|block\.difficulty|block\.gaslimit|block\.number|block\.timestamp|msg\.data|msg\.sender|msg\.sig|msg\.value|msg\.gas|tx\.gasprice|tx\.origin)\b'
 
-  reserved_keywords: \b(alias|apply|auto|copyof|define|immutable|implements|macro|mutable|partial|promise|reference|sealed|sizeof|supports|typedef|unchecked|receive|fallback)\b
+  reserved_keywords: \b(alias|apply|auto|copyof|define|immutable|implements|macro|mutable|partial|promise|reference|sealed|sizeof|supports|typedef|unchecked)\b
 
   ether_units: '(?:wei|finney|szabo|ether)'
   time_units: '(?:seconds|minutes|hours|days|weeks|years)'
@@ -683,7 +683,7 @@ contexts:
         - function-arguments
 
   constructor:
-    - match: \b(constructor)
+    - match: \b(constructor|receive|fallback)\b
       scope: entity.name.function.sol
       push:
         - curly-brackets-body
