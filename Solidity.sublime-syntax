@@ -109,6 +109,7 @@ contexts:
     - include: pragma
     - include: import
     - include: contract
+    - include: struct
 
   # comments
 
@@ -226,8 +227,8 @@ contexts:
       scope: punctuation.section.block.end
       pop: true
     - include: using
-    - include: variables
     - include: event
+    - include: variables
     - include: constructor
     - include: function
     - include: modifier
@@ -379,7 +380,10 @@ contexts:
         2: constant.language
         3: storage.modifier
         4: scope
-    - match: \b(var\s+)?\s+({{type_modifier}})+\s+({{identifier}}) # ex: BigInt.bigint memory x = BigInt.fromUint(7);
+    # IERC20 public immutable token;
+    # Roles.Role private immutable _whitelisteds;
+    # Stuff before one or more type_modifiers is not actually matched (IERC20 / Roles.Role) with this.. it has default highlight
+    - match: \b(var\s+)?\s+((?:{{type_modifier}}\s+)+)({{identifier}}) # ex: BigInt.bigint memory x = BigInt.fromUint(7);
       captures:
         1: keyword
         2: storage.modifier
@@ -445,14 +449,9 @@ contexts:
     - match: \bdo\b
       scope: keyword.control
       push:
-        - expression-in-brackets
-        - while-keyword
+        #- expression-in-brackets
+        #- while-keyword
         - control-structure-body
-
-  while-keyword:
-    - match: \bwhile\b
-      scope: keyword.control
-      pop: true
 
   # if statement
 
