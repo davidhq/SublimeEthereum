@@ -108,7 +108,7 @@ contexts:
   # contract
 
   contract:
-    - match: \b({{contractlike}})(\s+{{identifier}})\b
+    - match: \b({{contractlike}})\s+({{identifier}})\b
       captures:
         1: keyword
         2: entity.name.class

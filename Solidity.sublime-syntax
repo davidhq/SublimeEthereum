@@ -193,13 +193,13 @@ contexts:
   # contract
 
   contract:
-    - match: \b({{contract_like}})(\s+{{identifier}})\s+(is)\b
+    - match: \b({{contract_like}})\s+({{identifier}})\s+(is)\b
       captures:
         1: keyword
         2: entity.name.class
         3: keyword
       push: contract-parents
-    - match: \b({{contract_like}})(\s+{{identifier}})\b
+    - match: \b({{contract_like}})\s+({{identifier}})\b
       captures:
         1: keyword
         2: entity.name.class
