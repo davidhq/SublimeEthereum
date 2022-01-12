@@ -20,7 +20,7 @@ variables:
   func_modifier: '(?:public|private|internal|external|pure|view|payable|virtual)'
   func_modifier_override: override
 
-  type: '(?:address\s*payable|address|string|bytes?\d*|int\d*|uint\d*|bool|u?fixed\d+x\d+)'
+  type: '(?:address\s*payable|address|string|bytes?\d*|int\d*|uint\d*|bool|u?fixed(\d+x\d+)?)'
   type_modifier: '(?:private|public|internal|external|constant|immutable|memory|storage)'
   custom_type: '(?:[A-Za-z_][\w\.]*)' # ex.: A.MyStruct
   attribute: '(?:indexed|memory|storage|calldata|payable)'
