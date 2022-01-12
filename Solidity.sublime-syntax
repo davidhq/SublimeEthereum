@@ -103,13 +103,13 @@ contexts:
   # program structure
 
   program:
-    - include: statement
-
-  statement:
     - include: pragma
     - include: import
     - include: contract
     - include: struct
+    - include: function
+    - include: assembly
+    - include: variables # actually only constant declarations are allowed but we parse other definitions as well
 
   # comments
 
@@ -374,12 +374,13 @@ contexts:
   # var keyword was deprecated in solidity 0.4.20 but we still highlight it for older contracts!
   variable-declaration:
     - include: mapping
-    - match: \b(var\s+)?({{type}})(?:\[\])?\s+((?:{{type_modifier}}\s+)*)({{identifier}})
+    - match: \b(var\s+)?({{type}})(?:\[(\d*)\])*\s+((?:{{type_modifier}}\s+)*)({{identifier}})
       captures:
         1: keyword
         2: constant.language
-        3: storage.modifier
-        4: scope
+        3: constant.language # could not get this to work perfectly... uint256[3][257][16] private precomputedGenerators; --> 3 and 257 will not be colord as constants .. only the last number in multidimensional array definition will be a consttant
+        4: storage.modifier
+        5: scope
     # IERC20 public immutable token;
     # Roles.Role private immutable _whitelisteds;
     # Stuff before one or more type_modifiers is not actually matched (IERC20 / Roles.Role) with this.. it has default highlight
@@ -388,11 +389,12 @@ contexts:
         1: keyword
         2: storage.modifier
         3: scope
-    - match: \b(var\s+)?({{type}})(?:\[\])?\s+({{identifier}})
+    - match: \b(var\s+)?({{type}})(?:\[(\d*)\])*\s+({{identifier}})
       captures:
         1: keyword
         2: constant.language
-        3: scope
+        3: constant.language
+        4: scope
     - match: \b(var\s+)?({{type}})\b # not valid to have just type in a specific line for example but it's nice to color it immediately, not after identifier is specified as well
       captures:
         1: keyword
@@ -895,9 +897,38 @@ contexts:
       pop: true
 
   assembly-body-contents:
+    - include: assembly-function # example: aztec.sol - function defined inside assembly block, this function in turn has assembly written directly without the assembly block
+    - include: function-call # example: aztec.sol -- validateSwap() from inside of assembly {} block
     - include: assembly-statements
     - include: assembly-body-include
     - include: assembly-end-bracket
+
+  assembly-function:
+    - match: \b(function)\s+({{identifier}})
+      captures:
+        1: storage.type.function
+        2: entity.name.function
+      push:
+        - assembly-body
+        # assembly function returns declaration will work unintentially
+        #
+        # function alloc_bytes(size) -> ptr
+        # { ...
+        #
+        # because assembly-body will not match \{ but instead "->" and this will make it pop
+        # "->" will be colored as operator correctly, "ptr" will be ignored and \{ ... \} will be parsed as assembly body
+        #
+        #- function-returns-declaration
+        #- function-modifiers
+        - function-arguments
+    - match: \b(function)\s*
+      captures:
+        1: storage.type.function
+      push:
+        - assembly-body
+        #- function-returns-declaration
+        #- function-modifiers
+        - function-arguments
 
   assembly-statements:
     - match: '\:\='
@@ -905,7 +936,7 @@ contexts:
     - match: 'self'
       scope: keyword
     - match: '[\(\)\,\.]' # ignore there, but try to list all that are relevant
-    - match: \b(let|for|case|switch|default)\b
+    - match: \b(let|for|case|switch|default|if)\b
       scope: keyword
     - match: '\b({{opcode}})\b'
       scope: support.function
