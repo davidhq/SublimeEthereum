@@ -23,7 +23,7 @@ variables:
 
   elementary_type: '(?:address\s*payable|address|string|bytes?\d*|int\d*|uint\d*|bool|u?fixed(?:\d+x\d+)?)'
   type_modifier: '(?:private|public|internal|external|constant|immutable|memory|storage|override)'
-  function_attribute_data_location: '(?:memory|storage|calldata)'
+  data_location: '(?:memory|storage|calldata)'
   event_attributes: '(?:indexed)'
 
   expression_keyword_main: '\b(new|this|selfdestruct|delegatecall|selector)\b'
@@ -109,6 +109,10 @@ contexts:
     - include: contract
     - include: struct
     - include: function
+    # supposedly we can define "using" outside of contract scope.. it is not yet in language grammar though
+    # https://docs.soliditylang.org/en/latest/grammar.html#a4.SolidityParser.usingDirective
+    - include: using-directive
+    - include: user-defined-type
     - include: assembly
     - include: variables # actually only constant declarations are allowed but we parse other definitions as well
 
@@ -184,6 +188,8 @@ contexts:
       scope: keyword
     - match: \bfrom\b
       scope: keyword
+    - match: \*
+      scope: keyword
     - match: \;
       pop: true
     - include: string
@@ -227,7 +233,7 @@ contexts:
     - match: '\}'
       scope: punctuation.section.block.end
       pop: true
-    - include: using
+    - include: using-directive
     - include: event
     - include: variables
     - include: constructor
@@ -290,27 +296,40 @@ contexts:
       scope: punctuation.section.block.end
       pop: true
 
+  # user defined type
+
+  # https://docs.soliditylang.org/en/latest/grammar.html#a4.SolidityParser.userDefinedValueTypeDefinition
+  user-defined-type:
+    - match: '\b(type)\s+({{identifier}})\s+(is)\s+({{elementary_type}})'
+      captures:
+        1: keyword
+        2: scope
+        3: keyword
+        4: constant.language.solidity
+
   # using
 
-  using:
-    - match: \busing\b
+  # https://docs.soliditylang.org/en/latest/grammar.html#a4.SolidityParser.usingDirective
+  # todo?: using {add as +, addInt as +} for UncheckedInt8;
+  # it is not yet in docs, saw it here: https://blog.soliditylang.org/2021/09/27/user-defined-value-types/
+  using-directive:
+    - match: \b(using)\s+({{identifier_path}})\s+(for)\b
+      captures:
+        1: keyword
+        2: scope
+        3: keyword
+      push: using-declaration
+
+  using-declaration:
+    - include: function
+    - include: mapping
+    - include: elementary-function-argument # works ok here, has some redudancy but it's fine
+    # identifier is optional for cases like this: function bar(bytes memory, ...
+    - match: '\*'
       scope: keyword
-      push:
-        - match: \;
-          pop: true
-        - match: \b(for)\s+({{elementary_type}})
-          captures:
-            1: keyword
-            2: constant.language
-        - match: \b(for)\s+({{math_operator}}) # using SomeOtherLibrary for *;
-          captures:
-            1: keyword
-            2: keyword.operator.arithmetic
-        - match: \b(for)\s+(\w+)
-          captures:
-            1: keyword
-        - match: '{{identifier}}'
-        - include: else-pop
+    - match: \;
+      pop: true
+    - include: else-pop
 
   # variables
 
@@ -362,7 +381,7 @@ contexts:
       scope: punctuation.section.block.begin.sol
       push:
         - mapping-core
-    - match: \b({{function_attribute_data_location}})\b # this is the main difference - function argument attributes
+    - match: \b({{data_location}})\b # this is the main difference - function argument attributes
       captures:
         1: storage.modifier
     - match: \b{{identifier}}\b
@@ -752,7 +771,7 @@ contexts:
     - include: else-pop
 
   elementary-function-argument:
-    - match: '\b(?:({{elementary_type}})|({{identifier_path}}))(?:\[(\d*)\])?(?:\s+({{function_attribute_data_location}}))?(?:\s+({{identifier}}))?\b'
+    - match: '\b(?:({{elementary_type}})|({{identifier_path}}))(?:\[(\d*)\])?(?:\s+({{data_location}}))?(?:\s+({{identifier}}))?'
       captures:
         1: constant.language
         2: scope
@@ -907,7 +926,7 @@ contexts:
         - include: else-pop
 
   elementary-event-argument:
-    - match: '\b(?:({{elementary_type}})|({{identifier_path}}))(?:\[(\d*)\])?(?:\s+({{event_attributes}}))?(?:\s+({{identifier}}))?\b'
+    - match: '\b(?:({{elementary_type}})|({{identifier_path}}))(?:\[(\d*)\])?(?:\s+({{event_attributes}}))?(?:\s+({{identifier}}))?'
       captures:
         1: constant.language
         2: scope
