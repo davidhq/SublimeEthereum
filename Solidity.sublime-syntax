@@ -7,7 +7,7 @@ scope: source.solidity
 variables:
   identifier: '(?:[A-Za-z_]\w*)'
   identifier_path: '(?:[A-Za-z_][\w\.]*)' # ex.: A.MyStruct
-  number: '(?:[+-]?\.?\d[\d_e]*(?:\.[\de]+)?)?'
+  number: '(?:[+-]?\.?\d+[eE]?(?:\.\d+[eE]?)?)?'
   hex_number: '(?:[+-]?(0[Xx])[0-9a-fA-F_]*)'
   math_operator: '(?:\+|\+\+|\-|\-\-|\*|\*\*|\/|\^|\%)'
   logical_operator: '(?:\!|\&|\||\~)'
@@ -26,17 +26,19 @@ variables:
   data_location: '(?:memory|storage|calldata)'
   event_attributes: '(?:indexed)'
 
-  expression_keyword_main: '\b(new|this|selfdestruct|delegatecall|selector)\b'
+  expression_keyword_main: '\b(new|selfdestruct|delegatecall|selector)\b'
   expression_keyword_error_handling: '\b(revert|require|assert)\b'
   expression_keyword_binary_logic: '\b(true|false|null)\b'
-  expression_keyword_other: '\b(now|delete|addmod|mulmod|sha256|keccak256|ripemd160|ecrecover)\b'
 
   super_keyword: super
+  this_keyword: this
   special_members_keywords: '\b(length|timestamp)\b'
   special_functions: '\b(?:blockhash|gasleft|abi\.decode|abi\.encode|abi\.encodePacked|abi\.encodeWithSelector|abi\.encodeWithSignature)\b'
+  crypto_functions: '\b(addmod|mulmod|sha256|keccak256|ripemd160|ecrecover)\b'
   special_properties: '\b(?:block\.coinbase|block\.difficulty|block\.gaslimit|block\.number|block\.timestamp|msg\.data|msg\.sender|msg\.sig|msg\.value|msg\.gas|tx\.gasprice|tx\.origin)\b'
 
-  reserved_keywords: \b(alias|apply|auto|copyof|define|immutable|implements|macro|mutable|partial|promise|reference|sealed|sizeof|supports|typedef|unchecked)\b
+  # var keyword was deprecated in solidity 0.4.20 but we still highlight it for older contracts!
+  reserved_keywords: \b(var|after|alias|apply|auto|byte|case|copyof|default|define|final|implements|in|inline|let|macro|match|mutable|null|of|partial|promise|reference|relocatable|sealed|sizeof|static|supports|switch|typedef|typeof)\b
 
   ether_units: '(?:wei|finney|szabo|ether)'
   time_units: '(?:seconds|minutes|hours|days|weeks|years)'
@@ -109,6 +111,7 @@ contexts:
     - include: contract
     - include: struct
     - include: function
+    - include: error
     # supposedly we can define "using" outside of contract scope.. it is not yet in language grammar though
     # https://docs.soliditylang.org/en/latest/grammar.html#a4.SolidityParser.usingDirective
     - include: using-directive
@@ -161,7 +164,7 @@ contexts:
     - include: version_specification
 
   version_specification:
-    - match: ([\^><]\=?)(\d+)(\.\d+(\.\d+)?)?
+    - match: ([\^><]\=?)?(\d+)(\.\d+(\.\d+)?)?
       captures:
         1: keyword.sol
         2: constant.numeric.integer.sol
@@ -238,44 +241,48 @@ contexts:
     - include: variables
     - include: constructor
     - include: function
+    - include: error
     - include: modifier
     - include: struct
     - include: enum
+    - include: reserved-keywords
 
   # struct
 
   struct:
-    - match: \b(struct)\s+({{identifier}})
+    - match: \b(struct)(?:\s+({{identifier}}))?
       captures:
         1: keyword
-        2: entity.name.function
+        2: support.function
       push:
-        - struct-body
-    - match: \b(struct)\s*
-      captures:
-        1: keyword
-      push:
-        - struct-body
+        - struct-definition-body
 
-  struct-body:
+  struct-definition-body:
     - match: '\{'
       scope: punctuation.section.block.begin.sol
-      set: struct-body-contents
+      set: struct-definition-body-contents
     - include: else-pop
 
-  struct-body-contents:
-    - include: variables
+  struct-definition-body-contents:
+    - include: struct-field
     - match: '\}'
       scope: punctuation.section.block.end
       pop: true
 
+  struct-field:
+    - match: \b(?:({{elementary_type}})|({{identifier_path}}))?\s+({{identifier}})\b
+      captures:
+        1: constant.language
+        2: scope
+        3: variable.parameter
+
   # enum
 
   enum:
-    - match: \b(enum)\s+({{identifier}})
+    - match: \b(enum)\s+({{identifier}})?
       captures:
         1: keyword
-        2: entity.name.function
+        2: support.function
       push:
         - enum-body
     - match: \b(struct)\s*
@@ -291,7 +298,8 @@ contexts:
     - include: else-pop
 
   enum-body-contents:
-    - include: variables
+    - match: \b{{identifier}}\b
+      scope: variable.parameter
     - match: '\}'
       scope: punctuation.section.block.end
       pop: true
@@ -341,10 +349,9 @@ contexts:
   # variable-assignment
 
   variable-assignment:
-    - match: \b({{identifier}})\s*(\-?\+?\*?\/?\=)
+    - match: \b{{identifier}}\s*(\-?\+?\*?\/?\=)
       captures:
-        1: scope
-        2: keyword.operator.assignment
+        1: keyword.operator.assignment
       push: expression
     - match: \(
       scope: punctuation.definition.start.sol
@@ -354,13 +361,13 @@ contexts:
 
   mapping:
     - match: \bmapping\b
-      scope: storage.type
+      scope: keyword
       push: mapping-declaration
 
   # mapping when used in function argument declaration
   mapping-function-argument:
     - match: \bmapping\b
-      scope: storage.type
+      scope: keyword
       push: mapping-declaration-function-argument
 
   mapping-declaration:
@@ -369,11 +376,15 @@ contexts:
       push:
         - mapping-core
 
-    - include: function-modifiers
+    - include: mapping-modifiers
     - match: \b{{identifier}}\b
     - match: \;
       pop: true
     - include: else-pop
+
+  mapping-modifiers:
+    - match: \b{{func_modifier}}\b
+      scope: storage.modifier
 
   # mapping when used in function argument declaration
   mapping-declaration-function-argument:
@@ -394,7 +405,7 @@ contexts:
       scope: keyword
       push:
         - match: \bmapping\b # mapping of a mapping
-          scope: storage.type
+          scope: keyword
           push: mapping-declaration
         - include: mapping-contents
         - include: else-pop
@@ -405,7 +416,7 @@ contexts:
   # extracted out to be used for nested mappings definitions:
   # mapping (address => mapping(uint256 => uint256)) internal my_mapping;
   mapping-contents:
-    - match: '(?:({{elementary_type}})|({{identifier_path}}))'
+    - match: (?:({{elementary_type}})|({{identifier_path}}))
       captures:
         1: constant.language
         2: scope
@@ -414,38 +425,40 @@ contexts:
 
   # variable declaration
 
-  # var keyword was deprecated in solidity 0.4.20 but we still highlight it for older contracts!
   variable-declaration:
     - include: mapping
-    - match: \b(var\s+)?({{elementary_type}})(?:\[(\d*)\])*\s+((?:{{type_modifier}}\s+)*)({{identifier}})
-      captures:
-        1: keyword
-        2: constant.language
-        3: constant.numeric # could not get this to work perfectly... uint256[3][257][16] private precomputedGenerators; --> 3 and 257 will not be colord as constants .. only the last number in multidimensional array definition will be a consttant
-        4: storage.modifier
-        5: scope
+    - match: \b({{elementary_type}})
+      scope: constant.language
+      push:
+        - match: \[
+          push: variable-dimension
+        - match: ((?:{{type_modifier}}\s+)*)({{identifier}})
+          captures:
+            1: storage.modifier
+            2: scope
+        - include: else-pop
     # IERC20 public immutable token;
     # Roles.Role private immutable _whitelisteds;
     # Stuff before one or more type_modifiers is not actually matched (IERC20 / Roles.Role) with this.. it has default highlight
-    - match: \b(var\s+)?\s+((?:{{type_modifier}}\s+)+)({{identifier}}) # ex: BigInt.bigint memory x = BigInt.fromUint(7);
+    - match: \b((?:{{type_modifier}}\s+)+)({{identifier}}) # ex: BigInt.bigint memory x = BigInt.fromUint(7);
       captures:
-        1: keyword
-        2: storage.modifier
-        3: scope
-    - match: \b(var\s+)?({{elementary_type}})(?:\[(\d*)\])*\s+({{identifier}})
-      captures:
-        1: keyword
-        2: constant.language
-        3: constant.numeric
-        4: scope
-    - match: \b(var\s+)?({{elementary_type}})\b # not valid to have just type in a specific line for example but it's nice to color it immediately, not after identifier is specified as well
-      captures:
-        1: keyword
-        2: constant.language
-    - match: \b(var)\s+({{identifier}})\b # not valid to have just type in a specific line for example but it's nice to color it immediately, not after identifier is specified as well
-      captures:
-        1: keyword
+        1: storage.modifier
         2: scope
+    - match: \b({{elementary_type}})(?:\[(\d*)\])*\s+({{identifier}})
+      captures:
+        1: constant.language
+        2: constant.numeric
+        3: scope
+    - match: \b({{elementary_type}})\b # not valid to have just type in a specific line for example but it's nice to color it immediately, not after identifier is specified as well
+      captures:
+        1: constant.language
+
+  variable-dimension:
+    - match: \d*
+      scope: constant.numeric
+    - match: \]
+      pop: true
+    - include: else-pop
 
   # variable declaration with assignment
 
@@ -592,29 +605,30 @@ contexts:
     - match: \bcatch\b
       scope: keyword
       push:
-        - match: \bError\b # } catch Error(string memory /*reason*/) {
+        - match: \b(Error|Panic)\b # } catch Error(string memory /*reason*/) {
+          scope: support.type
         - include: function-arguments # } catch (bytes memory /*lowLevelData*/) {
         - include: else-pop
         # curly braces body after catch statement is handled outside of our try-catch parser
 
   # expression
 
+  reserved-keywords:
+    - match: '{{reserved_keywords}}'
+      scope: keyword.sol.reserved
+
   expression-keyword:
     - match: '{{expression_keyword_main}}'
-      scope: keyword
-    - match: '{{expression_keyword_other}}'
       scope: keyword
     - match: '{{expression_keyword_error_handling}}'
       scope: keyword
     - match: '{{expression_keyword_binary_logic}}'
       scope: constant.language
-    - match: '{{reserved_keywords}}'
-      scope: keyword.sol.reserved
     - match: '\.({{special_members_keywords}})'
       captures:
         1: support.type
     - match: '{{special_properties}}'
-      scope: constant.character
+      scope: support.type
 
   expression-include:
     - match: \[
@@ -625,6 +639,7 @@ contexts:
           pop: true
         - match: \, # ... = [0,1,2]
         - include: expression
+    - include: type-information-inquiry
     - include: function-call
     - include: expression-keyword
     - include: '{{expression_keyword_main}}'
@@ -632,7 +647,7 @@ contexts:
     - match: \b({{number}})\s+({{ether_units}}|{{time_units}})\b
       captures:
         1: constant.numeric
-        2: keyword.control
+        2: support.function
     - match: \(
       scope: punctuation.section.block.begin.sol
       push: tuple-content
@@ -658,6 +673,15 @@ contexts:
       pop: true
     - include: else-pop
 
+  # type information - https://docs.soliditylang.org/en/latest/units-and-global-variables.html?highlight=type#type-information
+  type-information-inquiry:
+    - match: \b(type)\s*\((?:({{elementary_type}})|({{identifier_path}}))?\)\.({{identifier}})\b # type conversion, ex: uint(-1)
+      captures:
+        1: keyword
+        2: constant.language
+        3: scope
+        4: support.type
+
   # function call
 
   function-call:
@@ -666,21 +690,19 @@ contexts:
         1: constant.language
         2: punctuation.section.block.begin.sol
       push: function-call-arguments
-    - match: '({{special_functions}})\s*\('
+    - match: '({{special_functions}}|{{crypto_functions}})\s*\('
       captures:
-        1: support.function
+        1: support.type
       push: function-call-arguments
     - match: '({{expression_keyword_error_handling}})\s*(\()'
       captures:
         1: keyword
         2: punctuation.section.block.begin.sol
       push: function-call-arguments
-    - match: '({{super_keyword}})\.({{identifier}})\s*(\()'
+    - match: \b({{super_keyword}}|{{this_keyword}})(?:\.({{identifier}}))?\b
       captures:
-        1: keyword
+        1: support.type
         2: support.function
-        3: punctuation.section.block.end.sol
-      push: function-call-arguments
     - match: '({{identifier}})\.({{identifier}})\s*(\()'
       captures:
         1: scope
@@ -705,6 +727,27 @@ contexts:
   function-call-argument:
     - include: expression
 
+  # error
+
+  error:
+    - match: \b(error)\s+({{identifier}})
+      captures:
+        1: storage.type.function
+        2: entity.name.function
+      push:
+        - curly-brackets-body
+        - function-returns-declaration
+        - function-modifiers
+        - function-arguments
+    - match: \b(error)\s*
+      captures:
+        1: storage.type.function
+      push:
+        - curly-brackets-body
+        - function-returns-declaration
+        - function-modifiers
+        - function-arguments
+
   # function, constructor, modifier
 
   function:
@@ -728,7 +771,7 @@ contexts:
 
   constructor:
     - match: \b(constructor|receive|fallback)\b
-      scope: entity.name.function.sol
+      scope: storage.type.function
       push:
         - curly-brackets-body
         - function-modifiers
@@ -737,8 +780,8 @@ contexts:
   modifier: # modifier as in "keyword", not as various function modifiers like: public, private etc.
     - match: \b(modifier)\s+({{identifier}})
       captures:
-        1: storage.type.function
-        2: entity.name.function
+        1: keyword
+        2: support.function
       push:
         - curly-brackets-body
         - function-returns-declaration
@@ -783,7 +826,7 @@ contexts:
   ## function-modifiers
 
   function-modifiers:
-    - match: '\b{{func_modifier}}\b'
+    - match: \b{{func_modifier}}\b
       scope: storage.modifier
     - match: '\b({{func_modifier_override}}\b)(?:\((?:{{identifier}}(?:,\s*)?)+\))?' # https://github.com/davidhq/SublimeEthereum/issues/50#issuecomment-611749874, 1) internal override(ERC20, ERC20Pausable) 2) internal override
       captures:
@@ -792,7 +835,8 @@ contexts:
       scope: keyword
       push: function-returns-arguments
     - include: function-call
-    - match: '\b{{identifier}}\b'
+    - match: \b{{identifier}}\b
+      scope: support.function
     - include: else-pop
 
   function-modifiers-recursive:
@@ -869,6 +913,7 @@ contexts:
     - include: variables
     - include: emit-event
     - include: assembly
+    - include: unchecked-arithmetic
     - match: \bcontinue|break\b # only actually applies inside control structures (which use this syntax context as well)
       scope: keyword
     - include: expression-include
@@ -890,8 +935,8 @@ contexts:
   event:
     - match: (event)\s+({{identifier}})
       captures:
-        1: storage.type
-        2: entity.name.function
+        1: keyword
+        2: support.function
       push: event-arguments
 
   event-arguments:
@@ -935,12 +980,21 @@ contexts:
         5: variable.parameter.function
       pop: true
 
+  # unchecked-arithmetic
+  # https://docs.soliditylang.org/en/latest/control-structures.html?#checked-or-unchecked-arithmetic
+
+  unchecked-arithmetic:
+    - match: \b(unchecked)\s*
+      captures:
+        1: keyword
+      push: curly-brackets-body
+
   # assembly
 
   assembly:
     - match: \b(assembly)\s*
       captures:
-        1: storage.type.function
+        1: keyword
       push: assembly-body
 
   assembly-body:
