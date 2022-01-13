@@ -88,7 +88,10 @@ patterns:
     '1': {name: constant.numeric}
     '2': {name: keyword.control}
   comment: Ether and time units
-- match: ([\"\'].*?[\"\'])
+- match: ([\"].*?[\"])
+  name: string.quoted
+  comment: Strings
+- match: ([\'].*?[\'])
   name: string.quoted
   comment: Strings
 - match: \b(\d+)(e\d*)?\b
