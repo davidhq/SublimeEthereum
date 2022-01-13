@@ -16,88 +16,107 @@ patterns:
 - match: \b(event|enum)\s+([A-Za-z_]\w*)\b
   name: keyword.control
   captures:
-    '2': {name: support.function}
+    '2': {name: entity.name.function}
   comment: Events
-- match: \b(contract|interface|library|using|struct|function|constructor|modifier)(\s+[A-Za-z_]\w*)?(?:\s+is\s+((?:[A-Za-z_][\,\s]*)*))?\b
+- match: \b(contract|interface|library)\s+([A-Za-z_]\w*)(?:\s+is\s+((?:[A-Za-z_][\,\s]*)*))?\b
+  name: keyword.control
+  captures:
+    '2': {name: entity.name.class}
+    '3': {name: support.type}
+  comment: Structures, function, event definitions
+- match: \b(constructor|error|using|struct|type|function|modifier|fallback)(\s+[A-Za-z_]\w*)?\b
   name: keyword.control
   captures:
     '2': {name: entity.name.function}
-    '3': {name: entity.name.function}
   comment: Structures, function, event definitions
-- match: \b(address\s*payable|address|string|bytes?\d*|int\d*|uint\d*|bool|u?fixed\d+x\d+)\s*(?:\[(\d*)\])?\s*(?:\[(\d*)\])?\s*(?:(indexed|memory|storage|calldata|payable)?\s*(\b[A-Za-z_]\w*)?\s*)?(?=[,\)])
+- match: \.(length|selector)\b
+  captures:
+    '1': {name: support.type}
+  comment: Special treatment for length and .selector
+- match: \b(super)\b
+  captures:
+    '1': {name: support.type}
+  comment: Special treatment for "super"
+- match: \b(address\s*payable|address|string|bytes?\d*|int\d*|uint\d*|bool|u?fixed\d+x\d+)\s*(?:\[(\d*)\])?\s*(?:\[(\d*)\])?\s*(?:(indexed|memory|storage|calldata|payable|immutable)?\s*(\b[A-Za-z_]\w*)?\s*)?(?=[,\)\n])
   captures:
     '1': {name: constant.language}
     '2': {name: constant.numeric}
     '3': {name: constant.numeric}
     '4': {name: keyword.control}
     '5': {name: variable.parameter}
-  comment: Built-in types
-- match: \b(mapping)\s*\((.*)\s+=>\s+(.*)\)(\s+(?:private|public|internal|external))?\s+([A-Za-z_]\w*)\b
+  comment: Built-in types function arguments
+- match: \b(?:(indexed|memory|storage|calldata|payable|immutable)\s*(\b[A-Za-z_]\w*)?\s*)(?=[,\)\n])
   captures:
-    '1': {name: constant.language}
+    '1': {name: keyword.control}
+    '2': {name: variable.parameter}
+  comment: Other types function arguments, like structs... but can only detect them if they have a modifier, example -- function witness(instance memory w, instance memory a, instance memory a1, instance memory a1_odd, uint k)
+- match: \b(mapping)\s*\((.*)\s+(=>)\s+(.*)\)(\s+(?:private|public|internal|external|storage|memory))?\s+([A-Za-z_]\w*)\b
+  captures:
+    '1': {name: keyword.control}
     '2': {name: constant.language}
-    '3': {name: constant.language}
-    '4': {name: keyword.control}
+    '3': {name: keyword.control}
+    '4': {name: constant.language}
+    '5': {name: keyword.control}
   comment: Mapping definition
 - match: \b(true|false)\b
   name: constant.language
   comment: True and false keywords
-- match: \b(address\s*payable|address|string|bytes?\d*|int\d*|uint\d*|bool|u?fixed\d+x\d+)(?:\s*\[(\d*)\])?(?:\s*\[(\d*)\])?\s*(private|public|internal|external|constant|memory|storage)?\s+(?:[A-Za-z_]\w*)\s*[\;\=]
-#- match: \b([A-Za-z_]\w+)(\s+(?:private|public|internal|external|constant))?\s+([A-Za-z_]\w*)[\;(?:\s*\=)]
+- match: \b(address\s*payable|address|string|bytes?\d*|int\d*|uint\d*|bool|u?fixed\d+x\d+)\b(?:(?:\s*\[(\d*)\])?(?:\s*\[(\d*)\])?(?:\s*\[(\d*)\])?\s*((?:private\s|public\s|internal\s|external\s|constant\s|immutable\s|memory\s|storage\s)*)\s*(?:[A-Za-z_]\w*)\s*(\=))?
   captures:
     '1': {name: constant.language}
     '2': {name: constant.numeric}
     '3': {name: constant.numeric}
-    '4': {name: keyword.control}
-  comment: Variable definitions - bytes data; | uint x = uint(y);
-- match: \b(var|import|constant|pragma|payable|storage|memory|calldata|if|else|for|while|do|break|continue|returns?|try|catch|private|public|pure|view|internal|external|virtual|override|abstract|this|suicide|selfdestruct|delegatecall|emit|new|is|throw|revert|assert|require|receive|fallback\_)\b
+    '4': {name: constant.numeric}
+    '5': {name: keyword.control}
+    '6': {name: keyword.control}
+  comment: Variable definitions - bytes data; | uint x = uint(y); BUT also just appearances of basic types anywhere... good example -- "using SafeMath for uint256;"
+- match: \b(var|solidity|import|constant|pragma|payable|storage|memory|calldata|if|else|for|while|do|break|continue|returns?|try|catch|private|public|pure|view|internal|immutable|external|virtual|override|abstract|this|suicide|selfdestruct|delegatecall|emit|new|is|throw|revert|assert|require|receive|delete)\b
   name: keyword.control
   comment: Langauge keywords
-- match: \b([A-Za-z_]\w*)\s*\:\s*
-  captures:
-    '1': {name: variable.parameter}
-  comment: Variable definitions - bytes data; | uint x = uint(y);
-- match: (=|!|>|<|\||&|\?|:|\^|~|\*|\+|\-|\/|\%|\bhex\b)
+# - match: \b([A-Za-z_]\w*)\s*\:(?!\=)\s* # we need negative lookahed to avoid capturing := used in assembly
+#   captures:
+#     '1': {name: variable.parameter}
+#   comment: Struct inits # MasonrySnapshot({time : block.number, rewardReceived : 0, rewardPerShare : 0});
+- match: (=|!|>|<|\||&|\?|:|\^|~|\*|\+|\-|\/|\%|\bhex\b|\bunicode\b)
   name: keyword.control
   comment: Operators
+- match: \bnow\b
+  name: support.type
+  comment: Now - it was removed in solidity 0.4 but we still include it
 - match: \b(msg|block|tx|abi)\.([A-Za-z_]\w*)\b
   captures:
     '1': {name: constant.language}
     '2': {name: constant.language}
   comment: msg and block special usage
-- match: \b(now|delete)\b
-  captures:
-    '1': {name: constant.language}
-  comment: Now and delete
 - match: \b(blockhash|gasleft|addmod|mulmod|keccak256|sha256|sha3|ripemd160|ecrecover)\s*\(
   captures:
     '1': {name: constant.language}
   comment: Function call - built-in functions
 - match: \b([A-Za-z_]\w*)(?:\[(\d*)\])?(?:\[(\d*)\])?\(
   captures:
-    '1': {name: support.function}
+    '1': {name: entity.name.function}
     '2': {name: constant.numeric}
     '3': {name: constant.numeric}
   comment: Function call, also for example - uint[] memory a = new uint[332](7); or uint[2][] memory arrayOfPairs = new uint[2][](size);
-- match: \b\.(length|selector)\b
-  captures:
-    '1': {name: support.type}
-  comment: Special treatment for length and .selector
 - match: \b(\d+)\s+(wei|finney|szabo|ether|seconds|minutes|hours|days|weeks|years)\b
   captures:
-    '1': {name: constant.numeric}
+    '1': {name: support.type}
     '2': {name: keyword.control}
   comment: Ether and time units
+- match: \banonymous\b
+  name: keyword.control
+  comment: Assembly stuff
+- match: \b(assembly|switch|let|case|default)\b
+  name: keyword.control
+  comment: Assembly stuff
 - match: ([\"].*?[\"])
   name: string.quoted
   comment: Strings
 - match: ([\'].*?[\'])
   name: string.quoted
   comment: Strings
-- match: \b(\d+)(e\d*)?\b
-  captures:
-    '1': {name: constant.numeric}
-    '2': {name: constant.numeric}
+- match: \b(?:[+-]?\.?\d+[eE]?)(?:\.\d+[eE]?\d*)?\b
+  name: constant.numeric
   comment: Numbers, possibly with scientific notation
 - match: \b(0[xX][a-fA-F0-9]+)\b
   name: constant.numeric
