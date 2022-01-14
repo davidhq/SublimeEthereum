@@ -35,6 +35,7 @@ variables:
   special_members_keywords: '\b(length|timestamp)\b'
   special_functions: '\b(?:blockhash|gasleft|abi\.decode|abi\.encode|abi\.encodePacked|abi\.encodeWithSelector|abi\.encodeWithSignature)\b'
   crypto_functions: '\b(addmod|mulmod|sha256|keccak256|ripemd160|ecrecover)\b'
+  string_literals: '\b(hex|unicode)\b'
   special_properties: '\b(?:block\.coinbase|block\.difficulty|block\.gaslimit|block\.number|block\.timestamp|msg\.data|msg\.sender|msg\.sig|msg\.value|msg\.gas|tx\.gasprice|tx\.origin)\b'
 
   # var keyword was deprecated in solidity 0.4.20 but we still highlight it for older contracts!
@@ -383,7 +384,7 @@ contexts:
     - include: else-pop
 
   mapping-modifiers:
-    - match: \b{{func_modifier}}\b
+    - match: \b{{type_modifier}}\b
       scope: storage.modifier
 
   # mapping when used in function argument declaration
@@ -427,38 +428,35 @@ contexts:
 
   variable-declaration:
     - include: mapping
-    - match: \b({{elementary_type}})
+    - match: \b{{elementary_type}}\b # uint256[3][257][16] private precomputedGenerators;
       scope: constant.language
       push:
-        - match: \[
-          push: variable-dimension
-        - match: ((?:{{type_modifier}}\s+)*)({{identifier}})
-          captures:
-            1: storage.modifier
-            2: scope
-        - include: else-pop
-    # IERC20 public immutable token;
-    # Roles.Role private immutable _whitelisteds;
-    # Stuff before one or more type_modifiers is not actually matched (IERC20 / Roles.Role) with this.. it has default highlight
-    - match: \b((?:{{type_modifier}}\s+)+)({{identifier}}) # ex: BigInt.bigint memory x = BigInt.fromUint(7);
+        #- variable-identifier
+        - variable-type
+        - variable-dimension
+    - match: \b{{identifier_path}}(?:\[(\d*)\])*\s+((?:{{type_modifier}}\s+)+) # ex: BigInt.bigint memory x = BigInt.fromUint(7); OR even BigInt.bigint[3] memory private x = BigInt.fromUint(7); (rare or never used) -- we cannot push variable-dimension on context here because we need strict matching... minuses are that only the last capture group will have a scope (this is how regexes work) and also we can only have digit, no expressions
       captures:
-        1: storage.modifier
-        2: scope
-    - match: \b({{elementary_type}})(?:\[(\d*)\])*\s+({{identifier}})
-      captures:
-        1: constant.language
-        2: constant.numeric
-        3: scope
-    - match: \b({{elementary_type}})\b # not valid to have just type in a specific line for example but it's nice to color it immediately, not after identifier is specified as well
-      captures:
-        1: constant.language
+        1: constant.numeric
+        2: storage.modifier
 
   variable-dimension:
-    - match: \d*
-      scope: constant.numeric
+    - match: \[
+      scope: punctuation.definition.start.sol
+      push: expression
     - match: \]
-      pop: true
+      scope: punctuation.definition.end.sol
+      push: variable-dimension
     - include: else-pop
+
+  variable-type:
+    - match: \b{{type_modifier}}\b
+      scope: storage.modifier
+    - include: else-pop
+
+  # variable-identifier:
+  #   - match: \b{{identifier}}\b
+  #     scope: scope
+  #     pop: true
 
   # variable declaration with assignment
 
@@ -641,6 +639,7 @@ contexts:
         - include: expression
     - include: type-information-inquiry
     - include: function-call
+    - include: string-literals
     - include: expression-keyword
     - include: '{{expression_keyword_main}}'
       scope: variable.parameter
@@ -681,6 +680,14 @@ contexts:
         2: constant.language
         3: scope
         4: support.type
+
+  # string literals
+  # https://docs.soliditylang.org/en/latest/types.html#unicode-literals
+  # https://docs.soliditylang.org/en/latest/types.html#hexadecimal-literals
+  string-literals:
+    - match: ({{string_literals}})(?=[\'\"])
+      captures:
+        1: variable.parameter
 
   # function call
 
@@ -910,6 +917,7 @@ contexts:
     - include: lvalue-statement
     - include: control-structure
     - include: function-call
+    - include: string-literals
     - include: variables
     - include: emit-event
     - include: assembly
@@ -1016,6 +1024,7 @@ contexts:
   assembly-body-contents:
     - include: assembly-function # example: aztec.sol - function defined inside assembly block, this function in turn has assembly written directly without the assembly block
     - include: function-call # example: aztec.sol -- validateSwap() from inside of assembly {} block
+    - include: string-literals
     - include: assembly-statements
     - include: assembly-body-include
     - include: assembly-end-bracket
@@ -1027,7 +1036,7 @@ contexts:
         2: entity.name.function
       push:
         - assembly-body
-        # assembly function returns declaration will work unintentially
+        # assembly function returns declaration will work as a nice side effect of other patterns :)
         #
         # function alloc_bytes(size) -> ptr
         # { ...
