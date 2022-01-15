@@ -7,7 +7,7 @@ scope: source.solidity
 variables:
   identifier: '(?:[A-Za-z_]\w*)'
   identifier_path: '(?:[A-Za-z_][\w\.]*)' # ex.: A.MyStruct
-  number: '(?:[+-]?\.?\d+[eE]?(?:\.\d+[eE]?)?)?'
+  number: '(?:[+-]?\.?\d+[eE]?)(?:\.\d+[eE]?\d*)?'
   hex_number: '(?:[+-]?(0[Xx])[0-9a-fA-F_]*)'
   math_operator: '(?:\+|\+\+|\-|\-\-|\*|\*\*|\/|\^|\%)'
   logical_operator: '(?:\!|\&|\||\~)'
@@ -33,10 +33,13 @@ variables:
   super_keyword: super
   this_keyword: this
   special_members_keywords: '\b(length|timestamp)\b'
+
   special_functions: '\b(?:blockhash|gasleft|abi\.decode|abi\.encode|abi\.encodePacked|abi\.encodeWithSelector|abi\.encodeWithSignature)\b'
+  # now was removed in solidity v0.4 but we still include it
+  special_properties: '\b(?:block\.coinbase|block\.difficulty|block\.gaslimit|block\.number|block\.timestamp|msg\.data|msg\.sender|msg\.sig|msg\.value|msg\.gas|tx\.gasprice|tx\.origin|now)\b'
+
   crypto_functions: '\b(addmod|mulmod|sha256|keccak256|ripemd160|ecrecover)\b'
   string_literals: '\b(hex|unicode)\b'
-  special_properties: '\b(?:block\.coinbase|block\.difficulty|block\.gaslimit|block\.number|block\.timestamp|msg\.data|msg\.sender|msg\.sig|msg\.value|msg\.gas|tx\.gasprice|tx\.origin)\b'
 
   # var keyword was deprecated in solidity 0.4.20 but we still highlight it for older contracts!
   reserved_keywords: \b(var|after|alias|apply|auto|byte|case|copyof|default|define|final|implements|in|inline|let|macro|match|mutable|null|of|partial|promise|reference|relocatable|sealed|sizeof|static|supports|switch|typedef|typeof)\b
@@ -44,6 +47,7 @@ variables:
   ether_units: '(?:wei|finney|szabo|ether)'
   time_units: '(?:seconds|minutes|hours|days|weeks|years)'
 
+  assembly_keywords: '\b(let|for|case|switch|default|if)\b'
   # https://solidity.readthedocs.io/en/v0.5.6/assembly.html
   opcode: stop|add|mul|sub|div|sdiv|mod|smod|addmod|mulmod|exp|signextend|lt|gt|slt|sgt|eq|iszero|and|or|xor|not|byte|sha3|address|balance|origin|caller|callvalue|calldataload|calldatasize|calldatacopy|codesize|codecopy|gasprice|extcodesize|extcodecopy|blockhash|coinbase|timestamp|number|difficulty|gaslimit|pop|mload|mstore|mstore8|sload|sstore|jump|jumpi|pc|msize|gas|jumpdest|push1|push2|push32|dup1|dup2|dup16|swap1|swap2|swap16|log0|log1|log4|create|call|callcode|return|revert|suicide|staticcall|delegatecall|returndatacopy|returndatasize
 
@@ -1059,10 +1063,8 @@ contexts:
   assembly-statements:
     - match: '\:\='
       scope: keyword
-    - match: 'self'
-      scope: keyword
     - match: '[\(\)\,\.]' # ignore there, but try to list all that are relevant
-    - match: \b(let|for|case|switch|default|if)\b
+    - match: '\b({{assembly_keywords}})\b'
       scope: keyword
     - match: '\b({{opcode}})\b'
       scope: support.function

@@ -24,7 +24,7 @@ variables:
   func_modifier: '(?:public|private|internal|external|pure|view|payable)'
   contractlike: '(?:contract|interface|library)'
 
-  language_keyword: \b(if|for|return|or|pass|not|from|import)\b # missing: in, to
+  language_keyword: \b(if|for|return|and|or|pass|not|from|import)\b # missing: in, to
   self_keyword: \b(self)\b # missing: in, to
 
   expression_keyword_main: '\b(new|this|selfdestruct|delegatecall|selector)\b'
