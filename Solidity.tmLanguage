@@ -42,28 +42,38 @@
 			<key>match</key>
 			<string>\b(event|enum)\s+([A-Za-z_]\w*)\b</string>
 			<key>name</key>
-			<string>keyword.control</string>
+			<string>keyword</string>
 		</dict>
 		<dict>
 			<key>captures</key>
 			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>keyword</string>
+				</dict>
 				<key>2</key>
 				<dict>
 					<key>name</key>
-					<string>entity.name.class</string>
+					<string>string.other.link</string>
 				</dict>
 				<key>3</key>
 				<dict>
 					<key>name</key>
-					<string>support.type</string>
+					<string>keyword</string>
+				</dict>
+				<key>4</key>
+				<dict>
+					<key>name</key>
+					<string>string</string>
 				</dict>
 			</dict>
 			<key>comment</key>
 			<string>Structures, function, event definitions</string>
 			<key>match</key>
-			<string>\b(contract|interface|library)\s+([A-Za-z_]\w*)(?:\s+is\s+((?:[A-Za-z_][\,\s]*)*))?\b</string>
+			<string>\b(contract|interface|library)\s+([A-Za-z_]\w*)(?:\s+(is)\s+((?:[A-Za-z_]\w*\,?\s*)*))?\b</string>
 			<key>name</key>
-			<string>keyword.control</string>
+			<string>keyword</string>
 		</dict>
 		<dict>
 			<key>captures</key>
@@ -77,9 +87,25 @@
 			<key>comment</key>
 			<string>Structures, function, event definitions</string>
 			<key>match</key>
-			<string>\b(constructor|error|using|struct|type|function|modifier|fallback)(\s+[A-Za-z_]\w*)?\b</string>
+			<string>\b(constructor|error|using|struct|type|modifier|fallback)(\s+[A-Za-z_]\w*)?\b</string>
 			<key>name</key>
-			<string>keyword.control</string>
+			<string>keyword</string>
+		</dict>
+		<dict>
+			<key>captures</key>
+			<dict>
+				<key>2</key>
+				<dict>
+					<key>name</key>
+					<string>entity.name.function</string>
+				</dict>
+			</dict>
+			<key>comment</key>
+			<string>Structures, function, event definitions</string>
+			<key>match</key>
+			<string>\b(function)(\s+[A-Za-z_]\w*)?\b</string>
+			<key>name</key>
+			<string>keyword</string>
 		</dict>
 		<dict>
 			<key>captures</key>
@@ -130,7 +156,7 @@
 				<key>4</key>
 				<dict>
 					<key>name</key>
-					<string>keyword.control</string>
+					<string>keyword</string>
 				</dict>
 				<key>5</key>
 				<dict>
@@ -149,7 +175,7 @@
 				<key>1</key>
 				<dict>
 					<key>name</key>
-					<string>keyword.control</string>
+					<string>keyword</string>
 				</dict>
 				<key>2</key>
 				<dict>
@@ -168,7 +194,7 @@
 				<key>1</key>
 				<dict>
 					<key>name</key>
-					<string>keyword.control</string>
+					<string>keyword</string>
 				</dict>
 				<key>2</key>
 				<dict>
@@ -178,7 +204,7 @@
 				<key>3</key>
 				<dict>
 					<key>name</key>
-					<string>keyword.control</string>
+					<string>keyword</string>
 				</dict>
 				<key>4</key>
 				<dict>
@@ -188,7 +214,7 @@
 				<key>5</key>
 				<dict>
 					<key>name</key>
-					<string>keyword.control</string>
+					<string>keyword</string>
 				</dict>
 			</dict>
 			<key>comment</key>
@@ -230,12 +256,12 @@
 				<key>5</key>
 				<dict>
 					<key>name</key>
-					<string>keyword.control</string>
+					<string>keyword</string>
 				</dict>
 				<key>6</key>
 				<dict>
 					<key>name</key>
-					<string>keyword.control</string>
+					<string>keyword</string>
 				</dict>
 			</dict>
 			<key>comment</key>
@@ -249,7 +275,7 @@
 			<key>match</key>
 			<string>\b(var|solidity|import|constant|pragma|payable|storage|memory|calldata|if|else|for|while|do|break|continue|returns?|try|catch|private|public|pure|view|internal|immutable|external|virtual|override|abstract|this|suicide|selfdestruct|delegatecall|emit|new|is|throw|revert|assert|require|receive|delete)\b</string>
 			<key>name</key>
-			<string>keyword.control</string>
+			<string>keyword</string>
 		</dict>
 		<dict>
 			<key>comment</key>
@@ -257,7 +283,7 @@
 			<key>match</key>
 			<string>(=|!|&gt;|&lt;|\||&amp;|\?|:|\^|~|\*|\+|\-|\/|\%|\bhex\b|\bunicode\b)</string>
 			<key>name</key>
-			<string>keyword.control</string>
+			<string>keyword</string>
 		</dict>
 		<dict>
 			<key>comment</key>
@@ -284,7 +310,7 @@
 			<key>comment</key>
 			<string>msg and block special usage</string>
 			<key>match</key>
-			<string>\b(msg|block|tx|abi)\.([A-Za-z_]\w*)\b</string>
+			<string>\b(msg|block|tx)\.([A-Za-z_]\w*)\b</string>
 		</dict>
 		<dict>
 			<key>captures</key>
@@ -293,6 +319,25 @@
 				<dict>
 					<key>name</key>
 					<string>constant.language</string>
+				</dict>
+				<key>2</key>
+				<dict>
+					<key>name</key>
+					<string>entity.name.function</string>
+				</dict>
+			</dict>
+			<key>comment</key>
+			<string>msg and block special usage</string>
+			<key>match</key>
+			<string>\b(abi)\.([A-Za-z_]\w*)\b</string>
+		</dict>
+		<dict>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>entity.name.function</string>
 				</dict>
 			</dict>
 			<key>comment</key>
@@ -330,26 +375,34 @@
 				<key>1</key>
 				<dict>
 					<key>name</key>
-					<string>support.type</string>
+					<string>constant</string>
 				</dict>
 				<key>2</key>
 				<dict>
 					<key>name</key>
-					<string>keyword.control</string>
+					<string>markup.italic</string>
 				</dict>
 			</dict>
 			<key>comment</key>
 			<string>Ether and time units</string>
 			<key>match</key>
-			<string>\b(\d+)\s+(wei|finney|szabo|ether|seconds|minutes|hours|days|weeks|years)\b</string>
+			<string>\b(\d+)\s+(wei|gwei|ether|seconds|minutes|hours|days|weeks)\b</string>
 		</dict>
 		<dict>
 			<key>comment</key>
-			<string>Assembly stuff</string>
+			<string>Event</string>
 			<key>match</key>
 			<string>\banonymous\b</string>
 			<key>name</key>
-			<string>keyword.control</string>
+			<string>keyword</string>
+		</dict>
+		<dict>
+			<key>comment</key>
+			<string>Unchecked</string>
+			<key>match</key>
+			<string>\bunchecked\b</string>
+			<key>name</key>
+			<string>keyword</string>
 		</dict>
 		<dict>
 			<key>comment</key>
@@ -357,7 +410,7 @@
 			<key>match</key>
 			<string>\b(assembly|switch|let|case|default)\b</string>
 			<key>name</key>
-			<string>keyword.control</string>
+			<string>keyword</string>
 		</dict>
 		<dict>
 			<key>comment</key>

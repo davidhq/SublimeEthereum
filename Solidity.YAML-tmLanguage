@@ -14,18 +14,25 @@ patterns:
   name: comment
   comment: Multiline comments
 - match: \b(event|enum)\s+([A-Za-z_]\w*)\b
-  name: keyword.control
+  name: keyword
   captures:
     '2': {name: entity.name.function}
   comment: Events
-- match: \b(contract|interface|library)\s+([A-Za-z_]\w*)(?:\s+is\s+((?:[A-Za-z_][\,\s]*)*))?\b
-  name: keyword.control
+- match: \b(contract|interface|library)\s+([A-Za-z_]\w*)(?:\s+(is)\s+((?:[A-Za-z_]\w*\,?\s*)*))?\b
+  name: keyword
   captures:
-    '2': {name: entity.name.class}
-    '3': {name: support.type}
+    '1': {name: keyword}
+    '2': {name: entity.name.function}
+    '3': {name: keyword}
+    '4': {name: entity.name.function}
   comment: Structures, function, event definitions
-- match: \b(constructor|error|using|struct|type|function|modifier|fallback)(\s+[A-Za-z_]\w*)?\b
-  name: keyword.control
+- match: \b(constructor|error|using|struct|type|modifier|fallback)(\s+[A-Za-z_]\w*)?\b
+  name: keyword
+  captures:
+    '2': {name: entity.name.function}
+  comment: Structures, function, event definitions
+- match: \b(function)(\s+[A-Za-z_]\w*)?\b
+  name: keyword
   captures:
     '2': {name: entity.name.function}
   comment: Structures, function, event definitions
@@ -42,21 +49,21 @@ patterns:
     '1': {name: constant.language}
     '2': {name: constant.numeric}
     '3': {name: constant.numeric}
-    '4': {name: keyword.control}
+    '4': {name: keyword}
     '5': {name: variable.parameter}
   comment: Built-in types function arguments
 - match: \b(?:(indexed|memory|storage|calldata|payable|immutable)\s*(\b[A-Za-z_]\w*)?\s*)(?=[,\)\n])
   captures:
-    '1': {name: keyword.control}
+    '1': {name: keyword}
     '2': {name: variable.parameter}
   comment: Other types function arguments, like structs... but can only detect them if they have a modifier, example -- function witness(instance memory w, instance memory a, instance memory a1, instance memory a1_odd, uint k)
 - match: \b(mapping)\s*\((.*)\s+(=>)\s+(.*)\)(\s+(?:private|public|internal|external|storage|memory))?\s+([A-Za-z_]\w*)\b
   captures:
-    '1': {name: keyword.control}
+    '1': {name: keyword}
     '2': {name: constant.language}
-    '3': {name: keyword.control}
+    '3': {name: keyword}
     '4': {name: constant.language}
-    '5': {name: keyword.control}
+    '5': {name: keyword}
   comment: Mapping definition
 - match: \b(true|false)\b
   name: constant.language
@@ -67,30 +74,35 @@ patterns:
     '2': {name: constant.numeric}
     '3': {name: constant.numeric}
     '4': {name: constant.numeric}
-    '5': {name: keyword.control}
-    '6': {name: keyword.control}
+    '5': {name: keyword}
+    '6': {name: keyword}
   comment: Variable definitions - bytes data; | uint x = uint(y); BUT also just appearances of basic types anywhere... good example -- "using SafeMath for uint256;"
 - match: \b(var|solidity|import|constant|pragma|payable|storage|memory|calldata|if|else|for|while|do|break|continue|returns?|try|catch|private|public|pure|view|internal|immutable|external|virtual|override|abstract|this|suicide|selfdestruct|delegatecall|emit|new|is|throw|revert|assert|require|receive|delete)\b
-  name: keyword.control
+  name: keyword
   comment: Langauge keywords
 # - match: \b([A-Za-z_]\w*)\s*\:(?!\=)\s* # we need negative lookahed to avoid capturing := used in assembly
 #   captures:
 #     '1': {name: variable.parameter}
 #   comment: Struct inits # MasonrySnapshot({time : block.number, rewardReceived : 0, rewardPerShare : 0});
 - match: (=|!|>|<|\||&|\?|:|\^|~|\*|\+|\-|\/|\%|\bhex\b|\bunicode\b)
-  name: keyword.control
+  name: keyword
   comment: Operators
 - match: \bnow\b
   name: support.type
   comment: Now - it was removed in solidity 0.4 but we still include it
-- match: \b(msg|block|tx|abi)\.([A-Za-z_]\w*)\b
+- match: \b(msg|block|tx)\.([A-Za-z_]\w*)\b
   captures:
     '1': {name: constant.language}
     '2': {name: constant.language}
   comment: msg and block special usage
-- match: \b(blockhash|gasleft|addmod|mulmod|keccak256|sha256|sha3|ripemd160|ecrecover)\s*\(
+- match: \b(abi)\.([A-Za-z_]\w*)\b
   captures:
     '1': {name: constant.language}
+    '2': {name: entity.name.function}
+  comment: msg and block special usage
+- match: \b(blockhash|gasleft|addmod|mulmod|keccak256|sha256|sha3|ripemd160|ecrecover)\s*\(
+  captures:
+    '1': {name: entity.name.function}
   comment: Function call - built-in functions
 - match: \b([A-Za-z_]\w*)(?:\[(\d*)\])?(?:\[(\d*)\])?\(
   captures:
@@ -98,16 +110,19 @@ patterns:
     '2': {name: constant.numeric}
     '3': {name: constant.numeric}
   comment: Function call, also for example - uint[] memory a = new uint[332](7); or uint[2][] memory arrayOfPairs = new uint[2][](size);
-- match: \b(\d+)\s+(wei|finney|szabo|ether|seconds|minutes|hours|days|weeks|years)\b
+- match: \b(\d+)\s+(wei|gwei|ether|seconds|minutes|hours|days|weeks)\b
   captures:
-    '1': {name: support.type}
-    '2': {name: keyword.control}
+    '1': {name: constant}
+    '2': {name: markup.italic}
   comment: Ether and time units
 - match: \banonymous\b
-  name: keyword.control
-  comment: Assembly stuff
+  name: keyword
+  comment: Event
+- match: \bunchecked\b
+  name: keyword
+  comment: Unchecked
 - match: \b(assembly|switch|let|case|default)\b
-  name: keyword.control
+  name: keyword
   comment: Assembly stuff
 - match: ([\"].*?[\"])
   name: string.quoted
