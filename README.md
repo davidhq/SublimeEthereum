@@ -18,21 +18,15 @@ Another relevant source for Solidity grammar syntax is [vscode-solidity](https:/
 
 Linguist branch is an implementation [with regexes](https://sublime-text-unofficial-documentation.readthedocs.io/en/latest/reference/syntaxdefs.html) but is satisfactory esp. relating to the fact that GitHub does not support stack-based grammars. Main branch (= used in sublime package to enable `.sol` syntax highlighting for [SublimeText](http://www.sublimetext.com/) editor) uses more advanced [context stack](http://www.sublimetext.com/docs/syntax.html) approach to achieve optimal visual results for Smart Contract developers. 
 
-### Languages 👅
+## Installation in SublimeText editor
 
-Someone once said that the entire human world consists of language and now it is turning out that programming languages are also constructs that make our world. Smart Contracts are becoming a basic human primitive for many digital interactions and their use will radically increase in coming years.  Having a syntax highlighter that faithfully covers the language grammar is important and we are going to keep it up to date and further improve it until it reaches the quality that **Ethereum** deserves. It is not much work time-wise but is honest work and it took considerable effort in the initial steps. Now the burden is less and as Smart Contracts once deployed are permanent so this syntax is more or less permanent, evolving only slightly.
+1. SublimeText menu / Preferences / Package Control
+2. Select _Install Package_
+3. Type **Ethereum** and press ENTER
 
-## Installation
+This will provide **Solidity** `.sol` and **Vyper** `.vy` syntax highlighting.
 
 [SublimeEthereum](https://packagecontrol.io/packages/Ethereum) on Package Control. 
-
-By following this link you can also see the total number of installs for this package (growing steadily as [more developers join the web3 movement](https://medium.com/electric-capital/electric-capital-developer-report-2021-f37874efea6d)).
-
-**SublimeText** is not the most used editor (got some decent competition lately) but it is still one of the best and will probably never go away. This editor is a viable alternative to [VSCode](https://code.visualstudio.com/) and is not controlled by a [big corporation](https://microsoft.com/) but rather more community based. We should be happy to have both options!
-
-Will document the number of installs each start of year starting from 2021:
-
-- **2021** → 53K installs
 
 [package-control]: https://packagecontrol.io/packages/Ethereum
 
