@@ -1,6 +1,6 @@
 # Ethereum Solidity Grammar
 
-## Description
+## for GitHub and SublimeText
 
 [Ethereum][ethereum] is a platform for decentralized applications. Decentralized applications are built with Smart Contracts.
 
@@ -21,7 +21,7 @@ Linguist branch is an implementation [with regexes](https://sublime-text-unoffic
 ## Installation in SublimeText editor
 
 1. SublimeText menu / Preferences / Package Control
-2. Select _Install Package_
+2. Select: Install Package
 3. Type **Ethereum** and press ENTER
 
 This will provide **Solidity** `.sol` and **Vyper** `.vy` syntax highlighting.
