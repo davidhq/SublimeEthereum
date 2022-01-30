@@ -44,8 +44,8 @@ variables:
   # var keyword was deprecated in solidity 0.4.20 but we still highlight it for older contracts!
   reserved_keywords: \b(var|after|alias|apply|auto|byte|case|copyof|default|define|final|implements|in|inline|let|macro|match|mutable|null|of|partial|promise|reference|relocatable|sealed|sizeof|static|supports|switch|typedef|typeof)\b
 
-  ether_units: '(?:wei|finney|szabo|ether)'
-  time_units: '(?:seconds|minutes|hours|days|weeks|years)'
+  ether_units: '(?:wei|gwei|ether)'
+  time_units: '(?:seconds|minutes|hours|days|weeks)'
 
   assembly_keywords: '\b(let|for|case|switch|default|if)\b'
   # https://solidity.readthedocs.io/en/v0.5.6/assembly.html
