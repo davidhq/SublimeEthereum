@@ -279,7 +279,8 @@ contexts:
       captures:
         1: constant.language
         2: scope
-        3: variable.parameter
+        #3: variable.parameter
+        3: scope
 
   # enum
 
@@ -303,8 +304,8 @@ contexts:
     - include: else-pop
 
   enum-body-contents:
-    - match: \b{{identifier}}\b
-      scope: variable.parameter
+    #- match: \b{{identifier}}\b
+    #  scope: variable.parameter
     - match: '\}'
       scope: punctuation.section.block.end
       pop: true
@@ -743,8 +744,8 @@ contexts:
   error:
     - match: \b(error)\s+({{identifier}})
       captures:
-        1: storage.type.function
-        2: entity.name.function
+        1: keyword
+        2: support.function
       push:
         - curly-brackets-body
         - function-returns-declaration
@@ -752,7 +753,7 @@ contexts:
         - function-arguments
     - match: \b(error)\s*
       captures:
-        1: storage.type.function
+        1: keyword
       push:
         - curly-brackets-body
         - function-returns-declaration
@@ -1036,7 +1037,7 @@ contexts:
   assembly-function:
     - match: \b(function)\s+({{identifier}})
       captures:
-        1: storage.type.function
+        1: keyword
         2: entity.name.function
       push:
         - assembly-body
