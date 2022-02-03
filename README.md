@@ -8,8 +8,6 @@ This package contains syntax highlighting for Ethereum's **Smart Contracts** lan
 
 Solidity was initially proposed in August 2014 by [dr. Gavin Wood](https://en.wikipedia.org/wiki/Gavin_Wood). The language was later developed by the Ethereum project's Solidity team, led by Christian Reitwiessner. Solidity is similar in syntax to JavaScript.
 
-Solidity is also used in most Ethereum [rollups](https://l2beat.com/) and some other EVM-compatible L1 distributed systems like [Fantom](https://fantom.foundation/).
-
 [ethereum]: https://www.ethereum.org/
 
 Version of syntax that GitHub is [using](https://github.com/github/linguist/tree/master/vendor/grammars) for [Solidity grammar](https://docs.soliditylang.org/en/latest/grammar.html) is in [linguist branch](https://github.com/davidhq/SublimeEthereum/tree/linguist). This grammar gives all `.sol` files ([example](https://github.com/ethereum/consensus-specs/blob/dev/solidity_deposit_contract/deposit_contract.sol)) its colors (= does _syntax highlighting_).
