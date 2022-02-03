@@ -211,13 +211,13 @@ contexts:
     - match: \b({{contract_like}})\s+({{identifier}})\s+(is)\b
       captures:
         1: keyword
-        2: entity.name.class
+        2: support.function
         3: keyword
       push: contract-parents
     - match: \b({{contract_like}})\s+({{identifier}})\b
       captures:
         1: keyword
-        2: entity.name.class
+        2: support.function
       push: contract-body
 
   contract-parents:
@@ -225,11 +225,11 @@ contexts:
       scope: punctuation.section.block.begin.sol
       set: contract-body-contents
     - match: '{{identifier}}'
-      scope: support.type
+      scope: support.function
     - match: \,
       scope: scope
     - match: \S+
-      scope: support.type
+      scope: support.function
 
   contract-body:
     - match: '\{'
@@ -650,7 +650,7 @@ contexts:
     - match: \b({{number}})\s+({{ether_units}}|{{time_units}})\b
       captures:
         1: constant.numeric
-        2: support.function
+        2: support.type
     - match: \(
       scope: punctuation.section.block.begin.sol
       push: tuple-content
@@ -764,7 +764,7 @@ contexts:
   function:
     - match: \b(function)\s+({{identifier}})
       captures:
-        1: storage.type.function
+        1: keyword
         2: entity.name.function
       push:
         - curly-brackets-body
@@ -782,7 +782,7 @@ contexts:
 
   constructor:
     - match: \b(constructor|receive|fallback)\b
-      scope: storage.type.function
+      scope: keyword
       push:
         - curly-brackets-body
         - function-modifiers
