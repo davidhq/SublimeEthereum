@@ -1,12 +1,12 @@
-# Ethereum Solidity Grammar
+# Ethereum Solidity and Vyper Grammars
 
 ## for GitHub and SublimeText
 
 [Ethereum][ethereum] is a platform for decentralized applications. Decentralized applications are built with Smart Contracts.
 
-This package contains syntax highlighting for Ethereum's **Smart Contracts** language [Solidity](https://soliditylang.org).
+This package contains syntax highlighting for Ethereum's Smart Contract languages [Solidity](https://soliditylang.org) and [Vyper](https://vyper.readthedocs.io).
 
-Solidity was initially proposed in August 2014 by [dr. Gavin Wood](https://en.wikipedia.org/wiki/Gavin_Wood). The language was later developed by the Ethereum project's Solidity team, led by Christian Reitwiessner. Solidity is similar in syntax to JavaScript.
+Solidity is the biggest Ethereum language and has similarity to JavaScript. Solidity was initially proposed in August 2014 by [dr. Gavin Wood](https://en.wikipedia.org/wiki/Gavin_Wood). The language was later developed by the Ethereum project's Solidity team, led by Christian Reitwiessner.
 
 [ethereum]: https://www.ethereum.org/
 
