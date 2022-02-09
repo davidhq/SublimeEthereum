@@ -24,27 +24,12 @@ patterns:
     '2': {name: entity.name.function}
     '3': {name: entity.name.function}
   comment: Structures, event definitions
-- match: \b(def)(\s+[A-Za-z_]\w*)?(?:\s+is\s+((?:[A-Za-z_][\,\s]*)*))?\b
-  name: storage.type.function
+- match: \b(def)(\s+[A-Za-z_]\w*)?\b
+  name: keyword
   captures:
     '2': {name: entity.name.function}
     '3': {name: entity.name.function}
   comment: function
-- match: \b(address\s*payable|address|string|bytes?\d*|int\d*|uint\d*|bool|u?fixed\d+x\d+)\s*(?:\[(\d*)\])?\s*(?:\[(\d*)\])?\s*(?:(indexed|memory|storage|calldata|payable)?\s*(\b[A-Za-z_]\w*)\s*)?(?=[,\)])
-  captures:
-    '1': {name: constant.language}
-    '2': {name: constant.numeric}
-    '3': {name: constant.numeric}
-    '4': {name: keyword.control}
-    '5': {name: variable.parameter}
-  comment: Built-in types
-- match: \b(mapping)\s*\((.*)\s+=>\s+(.*)\)(\s+(?:private|public|internal|external))?\s+([A-Za-z_]\w*)\b
-  captures:
-    '1': {name: constant.language}
-    '2': {name: constant.language}
-    '3': {name: constant.language}
-    '4': {name: keyword.control}
-  comment: Mapping definition
 - match: \b(True|False)\b
   name: constant.language
   comment: True and false keywords
@@ -59,7 +44,7 @@ patterns:
     '3': {name: constant.numeric}
     '4': {name: keyword.control}
   comment: Types
-- match: \b(var|import|constant|pragma|payable|storage|memory|calldata|if|else|for|while|do|break|continue|returns?|private|public|immutable|pure|view|internal|external|this|suicide|selfdestruct|delegatecall|emit|new|is|throw|revert|assert|require|\_)\b
+- match: \b(var|import|constant|map|raise|pragma|payable|storage|memory|calldata|if|else|for|while|do|break|continue|returns?|private|public|immutable|pure|view|internal|external|this|suicide|selfdestruct|delegatecall|emit|new|is|throw|revert|assert|require|\_)\b
   name: keyword.control
   comment: Langauge keywords
 - match: \b(not|or|pass|not|from|import)\b
@@ -68,29 +53,21 @@ patterns:
 - match: (@[A-Za-z_]\w*)\b
   name: keyword
   comment: Vyper decorators
-- match: \b([A-Za-z_]\w*)\s*\:\s*
-  captures:
-    '1': {name: variable.parameter}
-  comment: Variable definitions - bytes data; | uint x = uint(y);
 - match: (=|!|>|<|\||&|\?|:|\^|~|\*|\+|\-|\/|\%|\bhex\b)
   name: keyword.control
   comment: Operators
-- match: \b(msg|block|tx|abi)\.([A-Za-z_]\w*)\b
+- match: \b(msg|block|tx)\.([A-Za-z_]\w*)\b
   captures:
-    '1': {name: constant.language}
-    '2': {name: constant.language}
+    '1': {name: support.type}
+    '2': {name: support.type}
   comment: msg and block special usage
-- match: \b(now|delete)\b
-  captures:
-    '1': {name: constant.language}
-  comment: Now and delete
 - match: \b(blockhash|gasleft|addmod|mulmod|keccak256|sha256|sha3|ripemd160|ecrecover)\s*\(
   captures:
     '1': {name: constant.language}
   comment: Function call - built-in functions
 - match: \b([A-Za-z_]\w*)(?:\[(\d*)\])?(?:\[(\d*)\])?\(
   captures:
-    '1': {name: support.function}
+    '1': {name: entity.name.function}
     '2': {name: constant.numeric}
     '3': {name: constant.numeric}
   comment: Function call, also for example - uint[] memory a = new uint[332](7); or uint[2][] memory arrayOfPairs = new uint[2][](size);
@@ -98,18 +75,15 @@ patterns:
   captures:
     '1': {name: support.type}
   comment: Special treatment for length and .selector
-- match: \b(\d+)\s+(wei|finney|szabo|ether|seconds|minutes|hours|days|weeks|years)\b
+- match: \b(wei|gwei|ether|seconds|minutes|hours|days|weeks)\b
   captures:
-    '1': {name: constant.numeric}
-    '2': {name: keyword.control}
+    '1': {name: markup.italic}
   comment: Ether and time units
 - match: ([\"\'].*?[\"\'])
   name: string.quoted
   comment: Strings
-- match: \b(\d+)(e\d*)?\b
-  captures:
-    '1': {name: constant.numeric}
-    '2': {name: constant.numeric}
+- match: \b(?:[+-]?\.?[\d_]+[eE]?)(?:\.\d+[eE]?\d*)?\b
+  name: constant.numeric
   comment: Numbers, possibly with scientific notation
 - match: \b(0[xX][a-fA-F0-9]+)\b
   name: constant.numeric
