@@ -69,7 +69,7 @@ patterns:
     '5': {name: keyword}
     '6': {name: keyword}
   comment: Variable definitions - bytes data; | uint x = uint(y); BUT also just appearances of basic types anywhere... good example -- "using SafeMath for uint256;"
-- match: \b(var|solidity|import|constant|pragma|mapping|payable|storage|memory|calldata|if|else|for|while|do|break|continue|returns?|try|catch|private|public|pure|view|internal|immutable|external|virtual|override|abstract|this|suicide|selfdestruct|delegatecall|emit|new|is|throw|revert|assert|require|receive|delete)\b
+- match: \b(var|solidity|import|constant|pragma experimental|pragma|mapping|payable|storage|memory|calldata|if|else|for|while|do|break|continue|returns?|try|catch|private|public|pure|view|internal|immutable|external|virtual|override|abstract|this|suicide|selfdestruct|delegatecall|emit|new|is|throw|revert|assert|require|receive|delete)\b
   name: keyword
   comment: Langauge keywords
 - match: (=|!|>|<|\||&|\?|:|\^|~|\*|\+|\-|\/|\%|\bhex\b|\bunicode\b)
