@@ -265,12 +265,12 @@
 				<key>1</key>
 				<dict>
 					<key>name</key>
-					<string>constant.language</string>
+					<string>markup.list</string>
 				</dict>
 				<key>2</key>
 				<dict>
 					<key>name</key>
-					<string>constant.language</string>
+					<string>markup.list</string>
 				</dict>
 			</dict>
 			<key>comment</key>
@@ -279,23 +279,12 @@
 			<string>\b(msg|block|tx)\.([A-Za-z_]\w*)\b</string>
 		</dict>
 		<dict>
-			<key>captures</key>
-			<dict>
-				<key>1</key>
-				<dict>
-					<key>name</key>
-					<string>constant.language</string>
-				</dict>
-				<key>2</key>
-				<dict>
-					<key>name</key>
-					<string>entity.name.function</string>
-				</dict>
-			</dict>
 			<key>comment</key>
-			<string>msg and block special usage</string>
+			<string>abi functions</string>
 			<key>match</key>
 			<string>\b(abi)\.([A-Za-z_]\w*)\b</string>
+			<key>name</key>
+			<string>entity.name.function</string>
 		</dict>
 		<dict>
 			<key>captures</key>

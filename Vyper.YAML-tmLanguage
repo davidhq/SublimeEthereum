@@ -34,7 +34,8 @@ patterns:
   name: constant.language
   comment: True and false keywords
 - match: \b(self)\.\b
-  name: storage.type.function
+  captures:
+    '1': {name: markup.italic}
   comment: self call
 #- match: \b(address\s*payable|address|string|bytes?\d*|int\d*|uint\d*|bool|u?fixed\d+x\d+)(?:\s*\[(\d*)\])?(?:\s*\[(\d*)\])?\s*(private|public|internal|external|constant|memory|storage)?\s+(?:[A-Za-z_]\w*)\s*[\;\=]
 - match: \b(address\s*payable|address|string|bytes?\d*|int\d*|uint\d*|bool|u?fixed\d+x\d+)\b
@@ -58,8 +59,8 @@ patterns:
   comment: Operators
 - match: \b(msg|block|tx)\.([A-Za-z_]\w*)\b
   captures:
-    '1': {name: support.type}
-    '2': {name: support.type}
+    '1': {name: markup.list}
+    '2': {name: markup.list}
   comment: msg and block special usage
 - match: \b(blockhash|gasleft|addmod|mulmod|keccak256|sha256|sha3|ripemd160|ecrecover)\s*\(
   captures:

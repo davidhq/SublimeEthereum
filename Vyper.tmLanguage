@@ -95,12 +95,18 @@
 			<string>constant.language</string>
 		</dict>
 		<dict>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>markup.italic</string>
+				</dict>
+			</dict>
 			<key>comment</key>
 			<string>self call</string>
 			<key>match</key>
 			<string>\b(self)\.\b</string>
-			<key>name</key>
-			<string>storage.type.function</string>
 		</dict>
 		<dict>
 			<key>captures</key>
@@ -169,12 +175,12 @@
 				<key>1</key>
 				<dict>
 					<key>name</key>
-					<string>support.type</string>
+					<string>markup.list</string>
 				</dict>
 				<key>2</key>
 				<dict>
 					<key>name</key>
-					<string>support.type</string>
+					<string>markup.list</string>
 				</dict>
 			</dict>
 			<key>comment</key>

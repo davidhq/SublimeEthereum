@@ -80,8 +80,8 @@ patterns:
   comment: Now - it was removed in solidity 0.4 but we still include it
 - match: \b(msg|block|tx)\.([A-Za-z_]\w*)\b
   captures:
-    '1': {name: markup.heading}
-    '2': {name: markup.heading}
+    '1': {name: markup.list}
+    '2': {name: markup.list}
   comment: msg and block special usage
 - match: \b(abi)\.([A-Za-z_]\w*)\b
   name: entity.name.function
