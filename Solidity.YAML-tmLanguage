@@ -57,14 +57,6 @@ patterns:
     '1': {name: keyword}
     '2': {name: variable.parameter}
   comment: Other types function arguments, like structs... but can only detect them if they have a modifier, example -- function witness(instance memory w, instance memory a, instance memory a1, instance memory a1_odd, uint k)
-- match: \b(mapping)\s*\((.*)\s+(=>)\s+(.*)\)(\s+(?:private|public|internal|external|storage|memory))?\s+([A-Za-z_]\w*)\b
-  captures:
-    '1': {name: keyword}
-    '2': {name: constant.language}
-    '3': {name: keyword}
-    '4': {name: constant.language}
-    '5': {name: keyword}
-  comment: Mapping definition
 - match: \b(true|false)\b
   name: constant.language
   comment: True and false keywords
@@ -77,13 +69,9 @@ patterns:
     '5': {name: keyword}
     '6': {name: keyword}
   comment: Variable definitions - bytes data; | uint x = uint(y); BUT also just appearances of basic types anywhere... good example -- "using SafeMath for uint256;"
-- match: \b(var|solidity|import|constant|pragma|payable|storage|memory|calldata|if|else|for|while|do|break|continue|returns?|try|catch|private|public|pure|view|internal|immutable|external|virtual|override|abstract|this|suicide|selfdestruct|delegatecall|emit|new|is|throw|revert|assert|require|receive|delete)\b
+- match: \b(var|solidity|import|constant|pragma|mapping|payable|storage|memory|calldata|if|else|for|while|do|break|continue|returns?|try|catch|private|public|pure|view|internal|immutable|external|virtual|override|abstract|this|suicide|selfdestruct|delegatecall|emit|new|is|throw|revert|assert|require|receive|delete)\b
   name: keyword
   comment: Langauge keywords
-# - match: \b([A-Za-z_]\w*)\s*\:(?!\=)\s* # we need negative lookahed to avoid capturing := used in assembly
-#   captures:
-#     '1': {name: variable.parameter}
-#   comment: Struct inits # MasonrySnapshot({time : block.number, rewardReceived : 0, rewardPerShare : 0});
 - match: (=|!|>|<|\||&|\?|:|\^|~|\*|\+|\-|\/|\%|\bhex\b|\bunicode\b)
   name: keyword
   comment: Operators
@@ -110,10 +98,9 @@ patterns:
     '2': {name: constant.numeric}
     '3': {name: constant.numeric}
   comment: Function call, also for example - uint[] memory a = new uint[332](7); or uint[2][] memory arrayOfPairs = new uint[2][](size);
-- match: \b(\d+)\s+(wei|gwei|ether|seconds|minutes|hours|days|weeks)\b
+- match: \b(wei|gwei|ether|seconds|minutes|hours|days|weeks)\b
   captures:
-    '1': {name: constant}
-    '2': {name: markup.italic}
+    '1': {name: markup.italic}
   comment: Ether and time units
 - match: \banonymous\b
   name: keyword
@@ -130,7 +117,7 @@ patterns:
 - match: ([\'].*?[\'])
   name: string.quoted
   comment: Strings
-- match: \b(?:[+-]?\.?\d+[eE]?)(?:\.\d+[eE]?\d*)?\b
+- match: \b(?:[+-]?\.?[\d_]+[eE]?)(?:\.\d+[eE]?\d*)?\b
   name: constant.numeric
   comment: Numbers, possibly with scientific notation
 - match: \b(0[xX][a-fA-F0-9]+)\b

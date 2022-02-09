@@ -55,7 +55,7 @@
 				<key>2</key>
 				<dict>
 					<key>name</key>
-					<string>string.other.link</string>
+					<string>entity.name.function</string>
 				</dict>
 				<key>3</key>
 				<dict>
@@ -65,7 +65,7 @@
 				<key>4</key>
 				<dict>
 					<key>name</key>
-					<string>string</string>
+					<string>entity.name.function</string>
 				</dict>
 			</dict>
 			<key>comment</key>
@@ -189,40 +189,6 @@
 			<string>\b(?:(indexed|memory|storage|calldata|payable|immutable)\s*(\b[A-Za-z_]\w*)?\s*)(?=[,\)\n])</string>
 		</dict>
 		<dict>
-			<key>captures</key>
-			<dict>
-				<key>1</key>
-				<dict>
-					<key>name</key>
-					<string>keyword</string>
-				</dict>
-				<key>2</key>
-				<dict>
-					<key>name</key>
-					<string>constant.language</string>
-				</dict>
-				<key>3</key>
-				<dict>
-					<key>name</key>
-					<string>keyword</string>
-				</dict>
-				<key>4</key>
-				<dict>
-					<key>name</key>
-					<string>constant.language</string>
-				</dict>
-				<key>5</key>
-				<dict>
-					<key>name</key>
-					<string>keyword</string>
-				</dict>
-			</dict>
-			<key>comment</key>
-			<string>Mapping definition</string>
-			<key>match</key>
-			<string>\b(mapping)\s*\((.*)\s+(=&gt;)\s+(.*)\)(\s+(?:private|public|internal|external|storage|memory))?\s+([A-Za-z_]\w*)\b</string>
-		</dict>
-		<dict>
 			<key>comment</key>
 			<string>True and false keywords</string>
 			<key>match</key>
@@ -273,7 +239,7 @@
 			<key>comment</key>
 			<string>Langauge keywords</string>
 			<key>match</key>
-			<string>\b(var|solidity|import|constant|pragma|payable|storage|memory|calldata|if|else|for|while|do|break|continue|returns?|try|catch|private|public|pure|view|internal|immutable|external|virtual|override|abstract|this|suicide|selfdestruct|delegatecall|emit|new|is|throw|revert|assert|require|receive|delete)\b</string>
+			<string>\b(var|solidity|import|constant|pragma|mapping|payable|storage|memory|calldata|if|else|for|while|do|break|continue|returns?|try|catch|private|public|pure|view|internal|immutable|external|virtual|override|abstract|this|suicide|selfdestruct|delegatecall|emit|new|is|throw|revert|assert|require|receive|delete)\b</string>
 			<key>name</key>
 			<string>keyword</string>
 		</dict>
@@ -375,18 +341,13 @@
 				<key>1</key>
 				<dict>
 					<key>name</key>
-					<string>constant</string>
-				</dict>
-				<key>2</key>
-				<dict>
-					<key>name</key>
 					<string>markup.italic</string>
 				</dict>
 			</dict>
 			<key>comment</key>
 			<string>Ether and time units</string>
 			<key>match</key>
-			<string>\b(\d+)\s+(wei|gwei|ether|seconds|minutes|hours|days|weeks)\b</string>
+			<string>\b(wei|gwei|ether|seconds|minutes|hours|days|weeks)\b</string>
 		</dict>
 		<dict>
 			<key>comment</key>
@@ -432,7 +393,7 @@
 			<key>comment</key>
 			<string>Numbers, possibly with scientific notation</string>
 			<key>match</key>
-			<string>\b(?:[+-]?\.?\d+[eE]?)(?:\.\d+[eE]?\d*)?\b</string>
+			<string>\b(?:[+-]?\.?[\d_]+[eE]?)(?:\.\d+[eE]?\d*)?\b</string>
 			<key>name</key>
 			<string>constant.numeric</string>
 		</dict>
