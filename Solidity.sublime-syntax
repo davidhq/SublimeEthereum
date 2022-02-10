@@ -874,7 +874,7 @@ contexts:
       captures:
         1: storage.modifier
     - match: \breturns\b
-      scope: keyword
+      scope: support.type
       push: function-returns-arguments
     - include: function-modifier-with-arguments
     - match: \b{{identifier}}\b
@@ -900,7 +900,7 @@ contexts:
 
   function-returns-declaration-include:
     - match: \breturns\b
-      scope: keyword
+      scope: support.type
       push: tuple
 
   function-returns-arguments:
