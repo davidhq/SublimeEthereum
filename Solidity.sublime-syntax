@@ -381,6 +381,7 @@ contexts:
     - match: \b{{identifier}}\b
     - match: \;
       pop: true
+    - include: eol-pop
     - include: else-pop
 
   mapping-modifiers:
@@ -401,14 +402,14 @@ contexts:
     - include: else-pop
 
   mapping-core:
-    - include: mapping-contents
+    - include: mapping-from
     - match: \=\>
       scope: keyword
       push:
         - match: \bmapping\b # mapping of a mapping
           scope: keyword
           push: mapping-declaration
-        - include: mapping-contents
+        - include: mapping-from
         - include: else-pop
     - match: \)
       scope: punctuation.section.block.end.sol
@@ -416,7 +417,7 @@ contexts:
 
   # extracted out to be used for nested mappings definitions:
   # mapping (address => mapping(uint256 => uint256)) internal my_mapping;
-  mapping-contents:
+  mapping-from:
     - match: (?:({{elementary_type}})|({{identifier_path}}))
       captures:
         1: constant.language
@@ -478,12 +479,12 @@ contexts:
     - include: else-pop
 
   tuple-content:
+    - include: variable-declaration
+    - include: expression-include
     - match: '\)'
       scope: punctuation.definition.end.sol
       pop: true
     - match: ','
-    - include: variable-declaration
-    - include: expression-include
     - include: else-pop
 
   # control-structure
@@ -788,6 +789,7 @@ contexts:
       push:
         - curly-brackets-body
         - constructor-base-init
+        - constructor-modifiers
         - function-arguments
 
   receive_and_fallback:
@@ -860,6 +862,11 @@ contexts:
       push: function-call-arguments
     - include: else-pop
 
+  constructor-modifiers:
+    - match: \b{{func_modifier}}\b
+      scope: storage.modifier
+    - include: else-pop
+
   function-modifiers:
     - match: \b{{func_modifier}}\b
       scope: storage.modifier
@@ -911,6 +918,8 @@ contexts:
     - include: function-returns-arguments
 
   function-returns-argument:
+    # function GetTrie() internal pure returns (mapping(bytes32 => bytes) storage trie) {
+    - include: mapping-function-argument
     - match: '(?:({{elementary_type}})|({{identifier_path}}))(?:\[(\d*)\])*\s*((?:{{type_modifier}})+\s*)?({{identifier}})?'
       captures:
         1: constant.language
@@ -926,7 +935,6 @@ contexts:
         3: keyword
         4: variable.parameter
       pop: true
-    - include: mapping
     - include: else-pop
 
     ## curly-brackets-body
