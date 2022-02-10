@@ -153,7 +153,7 @@
 			<key>match</key>
 			<string>(=|!|&gt;|&lt;|\||&amp;|\?|:|\^|~|\*|\+|\-|\/|\%|\bhex\b)</string>
 			<key>name</key>
-			<string>keyword.control</string>
+			<string>keyword.operator</string>
 		</dict>
 		<dict>
 			<key>captures</key>

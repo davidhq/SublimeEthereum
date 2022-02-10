@@ -1,20 +1,30 @@
-# Ethereum Solidity and Vyper Grammars
+## SublimeText syntax highlighting for Solidity, Vyper and Cairo
 
-## for GitHub and SublimeText
-
-[Ethereum][ethereum] is a platform for decentralized applications. Decentralized applications are built with Smart Contracts.
-
-This package contains syntax highlighting for Ethereum's Smart Contract languages [Solidity](https://soliditylang.org) and [Vyper](https://vyper.readthedocs.io).
-
-Solidity is the biggest Ethereum language and has similarity to JavaScript. Solidity was initially proposed in August 2014 by [dr. Gavin Wood](https://en.wikipedia.org/wiki/Gavin_Wood). The language was later developed by the Ethereum project's Solidity team, led by Christian Reitwiessner.
-
-[ethereum]: https://www.ethereum.org/
+<img src="./img/logos.svg">
 
 Version of syntax that GitHub is [using](https://github.com/github/linguist/tree/master/vendor/grammars) for [Solidity grammar](https://docs.soliditylang.org/en/latest/grammar.html) is in [linguist branch](https://github.com/davidhq/SublimeEthereum/tree/linguist). This grammar gives all `.sol` files ([example](https://github.com/ethereum/consensus-specs/blob/dev/solidity_deposit_contract/deposit_contract.sol)) its colors (= does _syntax highlighting_).
 
-Another relevant source for Solidity grammar syntax is [vscode-solidity](https://github.com/juanfranblanco/vscode-solidity) (which was originally based on early versions of SublimeEthereum).
+### Ethereum
 
-Linguist branch is an implementation [with regexes](https://sublime-text-unofficial-documentation.readthedocs.io/en/latest/reference/syntaxdefs.html) but is satisfactory esp. relating to the fact that GitHub does not support stack-based grammars. Main branch (= used in sublime package to enable `.sol` syntax highlighting for [SublimeText](http://www.sublimetext.com/) editor) uses more advanced [context stack](http://www.sublimetext.com/docs/syntax.html) approach to achieve optimal visual results for Smart Contract developers. 
+[Ethereum][ethereum] is a platform for decentralized applications. Decentralized applications are built with Smart Contracts.
+
+### StarkNet
+
+[StarkNet](https://starkware.co/starknet/) is a permissionless decentralized ZK-Rollup operating as an L2 network over Ethereum, where any dApp can achieve unlimited scale for its computation, without compromising Ethereum’s composability and security.
+
+### Included grammars
+
+This package contains syntax highlighting for Ethereum's Smart Contract languages [Solidity](https://soliditylang.org) and [Vyper](https://vyper.readthedocs.io) as well as StarkNet [Cairo](https://www.cairo-lang.org/docs/index.html) language.
+
+Solidity is the biggest Ethereum language and has similarity to JavaScript. Solidity was initially proposed in August 2014 by [dr. Gavin Wood](https://en.wikipedia.org/wiki/Gavin_Wood). The language was later developed by the Ethereum project's Solidity team, led by Christian Reitwiessner.
+
+Vyper is a contract-oriented, pythonic programming language that targets the Ethereum Virtual Machine (EVM) as well. It lacks some general features and through this strives to be more secure by default.
+
+Cairo is a programming language for writing provable programs, where one party can prove to another that a certain computation was executed correctly. Cairo and similar proof systems can be used to provide scalability to blockchains.
+
+[ethereum]: https://www.ethereum.org/
+
+[Linguist branch](https://github.com/davidhq/SublimeEthereum/tree/linguist) has an implementation [with regexes](https://sublime-text-unofficial-documentation.readthedocs.io/en/latest/reference/syntaxdefs.html) and is used in GitHub. Main branch (= used in sublime package to enable `.sol` syntax highlighting for [SublimeText](http://www.sublimetext.com/) editor) uses more advanced [context stack](http://www.sublimetext.com/docs/syntax.html) approach to achieve optimal and more detailed results from what is possible with regex based approach.
 
 ## Installation in SublimeText editor
 
@@ -32,8 +42,12 @@ This will provide **Solidity** `.sol` and **Vyper** `.vy` syntax highlighting.
 
 * Solidity.sublime-syntax: syntax rules for Ethereum Solidity language
    * Ethereum plugin automatically uses *Solidity language syntax* when you are in a Solidity (.sol) file
+   * [vscode-solidity](https://github.com/juanfranblanco/vscode-solidity) is another good grammar implementation, it was originally derived from SublimeEthereum
 * Vyper.YAML-tmLanguage: syntax rules for Ethereum Vyper language
    * Ethereum plugin automatically uses *Vyper language syntax* when you are in a Vyper (.vy) file
+* Cairo.YAML-tmLanguage: syntax rules for StarkNet Cairo language
+   * Ethereum plugin automatically uses *Cairo language syntax* when you are in a Cairo (.cairo) file
+   * Cairo language grammar is derived from Atom grammar in [this repository](https://github.com/xshitaka/atom-language-cairo) by GitHub user _xshitaka_.
 
 ## License
 

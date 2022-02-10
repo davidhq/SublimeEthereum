@@ -52,7 +52,7 @@ patterns:
   name: keyword
   comment: Vyper decorators
 - match: (=|!|>|<|\||&|\?|:|\^|~|\*|\+|\-|\/|\%|\bhex\b)
-  name: keyword.control
+  name: keyword.operator
   comment: Operators
 - match: \b(msg|block|tx)\.([A-Za-z_]\w*)\b
   captures:

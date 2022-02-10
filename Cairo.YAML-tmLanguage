@@ -1,0 +1,196 @@
+---
+name: Cairo
+scopeName: source.cairo
+fileTypes: [cairo]
+uuid: ad87d2cd-8575-4bfe-984e-9421a3788912
+
+patterns:
+- include: "#directives"
+- include: "#statements"
+repository:
+  directives:
+    patterns:
+    - match: "(?<!\\w)\\s*(%builtins|%lang)\\s+"
+      captures:
+        '1':
+          name: keyword.directive.cairo
+      end: ''
+  statements:
+    patterns:
+    - include: "#string"
+    - include: "#comment"
+    - include: "#declaration"
+    - include: "#expression"
+    - include: "#punctuation-semicolon"
+  declaration:
+    patterns:
+    - include: "#import"
+  comment:
+    patterns:
+    - name: comment.line.number-sign
+      begin: "#"
+      beginCaptures:
+        '0':
+          name: punctuation.definition.comment
+      end: "$"
+      patterns:
+      - name: comment.line.number-sign
+        match: TODO
+  string:
+    patterns:
+    - name: string.quoted.double.cairo
+      begin: "\""
+      end: "\""
+      beginCaptures:
+        '0':
+          name: punctuation.definition.string.begin.cairo
+      endCaptures:
+        '0':
+          name: punctuation.definition.string.end.cairo
+    - name: string.quoted.single.cairo
+      begin: "'"
+      end: "'"
+      beginCaptures:
+        '0':
+          name: punctuation.definition.string.begin.cairo
+      endCaptures:
+        '0':
+          name: punctuation.definition.string.end.cairo
+  literal:
+    patterns:
+    - include: "#numeric-literal"
+  numeric-literal:
+    patterns:
+    - name: constant.numeric.decimal.cairo
+      match: "\\b(?:([0-9]+)|(0x[0-9a-fA-F]+))\\b"
+  storages:
+    patterns:
+    - match: "\\b(let|const|local|struct|member|alloc_locals)\\b"
+      name: storage.type.cairo
+  keywords:
+    patterns:
+    - name: keyword.controls.cairo
+      match: "\\b(else|if|in|return|end|assert)\\b"
+    - name: keyword.declaration.cairo
+      match: "\\b(from|import|func|namespace)\\b"
+    - name: keyword.others.cairo
+      match: "^\\s*@(constructor|storage_var|view|external|contract_interface|known_ap_change|event)\\s+"
+  function-expression:
+    patterns:
+    - name: meta.function.expression.cairo
+      begin: "\\s*(func)\\s+([_$[:alpha:]][_$[:alnum:]]*)\\s*"
+      beginCaptures:
+        '1':
+          name: storage.type.function.cairo
+        '2':
+          name: entity.name.function.cairo
+      end: "(?<=:)"
+      patterns:
+      - include: "#comment"
+      - include: "#function-implicit"
+      - include: "#function-params"
+      - match: "->"
+        name: keyword.function.return.cairo
+  function-implicit:
+    patterns:
+    - begin: "\\{"
+      end: "\\}"
+      patterns:
+      - include: "#parameters"
+  function-params:
+    patterns:
+    - begin: "\\("
+      end: "\\)"
+      patterns:
+      - include: "#parameters"
+  import:
+    patterns:
+    - begin: "(?<!\\w)\\s*(from)\\s"
+      beginCaptures:
+        '1':
+          name: keyword.declaration.cairo
+      end: "\\s*(import)\\s"
+      endCaptures:
+        '1':
+          name: keyword.declaration.cairo
+      patterns:
+      - include: "#string"
+      - include: "#comment"
+      - include: "#punctuation-accessor"
+      - name: meta.import.from.location.cairo
+        match: "[_$[:alpha:]][_$[:alnum:]]+"
+  class-instance:
+    patterns:
+    - match: "[[:upper:]][_$[:alnum:]]+[[:lower:]]+[_$[:alnum:]]+"
+      name: support.class.cairo
+  parameters:
+    patterns:
+    - include: "#comment"
+    - include: "#punctuation-accessor"
+    - match: "(:)\\s*([_$[:alpha:]][_$[:alnum:]]+)"
+      captures:
+        '1':
+          name: keyword.operator
+        '2':
+          name: support.type.cairo
+  expression:
+    patterns:
+    - include: "#expression-without-identifiers"
+    - include: "#identifiers"
+    - include: "#expression-punctuations"
+  expression-without-identifiers:
+    patterns:
+    - include: "#string"
+    - include: "#comment"
+    - include: "#literal"
+    - include: "#function-expression"
+    - include: "#storages"
+    - include: "#keywords"
+    - include: "#parameters"
+    - include: "#expression-operators"
+    - include: "#function-call"
+    - include: "#support-objects"
+  function-call:
+    patterns:
+    - begin: "([_$[:alpha:]][_$[:alnum:]]+)\\s*(?=\\()"
+      beginCaptures:
+        '1':
+          name: entity.name.function.cairo
+      end: "(?<=\\))"
+      patterns:
+      - include: "#string"
+      - include: "#comment"
+      - include: "#literal"
+      - include: "#identifiers"
+      - include: "#expression-operators"
+  support-objects:
+    patterns:
+    - include: "#class-instance"
+  identifiers:
+    patterns:
+    - name: variable.other.constant.cairo
+      match: "(?<!\\w)([[:upper:]][_$[:digit:][:upper:]]*)(?![_$[:alnum:]])"
+  expression-punctuations:
+    patterns:
+    - include: "#punctuation-accessor"
+  punctuation-accessor:
+    patterns:
+    - match: "(\\.)|(\\*)"
+      captures:
+        '1':
+          name: punctuation.separator.dot-accessor.cairo
+        '2':
+          name: keyword.operator
+  punctuation-semicolon:
+    patterns:
+    - match: ";"
+      name: punctuation.terminator.statement.cairo
+  expression-operators:
+    patterns:
+    - name: keyword.brackets.python-hints.cairo
+      match: "\\%\\{|\\%\\}"
+    - match: (=|!|>|<|\||&|\?|:|\^|~|\*|\+|\-|\/|\%)
+      name: keyword.operator
+      omment: Operators
+    - match: "(?<![\\w$])(cast)(?![\\w$])"
+      name: keyword.operator.cast.cairo
