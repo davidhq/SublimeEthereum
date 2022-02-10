@@ -7,7 +7,7 @@ scope: source.solidity
 variables:
   identifier: '(?:[A-Za-z_]\w*)'
   identifier_path: '(?:[A-Za-z_][\w\.]*)' # ex.: A.MyStruct
-  number: '(?:[+-]?\.?[\d_]+[eE]?)(?:\.\d+[eE]?\d*)?'
+  number: '(?:[+-]?\.?\d[\d_]*[eE]?)(?:\.\d+[eE]?\d*)?'
   hex_number: '(?:[+-]?(0[Xx])[0-9a-fA-F_]*)'
   math_operator: '(?:\+|\+\+|\-|\-\-|\*|\*\*|\/|\^|\%)'
   logical_operator: '(?:\!|\&|\||\~)'
@@ -21,7 +21,7 @@ variables:
   func_modifier: '(?:public|private|internal|external|pure|view|payable|virtual)'
   func_modifier_override: override
 
-  elementary_type: '(?:address\s*payable|address|string|bytes?\d*|int\d*|uint\d*|bool|u?fixed(?:\d+x\d+)?)'
+  elementary_type: '(?:address(?:\s+payable)?|string|bytes?\d*|int\d*|uint\d*|bool|u?fixed(?:\d+x\d+)?)'
   type_modifier: '(?:private|public|internal|external|constant|immutable|memory|storage|override)'
   data_location: '(?:memory|storage|calldata)'
   event_attributes: '(?:indexed)'
@@ -166,7 +166,6 @@ contexts:
         1: keyword.sol
         2: keyword.sol
       push: version_specification
-    - include: version_specification
 
   version_specification:
     - match: ([\^><]\=?)?(\d+)(\.\d+(\.\d+)?)?
@@ -226,6 +225,9 @@ contexts:
       set: contract-body-contents
     - match: '{{identifier}}'
       scope: support.function
+    - match: '\('
+      # contract Derived1 is Base(7) {}
+      push: function-call-arguments
     - match: \,
       scope: scope
     - match: \S+
@@ -245,6 +247,7 @@ contexts:
     - include: event
     - include: variables
     - include: constructor
+    - include: receive_and_fallback
     - include: function
     - include: error
     - include: modifier
@@ -269,18 +272,10 @@ contexts:
     - include: else-pop
 
   struct-definition-body-contents:
-    - include: struct-field
+    - include: variable-declaration
     - match: '\}'
       scope: punctuation.section.block.end
       pop: true
-
-  struct-field:
-    - match: \b(?:({{elementary_type}})|({{identifier_path}}))?\s+({{identifier}})\b
-      captures:
-        1: constant.language
-        2: scope
-        #3: variable.parameter
-        3: scope
 
   # enum
 
@@ -697,7 +692,13 @@ contexts:
   # function call
 
   function-call:
-    - match: '({{elementary_type}})\s*(\()' # type conversion, ex: uint(-1)
+    # r.limbs = new uint[](max(_a.limbs.length, _b.limbs.length));
+    # uint[] memory newLimbs = new uint[](r.limbs.length + 1);
+    # we do this because of:
+    # uint[](...)
+    - include: variable-declaration
+    # Conversions from address to address payable are now possible via payable(x), where x must be of type address
+    - match: '({{elementary_type}}|payable)\s*(\()' # type conversion, ex: uint(-1)
       captures:
         1: constant.language
         2: punctuation.section.block.begin.sol
@@ -772,7 +773,7 @@ contexts:
         - function-returns-declaration
         - function-modifiers
         - function-arguments
-    - match: \b(function)\s*
+    - match: \b(function)\b
       captures:
         1: storage.type.function
       push:
@@ -782,18 +783,26 @@ contexts:
         - function-arguments
 
   constructor:
-    - match: \b(constructor|receive|fallback)\b
+    - match: \b(constructor)\b
+      scope: keyword
+      push:
+        - curly-brackets-body
+        - constructor-base-init
+        - function-arguments
+
+  receive_and_fallback:
+    - match: \b(receive|fallback)\b
       scope: keyword
       push:
         - curly-brackets-body
         - function-modifiers
         - function-arguments
 
-  modifier: # modifier as in "keyword", not as various function modifiers like: public, private etc.
+  modifier: # the actual "modifier" keyword, not as various function modifiers like: public, private etc.
     - match: \b(modifier)\s+({{identifier}})
       captures:
         1: keyword
-        2: support.function
+        2: entity.name.class
       push:
         - curly-brackets-body
         - function-returns-declaration
@@ -837,6 +846,20 @@ contexts:
 
   ## function-modifiers
 
+  # abstract contract MultiDistributorAuthorization is Authentication {
+
+  # constructor(IVault vault) Authentication(bytes32(uint256(address(this)))) {
+  # ...
+  # }
+
+  constructor-base-init:
+    - match: '({{identifier}})\s*(\()'
+      captures:
+        1: support.function
+        2: punctuation.section.block.begin.sol
+      push: function-call-arguments
+    - include: else-pop
+
   function-modifiers:
     - match: \b{{func_modifier}}\b
       scope: storage.modifier
@@ -846,10 +869,17 @@ contexts:
     - match: \breturns\b
       scope: keyword
       push: function-returns-arguments
-    - include: function-call
+    - include: function-modifier-with-arguments
     - match: \b{{identifier}}\b
-      scope: support.function
+      scope: entity.name.class
     - include: else-pop
+
+  function-modifier-with-arguments:
+    - match: '({{identifier}})\s*(\()'
+      captures:
+        1: entity.name.class
+        2: punctuation.section.block.begin.sol
+      push: function-call-arguments
 
   function-modifiers-recursive:
     - include: function-modifier
@@ -1052,7 +1082,7 @@ contexts:
         #- function-returns-declaration
         #- function-modifiers
         - function-arguments
-    - match: \b(function)\s*
+    - match: \b(function)\b
       captures:
         1: storage.type.function
       push:
