@@ -209,13 +209,13 @@ contexts:
   contract:
     - match: \b({{contract_like}})\s+({{identifier}})\s+(is)\b
       captures:
-        1: keyword
+        1: keyword.declaration.class
         2: support.function
         3: keyword
       push: contract-parents
     - match: \b({{contract_like}})\s+({{identifier}})\b
       captures:
-        1: keyword
+        1: keyword.declaration.class
         2: support.function
       push: contract-body
 
@@ -260,7 +260,7 @@ contexts:
   struct:
     - match: \b(struct)(?:\s+({{identifier}}))?
       captures:
-        1: keyword
+        1: keyword.declaration.struct
         2: support.function
       push:
         - struct-definition-body
@@ -282,7 +282,7 @@ contexts:
   enum:
     - match: \b(enum)\s+({{identifier}})?
       captures:
-        1: keyword
+        1: keyword.declaration.enum
         2: support.function
       push:
         - enum-body
@@ -808,8 +808,8 @@ contexts:
   modifier: # the actual "modifier" keyword, not as various function modifiers like: public, private etc.
     - match: \b(modifier)\s+({{identifier}})
       captures:
-        1: keyword
-        2: entity.name.class
+        1: keyword.declaration.modifier
+        2: support.function
       push:
         - curly-brackets-body
         - function-returns-declaration
@@ -883,13 +883,13 @@ contexts:
       push: function-returns-arguments
     - include: function-modifier-with-arguments
     - match: \b{{identifier}}\b
-      scope: entity.name.class
+      scope: entity.name.class # misuse of syntax type but ok for the stand-out effect we want
     - include: else-pop
 
   function-modifier-with-arguments:
     - match: '({{identifier}})\s*(\()'
       captures:
-        1: entity.name.class
+        1: entity.name.class # misuse of syntax type but ok for the stand-out effect we want
         2: punctuation.section.block.begin.sol
       push: function-call-arguments
 
