@@ -761,12 +761,12 @@ contexts:
         - function-modifiers
         - function-arguments
 
-  # function, constructor, modifier
+  # function declaration
 
   function:
     - match: \b(function)\s+({{identifier}})
       captures:
-        1: keyword
+        1: keyword.declaration.function
         2: entity.name.function
       push:
         - curly-brackets-body
@@ -775,29 +775,35 @@ contexts:
         - function-arguments
     - match: \b(function)\b
       captures:
-        1: keyword
+        1: keyword.declaration.function
       push:
         - curly-brackets-body
         - function-returns-declaration
         - function-modifiers
         - function-arguments
 
+  # constructor declaration
+
   constructor:
     - match: \b(constructor)\b
-      scope: keyword
+      scope: keyword.declaration.function
       push:
         - curly-brackets-body
         - constructor-base-init
         - constructor-modifiers
         - function-arguments
 
+  # special receive and fallback functions
+
   receive_and_fallback:
     - match: \b(receive|fallback)\b
-      scope: keyword
+      scope: keyword.declaration.function
       push:
         - curly-brackets-body
         - function-modifiers
         - function-arguments
+
+  # modifier declaration
 
   modifier: # the actual "modifier" keyword, not as various function modifiers like: public, private etc.
     - match: \b(modifier)\s+({{identifier}})

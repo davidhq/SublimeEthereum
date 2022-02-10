@@ -76,7 +76,7 @@
 			<key>match</key>
 			<string>\b(def)(\s+[A-Za-z_]\w*)?\b</string>
 			<key>name</key>
-			<string>keyword</string>
+			<string>keyword.declaration.function</string>
 		</dict>
 		<dict>
 			<key>comment</key>
@@ -232,7 +232,7 @@
 				<key>1</key>
 				<dict>
 					<key>name</key>
-					<string>markup.italic</string>
+					<string>support.type</string>
 				</dict>
 			</dict>
 			<key>comment</key>

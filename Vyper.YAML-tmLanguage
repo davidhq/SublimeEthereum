@@ -23,7 +23,7 @@ patterns:
     '3': {name: entity.name.function}
   comment: Structures, event definitions
 - match: \b(def)(\s+[A-Za-z_]\w*)?\b
-  name: keyword
+  name: keyword.declaration.function
   captures:
     '2': {name: entity.name.function}
     '3': {name: entity.name.function}
@@ -75,7 +75,7 @@ patterns:
   comment: Special treatment for length and .selector
 - match: \b(wei|gwei|ether|seconds|minutes|hours|days|weeks)\b
   captures:
-    '1': {name: markup.italic}
+    '1': {name: support.type}
   comment: Ether and time units
 - match: ([\"\'].*?[\"\'])
   name: string.quoted
