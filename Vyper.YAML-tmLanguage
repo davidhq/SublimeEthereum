@@ -13,10 +13,8 @@ patterns:
   end: (\"\"\")
   name: comment
   comment: Multiline comments
-- match: \b(event|enum)\s+([A-Za-z_]\w*)\b
+- match: \b(event|indexed)\b
   name: keyword.control
-  captures:
-    '2': {name: support.function}
   comment: Events
 - match: \b(contract|interface|library|using|struct|constructor|modifier)(\s+[A-Za-z_]\w*)?(?:\s+is\s+((?:[A-Za-z_][\,\s]*)*))?\b
   name: keyword.control
@@ -37,7 +35,7 @@ patterns:
   name: storage.type.function
   comment: self call
 #- match: \b(address\s*payable|address|string|bytes?\d*|int\d*|uint\d*|bool|u?fixed\d+x\d+)(?:\s*\[(\d*)\])?(?:\s*\[(\d*)\])?\s*(private|public|internal|external|constant|memory|storage)?\s+(?:[A-Za-z_]\w*)\s*[\;\=]
-- match: \b(address\s*payable|address|string|bytes?\d*|int\d*|uint\d*|bool|u?fixed\d+x\d+)\b
+- match: \b(address(?:\s+payable)?|string|bytes?\d*|int\d*|uint\d*|bool|u?fixed\d+x\d+)\b
   captures:
     '1': {name: constant.language}
     '2': {name: constant.numeric}

@@ -29,18 +29,10 @@
 			<string>comment</string>
 		</dict>
 		<dict>
-			<key>captures</key>
-			<dict>
-				<key>2</key>
-				<dict>
-					<key>name</key>
-					<string>support.function</string>
-				</dict>
-			</dict>
 			<key>comment</key>
 			<string>Events</string>
 			<key>match</key>
-			<string>\b(event|enum)\s+([A-Za-z_]\w*)\b</string>
+			<string>\b(event|indexed)\b</string>
 			<key>name</key>
 			<string>keyword.control</string>
 		</dict>
@@ -129,7 +121,7 @@
 			<key>comment</key>
 			<string>Types</string>
 			<key>match</key>
-			<string>\b(address\s*payable|address|string|bytes?\d*|int\d*|uint\d*|bool|u?fixed\d+x\d+)\b</string>
+			<string>\b(address(?:\s+payable)?|string|bytes?\d*|int\d*|uint\d*|bool|u?fixed\d+x\d+)\b</string>
 		</dict>
 		<dict>
 			<key>comment</key>
