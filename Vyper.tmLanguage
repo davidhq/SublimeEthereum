@@ -127,7 +127,7 @@
 			<key>comment</key>
 			<string>Langauge keywords</string>
 			<key>match</key>
-			<string>\b(var|import|constant|map|raise|pragma|payable|storage|memory|calldata|if|else|for|while|do|break|continue|returns?|private|public|immutable|pure|view|internal|external|this|suicide|selfdestruct|delegatecall|emit|new|is|throw|revert|assert|require|\_)\b</string>
+			<string>\b(constant|map|raise|payable|storage|memory|calldata|if|else|for|while|do|break|continue|return|private|public|immutable|pure|view|internal|external|this|suicide|selfdestruct|delegatecall|emit|new|is|throw|revert|assert|require|\_)\b</string>
 			<key>name</key>
 			<string>keyword.control</string>
 		</dict>
@@ -135,7 +135,7 @@
 			<key>comment</key>
 			<string>Vyper specific keywords</string>
 			<key>match</key>
-			<string>\b(not|or|pass|not|from|import)\b</string>
+			<string>\b(not|and|or|pass|from|import|as)\b</string>
 			<key>name</key>
 			<string>keyword</string>
 		</dict>

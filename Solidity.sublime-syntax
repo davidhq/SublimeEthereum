@@ -314,7 +314,7 @@ contexts:
         1: keyword
         2: scope
         3: keyword
-        4: constant.language.solidity
+        4: constant.language
 
   # using
 
@@ -398,7 +398,7 @@ contexts:
       captures:
         1: storage.modifier
     - match: \b{{identifier}}\b
-      scope: variable.parameter.function
+      scope: variable.parameter
     - include: else-pop
 
   mapping-core:
@@ -499,12 +499,12 @@ contexts:
 
   while-loop:
     - match: \bwhile\b
-      scope: keyword.control
+      scope: keyword
       push:
         - control-structure-body
         - expression-in-brackets
     - match: \bdo\b
-      scope: keyword.control
+      scope: keyword
       push:
         #- expression-in-brackets
         #- while-keyword
@@ -516,7 +516,7 @@ contexts:
     - include: else-if-statement
     - include: else-statement
     - match: \bif\b
-      scope: keyword.control
+      scope: keyword
       push:
         - control-structure-body
         - expression-in-brackets
@@ -546,15 +546,15 @@ contexts:
   else-if-statement:
     - match: \b(else)\s+(if)\b
       captures:
-        1: keyword.control
-        2: keyword.control
+        1: keyword
+        2: keyword
       push:
         - control-structure-body
         - expression-in-brackets
 
   else-statement:
     - match: \b(else)\b
-      scope: keyword.control
+      scope: keyword
       push:
         - control-structure-body
 
@@ -562,7 +562,7 @@ contexts:
 
   for-loop:
     - match: \bfor\b
-      scope: keyword.control
+      scope: keyword
       push:
         - control-structure-body
         - for-loop-arguments
@@ -605,7 +605,7 @@ contexts:
       scope: keyword
       push:
         - match: \b(Error|Panic)\b # } catch Error(string memory /*reason*/) {
-          scope: support.type
+          scope: storage.type
         - include: function-arguments # } catch (bytes memory /*lowLevelData*/) {
         - include: else-pop
         # curly braces body after catch statement is handled outside of our try-catch parser
@@ -625,9 +625,9 @@ contexts:
       scope: constant.language
     - match: '\.({{special_members_keywords}})'
       captures:
-        1: support.type
+        1: storage.type
     - match: '{{special_properties}}'
-      scope: support.type
+      scope: storage.type
 
   expression-include:
     - match: \[
@@ -647,7 +647,7 @@ contexts:
     - match: \b({{number}})\s+({{ether_units}}|{{time_units}})\b
       captures:
         1: constant.numeric
-        2: support.type
+        2: storage.type
     - match: \(
       scope: punctuation.section.block.begin.sol
       push: tuple-content
@@ -680,7 +680,7 @@ contexts:
         1: keyword
         2: constant.language
         3: scope
-        4: support.type
+        4: storage.type
 
   # string literals
   # https://docs.soliditylang.org/en/latest/types.html#unicode-literals
@@ -706,17 +706,16 @@ contexts:
       push: function-call-arguments
     - match: '({{special_functions}}|{{crypto_functions}})\s*\('
       captures:
-        1: support.type
+        1: storage.type
       push: function-call-arguments
     - match: '({{expression_keyword_error_handling}})\s*(\()'
       captures:
         1: keyword
         2: punctuation.section.block.begin.sol
       push: function-call-arguments
-    - match: \b({{super_keyword}}|{{this_keyword}})(?:\.({{identifier}}))?\b
+    - match: \b({{super_keyword}}|{{this_keyword}})\b
       captures:
-        1: support.type
-        2: support.function
+        1: storage.type
     - match: '({{identifier}})\.({{identifier}})\s*(\()'
       captures:
         1: scope
@@ -776,7 +775,7 @@ contexts:
         - function-arguments
     - match: \b(function)\b
       captures:
-        1: storage.type.function
+        1: keyword
       push:
         - curly-brackets-body
         - function-returns-declaration
@@ -843,7 +842,7 @@ contexts:
         2: scope
         3: constant.numeric
         4: storage.modifier
-        5: variable.parameter.function
+        5: variable.parameter
       pop: true
 
   ## function-modifiers
@@ -874,7 +873,7 @@ contexts:
       captures:
         1: storage.modifier
     - match: \breturns\b
-      scope: support.type
+      scope: keyword
       push: function-returns-arguments
     - include: function-modifier-with-arguments
     - match: \b{{identifier}}\b
@@ -900,7 +899,7 @@ contexts:
 
   function-returns-declaration-include:
     - match: \breturns\b
-      scope: support.type
+      scope: keyword
       push: tuple
 
   function-returns-arguments:
@@ -925,14 +924,14 @@ contexts:
         1: constant.language
         2: scope
         3: constant.numeric # same small issue with multi-dimensional arrays as above - seems like a bug in sublime parser, only the last number will get constant.numeric
-        4: keyword
+        4: storage.modifier
         5: variable.parameter
       pop: true
     - match: '({{identifier}})(?:\[(\d*)\])*\s*((?:{{type_modifier}})+\s*)?({{identifier}})?'
       captures:
         1: constant.language
         2: constant.numeric # see the problem description above - won't solve this, not a big issue and is probably a bug with parser
-        3: keyword
+        3: storage.modifier
         4: variable.parameter
       pop: true
     - include: else-pop
@@ -1028,7 +1027,7 @@ contexts:
         2: scope
         3: constant.numeric
         4: storage.modifier
-        5: variable.parameter.function
+        5: variable.parameter
       pop: true
 
   # unchecked-arithmetic
@@ -1092,7 +1091,7 @@ contexts:
         - function-arguments
     - match: \b(function)\b
       captures:
-        1: storage.type.function
+        1: keyword
       push:
         - assembly-body
         #- function-returns-declaration
