@@ -260,7 +260,7 @@
 			<key>comment</key>
 			<string>Numbers, possibly with scientific notation</string>
 			<key>match</key>
-			<string>\b(?:[+-]?\.?[\d_]+[eE]?)(?:\.\d+[eE]?\d*)?\b</string>
+			<string>\b(?:[+-]?\.?\d[\d_]*[eE]?)(?:\.\d+[eE]?\d*)?\b</string>
 			<key>name</key>
 			<string>constant.numeric</string>
 		</dict>

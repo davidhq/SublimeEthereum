@@ -82,7 +82,7 @@ patterns:
 - match: ([\"\'].*?[\"\'])
   name: string.quoted
   comment: Strings
-- match: \b(?:[+-]?\.?[\d_]+[eE]?)(?:\.\d+[eE]?\d*)?\b
+- match: \b(?:[+-]?\.?\d[\d_]*[eE]?)(?:\.\d+[eE]?\d*)?\b
   name: constant.numeric
   comment: Numbers, possibly with scientific notation
 - match: \b(0[xX][a-fA-F0-9]+)\b
