@@ -44,7 +44,7 @@ patterns:
   captures:
     '1': {name: support.type}
   comment: Special treatment for "super"
-- match: \b(address\s*payable|address|string|bytes?\d*|int\d*|uint\d*|bool|u?fixed\d+x\d+)\s*(?:\[(\d*)\])?\s*(?:\[(\d*)\])?\s*(?:(indexed|memory|storage|calldata|payable|immutable)?\s*(\b[A-Za-z_]\w*)?\s*)?(?=[,\)\n])
+- match: \b(address(?:\s+payable)?|string|bytes?\d*|int\d*|uint\d*|bool|u?fixed\d+x\d+)\s*(?:\[(\d*)\])?\s*(?:\[(\d*)\])?\s*(?:(indexed|memory|storage|calldata|payable|immutable)?\s*(\b[A-Za-z_]\w*)?\s*)?(?=[,\)\n])
   captures:
     '1': {name: constant.language}
     '2': {name: constant.numeric}
@@ -60,7 +60,7 @@ patterns:
 - match: \b(true|false)\b
   name: constant.language
   comment: True and false keywords
-- match: \b(address\s*payable|address|string|bytes?\d*|int\d*|uint\d*|bool|u?fixed\d+x\d+)\b(?:(?:\s*\[(\d*)\])?(?:\s*\[(\d*)\])?(?:\s*\[(\d*)\])?\s*((?:private\s|public\s|internal\s|external\s|constant\s|immutable\s|memory\s|storage\s)*)\s*(?:[A-Za-z_]\w*)\s*(\=))?
+- match: \b(address|payable|string|bytes?\d*|int\d*|uint\d*|bool|u?fixed\d+x\d+)\b(?:(?:\s*\[(\d*)\])?(?:\s*\[(\d*)\])?(?:\s*\[(\d*)\])?\s*((?:private\s|public\s|internal\s|external\s|constant\s|immutable\s|memory\s|storage\s)*)\s*(?:[A-Za-z_]\w*)\s*(\=))?
   captures:
     '1': {name: constant.language}
     '2': {name: constant.numeric}
@@ -69,7 +69,12 @@ patterns:
     '5': {name: keyword}
     '6': {name: keyword}
   comment: Variable definitions - bytes data; | uint x = uint(y); BUT also just appearances of basic types anywhere... good example -- "using SafeMath for uint256;"
-- match: \b(var|solidity|import|constant|pragma experimental|pragma|mapping|payable|storage|memory|calldata|if|else|for|while|do|break|continue|returns?|try|catch|private|public|pure|view|internal|immutable|external|virtual|override|abstract|this|suicide|selfdestruct|delegatecall|emit|new|is|throw|revert|assert|require|receive|delete)\b
+- match: \b(import).*?(from)\b
+  captures:
+    '1': {name: keyword}
+    '2': {name: keyword}
+  comment: import ... from
+- match: \b(var|solidity|constant|pragma experimental|pragma|mapping|payable|storage|memory|calldata|if|else|for|while|do|break|continue|return|try|catch|private|public|pure|view|internal|immutable|external|virtual|override|abstract|this|suicide|selfdestruct|delegatecall|emit|new|is|throw|revert|assert|require|receive|delete)\b
   name: keyword
   comment: Langauge keywords
 - match: (=|!|>|<|\||&|\?|:|\^|~|\*|\+|\-|\/|\%|\bhex\b|\bunicode\b)
@@ -77,7 +82,7 @@ patterns:
   comment: Operators
 - match: \bnow\b
   name: support.type
-  comment: Now - it was removed in solidity 0.4 but we still include it
+  comment: Now - it was removed in solidity 0.4 but we still include it because some old contracts use it
 - match: \b(msg|block|tx)\.([A-Za-z_]\w*)\b
   captures:
     '1': {name: markup.list}
@@ -100,6 +105,9 @@ patterns:
   captures:
     '1': {name: markup.italic}
   comment: Ether and time units
+- match: \breturns\b
+  name: markup.italic
+  comment: Event
 - match: \banonymous\b
   name: keyword
   comment: Event
@@ -115,7 +123,7 @@ patterns:
 - match: ([\'].*?[\'])
   name: string.quoted
   comment: Strings
-- match: \b(?:[+-]?\.?[\d_]+[eE]?)(?:\.\d+[eE]?\d*)?\b
+- match: \b(?:[+-]?\.?\d[\d_]*[eE]?)(?:\.\d+[eE]?\d*)?\b
   name: constant.numeric
   comment: Numbers, possibly with scientific notation
 - match: \b(0[xX][a-fA-F0-9]+)\b

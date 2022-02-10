@@ -13,10 +13,8 @@ patterns:
   end: (\"\"\")
   name: comment
   comment: Multiline comments
-- match: \b(event|enum)\s+([A-Za-z_]\w*)\b
+- match: \b(event|indexed)\b
   name: keyword.control
-  captures:
-    '2': {name: support.function}
   comment: Events
 - match: \b(contract|interface|library|using|struct|constructor|modifier)(\s+[A-Za-z_]\w*)?(?:\s+is\s+((?:[A-Za-z_][\,\s]*)*))?\b
   name: keyword.control
@@ -38,21 +36,21 @@ patterns:
     '1': {name: markup.italic}
   comment: self call
 #- match: \b(address\s*payable|address|string|bytes?\d*|int\d*|uint\d*|bool|u?fixed\d+x\d+)(?:\s*\[(\d*)\])?(?:\s*\[(\d*)\])?\s*(private|public|internal|external|constant|memory|storage)?\s+(?:[A-Za-z_]\w*)\s*[\;\=]
-- match: \b(address\s*payable|address|string|bytes?\d*|int\d*|uint\d*|bool|u?fixed\d+x\d+)\b
+- match: \b(address(?:\s+payable)?|string|bytes?\d*|int\d*|uint\d*|bool|u?fixed\d+x\d+)\b
   captures:
     '1': {name: constant.language}
     '2': {name: constant.numeric}
     '3': {name: constant.numeric}
     '4': {name: keyword.control}
   comment: Types
-- match: \b(var|import|constant|map|raise|pragma|payable|storage|memory|calldata|if|else|for|while|do|break|continue|returns?|private|public|immutable|pure|view|internal|external|this|suicide|selfdestruct|delegatecall|emit|new|is|throw|revert|assert|require|\_)\b
+- match: \b(import|constant|map|raise|payable|storage|memory|calldata|if|else|for|while|do|break|continue|return|private|public|immutable|pure|view|internal|external|this|suicide|selfdestruct|delegatecall|emit|new|is|throw|revert|assert|require|\_)\b
   name: keyword.control
   comment: Langauge keywords
-- match: \b(not|or|pass|not|from|import)\b
+- match: \b(not|and|or|pass|from|import|as)\b
   name: keyword
   comment: Vyper specific keywords
 - match: (@[A-Za-z_]\w*)\b
-  name: keyword
+  name: markup.italic
   comment: Vyper decorators
 - match: (=|!|>|<|\||&|\?|:|\^|~|\*|\+|\-|\/|\%|\bhex\b)
   name: keyword.control
@@ -83,7 +81,7 @@ patterns:
 - match: ([\"\'].*?[\"\'])
   name: string.quoted
   comment: Strings
-- match: \b(?:[+-]?\.?[\d_]+[eE]?)(?:\.\d+[eE]?\d*)?\b
+- match: \b(?:[+-]?\.?\d[\d_]*[eE]?)(?:\.\d+[eE]?\d*)?\b
   name: constant.numeric
   comment: Numbers, possibly with scientific notation
 - match: \b(0[xX][a-fA-F0-9]+)\b

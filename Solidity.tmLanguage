@@ -167,7 +167,7 @@
 			<key>comment</key>
 			<string>Built-in types function arguments</string>
 			<key>match</key>
-			<string>\b(address\s*payable|address|string|bytes?\d*|int\d*|uint\d*|bool|u?fixed\d+x\d+)\s*(?:\[(\d*)\])?\s*(?:\[(\d*)\])?\s*(?:(indexed|memory|storage|calldata|payable|immutable)?\s*(\b[A-Za-z_]\w*)?\s*)?(?=[,\)\n])</string>
+			<string>\b(address(?:\s+payable)?|string|bytes?\d*|int\d*|uint\d*|bool|u?fixed\d+x\d+)\s*(?:\[(\d*)\])?\s*(?:\[(\d*)\])?\s*(?:(indexed|memory|storage|calldata|payable|immutable)?\s*(\b[A-Za-z_]\w*)?\s*)?(?=[,\)\n])</string>
 		</dict>
 		<dict>
 			<key>captures</key>
@@ -233,13 +233,32 @@
 			<key>comment</key>
 			<string>Variable definitions - bytes data; | uint x = uint(y); BUT also just appearances of basic types anywhere... good example -- "using SafeMath for uint256;"</string>
 			<key>match</key>
-			<string>\b(address\s*payable|address|string|bytes?\d*|int\d*|uint\d*|bool|u?fixed\d+x\d+)\b(?:(?:\s*\[(\d*)\])?(?:\s*\[(\d*)\])?(?:\s*\[(\d*)\])?\s*((?:private\s|public\s|internal\s|external\s|constant\s|immutable\s|memory\s|storage\s)*)\s*(?:[A-Za-z_]\w*)\s*(\=))?</string>
+			<string>\b(address|payable|string|bytes?\d*|int\d*|uint\d*|bool|u?fixed\d+x\d+)\b(?:(?:\s*\[(\d*)\])?(?:\s*\[(\d*)\])?(?:\s*\[(\d*)\])?\s*((?:private\s|public\s|internal\s|external\s|constant\s|immutable\s|memory\s|storage\s)*)\s*(?:[A-Za-z_]\w*)\s*(\=))?</string>
+		</dict>
+		<dict>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>keyword</string>
+				</dict>
+				<key>2</key>
+				<dict>
+					<key>name</key>
+					<string>keyword</string>
+				</dict>
+			</dict>
+			<key>comment</key>
+			<string>import ... from</string>
+			<key>match</key>
+			<string>\b(import).*?(from)\b</string>
 		</dict>
 		<dict>
 			<key>comment</key>
 			<string>Langauge keywords</string>
 			<key>match</key>
-			<string>\b(var|solidity|import|constant|pragma experimental|pragma|mapping|payable|storage|memory|calldata|if|else|for|while|do|break|continue|returns?|try|catch|private|public|pure|view|internal|immutable|external|virtual|override|abstract|this|suicide|selfdestruct|delegatecall|emit|new|is|throw|revert|assert|require|receive|delete)\b</string>
+			<string>\b(var|solidity|constant|pragma experimental|pragma|mapping|payable|storage|memory|calldata|if|else|for|while|do|break|continue|return|try|catch|private|public|pure|view|internal|immutable|external|virtual|override|abstract|this|suicide|selfdestruct|delegatecall|emit|new|is|throw|revert|assert|require|receive|delete)\b</string>
 			<key>name</key>
 			<string>keyword</string>
 		</dict>
@@ -253,7 +272,7 @@
 		</dict>
 		<dict>
 			<key>comment</key>
-			<string>Now - it was removed in solidity 0.4 but we still include it</string>
+			<string>Now - it was removed in solidity 0.4 but we still include it because some old contracts use it</string>
 			<key>match</key>
 			<string>\bnow\b</string>
 			<key>name</key>
@@ -342,6 +361,14 @@
 			<key>comment</key>
 			<string>Event</string>
 			<key>match</key>
+			<string>\breturns\b</string>
+			<key>name</key>
+			<string>markup.italic</string>
+		</dict>
+		<dict>
+			<key>comment</key>
+			<string>Event</string>
+			<key>match</key>
 			<string>\banonymous\b</string>
 			<key>name</key>
 			<string>keyword</string>
@@ -382,7 +409,7 @@
 			<key>comment</key>
 			<string>Numbers, possibly with scientific notation</string>
 			<key>match</key>
-			<string>\b(?:[+-]?\.?[\d_]+[eE]?)(?:\.\d+[eE]?\d*)?\b</string>
+			<string>\b(?:[+-]?\.?\d[\d_]*[eE]?)(?:\.\d+[eE]?\d*)?\b</string>
 			<key>name</key>
 			<string>constant.numeric</string>
 		</dict>
