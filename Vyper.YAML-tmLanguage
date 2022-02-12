@@ -56,8 +56,8 @@ patterns:
   comment: Operators
 - match: \b(msg|block|tx)\.([A-Za-z_]\w*)\b
   captures:
-    '1': {name: support.type}
-    '2': {name: support.type}
+    '1': {name: storage.type}
+    '2': {name: storage.type}
   comment: msg and block special usage
 - match: \b(blockhash|gasleft|addmod|mulmod|keccak256|sha256|sha3|ripemd160|ecrecover)\s*\(
   captures:
@@ -71,11 +71,11 @@ patterns:
   comment: Function call, also for example - uint[] memory a = new uint[332](7); or uint[2][] memory arrayOfPairs = new uint[2][](size);
 - match: \b\.(length|selector)\b
   captures:
-    '1': {name: support.type}
+    '1': {name: storage.type}
   comment: Special treatment for length and .selector
 - match: \b(wei|gwei|ether|seconds|minutes|hours|days|weeks)\b
   captures:
-    '1': {name: support.type}
+    '1': {name: storage.type}
   comment: Ether and time units
 - match: ([\"\'].*?[\"\'])
   name: string.quoted

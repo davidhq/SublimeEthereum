@@ -161,12 +161,12 @@
 				<key>1</key>
 				<dict>
 					<key>name</key>
-					<string>support.type</string>
+					<string>storage.type</string>
 				</dict>
 				<key>2</key>
 				<dict>
 					<key>name</key>
-					<string>support.type</string>
+					<string>storage.type</string>
 				</dict>
 			</dict>
 			<key>comment</key>
@@ -218,7 +218,7 @@
 				<key>1</key>
 				<dict>
 					<key>name</key>
-					<string>support.type</string>
+					<string>storage.type</string>
 				</dict>
 			</dict>
 			<key>comment</key>
@@ -232,7 +232,7 @@
 				<key>1</key>
 				<dict>
 					<key>name</key>
-					<string>support.type</string>
+					<string>storage.type</string>
 				</dict>
 			</dict>
 			<key>comment</key>
