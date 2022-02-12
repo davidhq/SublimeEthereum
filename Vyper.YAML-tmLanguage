@@ -31,9 +31,9 @@ patterns:
 - match: \b(True|False)\b
   name: constant.language
   comment: True and false keywords
-- match: \b(self)\.\b
+- match: \bself\b
   name: storage.type.function
-  comment: self call
+  comment: self variable
 #- match: \b(address\s*payable|address|string|bytes?\d*|int\d*|uint\d*|bool|u?fixed\d+x\d+)(?:\s*\[(\d*)\])?(?:\s*\[(\d*)\])?\s*(private|public|internal|external|constant|memory|storage)?\s+(?:[A-Za-z_]\w*)\s*[\;\=]
 - match: \b(address(?:\s+payable)?|string|bytes?\d*|int\d*|uint\d*|bool|u?fixed\d+x\d+)\b
   captures:
@@ -51,7 +51,7 @@ patterns:
 - match: (@[A-Za-z_]\w*)\b
   name: keyword
   comment: Vyper decorators
-- match: (=|!|>|<|\||&|\?|:|\^|~|\*|\+|\-|\/|\%|\bhex\b)
+- match: (=|!|>|<|\||&|\?|\^|~|\*|\+|\-|\/|\%|\bhex\b)
   name: keyword.operator
   comment: Operators
 - match: \b(msg|block|tx)\.([A-Za-z_]\w*)\b
@@ -65,7 +65,7 @@ patterns:
   comment: Function call - built-in functions
 - match: \b([A-Za-z_]\w*)(?:\[(\d*)\])?(?:\[(\d*)\])?\(
   captures:
-    '1': {name: entity.name.function}
+    '1': {name: support.function}
     '2': {name: constant.numeric}
     '3': {name: constant.numeric}
   comment: Function call, also for example - uint[] memory a = new uint[332](7); or uint[2][] memory arrayOfPairs = new uint[2][](size);
@@ -80,7 +80,7 @@ patterns:
 - match: ([\"\'].*?[\"\'])
   name: string.quoted
   comment: Strings
-- match: \b(?:[+-]?\.?\d[\d_]*[eE]?)(?:\.\d+[eE]?\d*)?\b
+- match: \b(?:[+-]?\.?\d[\d_eE]*)(?:\.\d+[\deE]*)?\b
   name: constant.numeric
   comment: Numbers, possibly with scientific notation
 - match: \b(0[xX][a-fA-F0-9]+)\b

@@ -7,11 +7,11 @@ scope: source.solidity
 variables:
   identifier: '(?:[A-Za-z_]\w*)'
   identifier_path: '(?:[A-Za-z_][\w\.]*)' # ex.: A.MyStruct
-  number: '(?:[+-]?\.?\d[\d_]*[eE]?)(?:\.\d+[eE]?\d*)?'
+  number: '(?:[+-]?\.?\d[\d_eE]*)(?:\.\d+[\deE]*)?'
   hex_number: '(?:[+-]?(0[Xx])[0-9a-fA-F_]*)'
   math_operator: '(?:\+|\+\+|\-|\-\-|\*|\*\*|\/|\^|\%)'
   logical_operator: '(?:\!|\&|\||\~)'
-  ternary_operator: '(?:\:|\?)'
+  question_mark: '(?:\?)'
   comparison_operator: '(?:\>(?:\=)?|\<(?:\=)?|\=\=|\!\=)' # todo
 
   contract: contract
@@ -26,18 +26,21 @@ variables:
   data_location: '(?:memory|storage|calldata)'
   event_attributes: '(?:indexed)'
 
-  expression_keyword_main: '\b(new|selfdestruct|delegatecall|selector)\b'
+  expression_keyword_main: '\b(new|selector)\b'
   expression_keyword_error_handling: '\b(revert|require|assert)\b'
   expression_keyword_binary_logic: '\b(true|false|null)\b'
 
-  super_keyword: super
-  this_keyword: this
-  special_members_keywords: '\b(length|timestamp)\b'
+  special_accessors: '\b(?:this|super)\b'
+  special_members_keywords: '\.(length|timestamp)\b'
 
-  special_functions: '\b(?:blockhash|gasleft|abi\.decode|abi\.encode|abi\.encodePacked|abi\.encodeWithSelector|abi\.encodeWithSignature)\b'
+  special_functions: '\b(?:blockhash|gasleft)\b'
+  special_functions_abi: '\b(?:(abi)\.(decode|encode|encodePacked|encodeWithSelector|encodeWithSignature))\b'
   # now was removed in solidity v0.4 but we still include it
-  special_properties: '\b(?:block\.coinbase|block\.difficulty|block\.gaslimit|block\.number|block\.timestamp|msg\.data|msg\.sender|msg\.sig|msg\.value|msg\.gas|tx\.gasprice|tx\.origin|now)\b'
+  special_object_block: '\b(?:(block)\.(coinbase|difficulty|gaslimit|number|timestamp))\b'
+  special_object_msg: '\b(?:(msg)\.(data|sender|sigvalue|gas))\b'
+  special_object_tx: '\b(?:(tx)\.(gasprice|origin))\b'
 
+  contract_functions: '\b(selfdestruct|call|delegatecall|staticcall)\b'
   crypto_functions: '\b(addmod|mulmod|sha256|keccak256|ripemd160|ecrecover)\b'
   string_literals: '\b(hex|unicode)\b'
 
@@ -48,8 +51,9 @@ variables:
   time_units: '(?:seconds|minutes|hours|days|weeks)'
 
   assembly_keywords: '\b(let|for|case|switch|default|if)\b'
-  # https://solidity.readthedocs.io/en/v0.5.6/assembly.html
-  opcode: stop|add|mul|sub|div|sdiv|mod|smod|addmod|mulmod|exp|signextend|lt|gt|slt|sgt|eq|iszero|and|or|xor|not|byte|sha3|address|balance|origin|caller|callvalue|calldataload|calldatasize|calldatacopy|codesize|codecopy|gasprice|extcodesize|extcodecopy|blockhash|coinbase|timestamp|number|difficulty|gaslimit|pop|mload|mstore|mstore8|sload|sstore|jump|jumpi|pc|msize|gas|jumpdest|push1|push2|push32|dup1|dup2|dup16|swap1|swap2|swap16|log0|log1|log4|create|call|callcode|return|revert|suicide|staticcall|delegatecall|returndatacopy|returndatasize
+  assembly_operators: '(?:\:\=)'
+  # https://docs.soliditylang.org/en/v0.8.11/yul.html#evm-dialect
+  opcode: stop|add|sub|mul|div|sdiv|mod|smod|exp|not|lt|gt|slt|sgt|eq|iszero|and|or|xor|byte|shl|shr|sar|addmod|mulmod|signextend|keccak256|pc|pop|mload|mstore|mstore8|sload|sstore|msize|gas|address|balance|selfbalance|caller|callvalue|calldataload|calldatasize|calldatacopy|codesize|codecopy|extcodesize|extcodecopy|returndatasize|returndatacopy|extcodehash|create|create2|call|callcode|delegatecall|staticcall|return|revert|selfdestruct|invalid|log0|log1|log2|log3|log4|chainid|basefee|origin|gasprice|blockhash|coinbase|timestamp|number|difficulty|gaslimit
 
 contexts:
   main:
@@ -623,11 +627,21 @@ contexts:
       scope: keyword
     - match: '{{expression_keyword_binary_logic}}'
       scope: constant.language
-    - match: '\.({{special_members_keywords}})'
+    - match: '{{special_members_keywords}}'
       captures:
         1: storage.type
-    - match: '{{special_properties}}'
-      scope: storage.type
+    - match: '{{special_object_block}}'
+      captures:
+        1: storage.type
+        2: storage.type
+    - match: '{{special_object_msg}}'
+      captures:
+        1: storage.type
+        2: storage.type
+    - match: '{{special_object_tx}}'
+      captures:
+        1: storage.type
+        2: storage.type
 
   expression-include:
     - match: \[
@@ -639,6 +653,8 @@ contexts:
         - match: \, # ... = [0,1,2]
         - include: expression
     - include: type-information-inquiry
+    - include: ternary-operator
+    - include: special-accessors
     - include: function-call
     - include: string-literals
     - include: expression-keyword
@@ -664,8 +680,8 @@ contexts:
       scope: keyword.operator.logical
     - match: '{{logical_operator}}'
       scope: keyword.operator.logical
-    - match: '{{ternary_operator}}'
-      scope: keyword
+    - match: '{{question_mark}}'
+      scope: keyword.operator.logical
 
   expression:
     - include: expression-include
@@ -690,8 +706,26 @@ contexts:
       captures:
         1: variable.parameter
 
-  # function call
+  # ternary operator
 
+  ternary-operator:
+    - match: '{{question_mark}}'
+      scope: keyword.operator.logical
+      push:
+        - include: ternary-colon-operator
+        - include: expression-include
+        - include: else-pop
+
+  ternary-colon-operator:
+    - match: '\:'
+      scope: keyword.operator
+
+  special-accessors:
+    - match: '{{special_accessors}}'
+      scope: storage.type
+
+  # function call
+  # keep in sync with assembly-function-call!
   function-call:
     # r.limbs = new uint[](max(_a.limbs.length, _b.limbs.length));
     # uint[] memory newLimbs = new uint[](r.limbs.length + 1);
@@ -704,23 +738,23 @@ contexts:
         1: constant.language
         2: punctuation.section.block.begin.sol
       push: function-call-arguments
-    - match: '({{special_functions}}|{{crypto_functions}})\s*\('
+    - match: '({{special_functions}}|{{crypto_functions}}|{{contract_functions}})\s*\('
       captures:
         1: storage.type
+      push: function-call-arguments
+    - match: '{{special_functions_abi}}\s*\('
+      captures:
+        1: storage.type
+        2: storage.type
       push: function-call-arguments
     - match: '({{expression_keyword_error_handling}})\s*(\()'
       captures:
         1: keyword
         2: punctuation.section.block.begin.sol
       push: function-call-arguments
-    - match: \b({{super_keyword}}|{{this_keyword}})\b
+    - match: '({{special_accessors}})\s*\('
       captures:
         1: storage.type
-    - match: '({{identifier}})\.({{identifier}})\s*(\()'
-      captures:
-        1: scope
-        2: support.function
-        3: punctuation.section.block.end.sol
       push: function-call-arguments
     - match: '({{identifier}})\s*(\()'
       captures:
@@ -1071,7 +1105,6 @@ contexts:
 
   assembly-body-contents:
     - include: assembly-function # example: aztec.sol - function defined inside assembly block, this function in turn has assembly written directly without the assembly block
-    - include: function-call # example: aztec.sol -- validateSwap() from inside of assembly {} block
     - include: string-literals
     - include: assembly-statements
     - include: assembly-body-include
@@ -1107,23 +1140,78 @@ contexts:
   assembly-statements:
     - match: '\:\='
       scope: keyword
-    - match: '[\(\)\,\.]' # ignore there, but try to list all that are relevant
+    #- match: '[\(\)\,\.]' # ignore these, but try to list all that are relevant
     - match: '\b({{assembly_keywords}})\b'
       scope: keyword
-    - match: '\b({{opcode}})\b'
-      scope: support.function
+    - include: assembly-opcode
     - match: '{{math_operator}}'
       scope: keyword.operator.arithmetic
     - include: hex_number
     - include: number
     - include: string
+    - include: assembly-function-call
     - match: '{{identifier}}'
     - match: '{{expression_keyword_main}}'
       scope: keyword
-    - match: '\.'
+    #- match: '\.'
     - match: '{{comparison_operator}}'
       scope: keyword.operator.logical
     - match: '{{logical_operator}}'
       scope: keyword.operator.logical
-    - match: '{{ternary_operator}}'
+    - match: '{{assembly_operators}}'
       scope: keyword
+
+  assembly-opcode:
+    - match: '\b({{opcode}})\b'
+      scope: support.function
+
+  # function call
+  # ⚠️ keep in sync with assembly-call!
+  # let expected := mod(keccak256(0x2e0, sub(b, 0x2e0)), gen_order)
+  #
+  assembly-function-call:
+    # r.limbs = new uint[](max(_a.limbs.length, _b.limbs.length));
+    # uint[] memory newLimbs = new uint[](r.limbs.length + 1);
+    # we do this because of:
+    # uint[](...)
+    - include: variable-declaration
+    # Conversions from address to address payable are now possible via payable(x), where x must be of type address
+    - match: '({{elementary_type}}|payable)\s*(\()' # type conversion, ex: uint(-1)
+      captures:
+        1: constant.language
+        2: punctuation.section.block.begin.sol
+      push: function-call-assembly-arguments
+    - match: '({{special_functions}}|{{crypto_functions}})\s*\('
+      captures:
+        1: storage.type
+      push: function-call-assembly-arguments
+    - match: '{{special_functions_abi}}\s*\('
+      captures:
+        1: storage.type
+        2: storage.type
+      push: function-call-assembly-arguments
+    - match: '({{expression_keyword_error_handling}})\s*(\()'
+      captures:
+        1: keyword
+        2: punctuation.section.block.begin.sol
+      push: function-call-assembly-arguments
+    - match: '({{special_accessors}})\s*\('
+      captures:
+        1: storage.type
+      push: function-call-assembly-arguments
+    - match: '({{identifier}})\s*(\()'
+      captures:
+        1: support.function
+        2: punctuation.section.block.begin.sol
+      push: function-call-assembly-arguments
+
+  function-call-assembly-arguments:
+    - include: assembly-opcode
+    - include: assembly-statements
+    - include: expression-include
+    - match: ','
+    - match: '\)'
+      scope: punctuation.section.block.end.sol
+      pop: true
+    - match: \;
+      pop: true

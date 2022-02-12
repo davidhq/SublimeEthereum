@@ -130,7 +130,7 @@ repository:
     - match: "(:)\\s*([_$[:alpha:]][_$[:alnum:]]+)"
       captures:
         '1':
-          name: keyword.operator
+          name: punctuation.separator
         '2':
           name: support.type.cairo
   expression:
@@ -189,7 +189,7 @@ repository:
     patterns:
     - name: keyword.brackets.python-hints.cairo
       match: "\\%\\{|\\%\\}"
-    - match: (=|!|>|<|\||&|\?|:|\^|~|\*|\+|\-|\/|\%)
+    - match: (=|!|>|<|\||&|\?|\^|~|\*|\+|\-|\/|\%)
       name: keyword.operator
       omment: Operators
     - match: "(?<![\\w$])(cast)(?![\\w$])"

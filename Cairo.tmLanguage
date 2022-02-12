@@ -124,7 +124,7 @@
 				</dict>
 				<dict>
 					<key>match</key>
-					<string>(=|!|&gt;|&lt;|\||&amp;|\?|:|\^|~|\*|\+|\-|\/|\%)</string>
+					<string>(=|!|&gt;|&lt;|\||&amp;|\?|\^|~|\*|\+|\-|\/|\%)</string>
 					<key>name</key>
 					<string>keyword.operator</string>
 					<key>omment</key>
@@ -448,7 +448,7 @@
 						<key>1</key>
 						<dict>
 							<key>name</key>
-							<string>keyword.operator</string>
+							<string>punctuation.separator</string>
 						</dict>
 						<key>2</key>
 						<dict>

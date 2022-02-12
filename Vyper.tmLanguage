@@ -88,9 +88,9 @@
 		</dict>
 		<dict>
 			<key>comment</key>
-			<string>self call</string>
+			<string>self variable</string>
 			<key>match</key>
-			<string>\b(self)\.\b</string>
+			<string>\bself\b</string>
 			<key>name</key>
 			<string>storage.type.function</string>
 		</dict>
@@ -151,7 +151,7 @@
 			<key>comment</key>
 			<string>Operators</string>
 			<key>match</key>
-			<string>(=|!|&gt;|&lt;|\||&amp;|\?|:|\^|~|\*|\+|\-|\/|\%|\bhex\b)</string>
+			<string>(=|!|&gt;|&lt;|\||&amp;|\?|\^|~|\*|\+|\-|\/|\%|\bhex\b)</string>
 			<key>name</key>
 			<string>keyword.operator</string>
 		</dict>
@@ -194,7 +194,7 @@
 				<key>1</key>
 				<dict>
 					<key>name</key>
-					<string>entity.name.function</string>
+					<string>support.function</string>
 				</dict>
 				<key>2</key>
 				<dict>
@@ -252,7 +252,7 @@
 			<key>comment</key>
 			<string>Numbers, possibly with scientific notation</string>
 			<key>match</key>
-			<string>\b(?:[+-]?\.?\d[\d_]*[eE]?)(?:\.\d+[eE]?\d*)?\b</string>
+			<string>\b(?:[+-]?\.?\d[\d_eE]*)(?:\.\d+[\deE]*)?\b</string>
 			<key>name</key>
 			<string>constant.numeric</string>
 		</dict>
