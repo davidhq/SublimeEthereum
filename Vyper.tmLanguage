@@ -87,47 +87,20 @@
 			<string>constant.language</string>
 		</dict>
 		<dict>
-			<key>captures</key>
-			<dict>
-				<key>1</key>
-				<dict>
-					<key>name</key>
-					<string>markup.italic</string>
-				</dict>
-			</dict>
 			<key>comment</key>
-			<string>self call</string>
+			<string>self variable</string>
 			<key>match</key>
-			<string>\b(self)\.\b</string>
+			<string>\bself\b</string>
+			<key>name</key>
+			<string>markup.italic</string>
 		</dict>
 		<dict>
-			<key>captures</key>
-			<dict>
-				<key>1</key>
-				<dict>
-					<key>name</key>
-					<string>constant.language</string>
-				</dict>
-				<key>2</key>
-				<dict>
-					<key>name</key>
-					<string>constant.numeric</string>
-				</dict>
-				<key>3</key>
-				<dict>
-					<key>name</key>
-					<string>constant.numeric</string>
-				</dict>
-				<key>4</key>
-				<dict>
-					<key>name</key>
-					<string>keyword.control</string>
-				</dict>
-			</dict>
 			<key>comment</key>
 			<string>Types</string>
 			<key>match</key>
 			<string>\b(address(?:\s+payable)?|string|bytes?\d*|int\d*|uint\d*|bool|u?fixed\d+x\d+)\b</string>
+			<key>name</key>
+			<string>support.type</string>
 		</dict>
 		<dict>
 			<key>comment</key>
@@ -157,9 +130,9 @@
 			<key>comment</key>
 			<string>Operators</string>
 			<key>match</key>
-			<string>(=|!|&gt;|&lt;|\||&amp;|\?|:|\^|~|\*|\+|\-|\/|\%|\bhex\b)</string>
+			<string>(=|!|&gt;|&lt;|\||&amp;|\?|\^|~|\*|\+|\-|\/|\%|\bhex\b)</string>
 			<key>name</key>
-			<string>keyword.control</string>
+			<string>keyword.operator</string>
 		</dict>
 		<dict>
 			<key>captures</key>
@@ -167,12 +140,12 @@
 				<key>1</key>
 				<dict>
 					<key>name</key>
-					<string>markup.list</string>
+					<string>support.type</string>
 				</dict>
 				<key>2</key>
 				<dict>
 					<key>name</key>
-					<string>markup.list</string>
+					<string>support.type</string>
 				</dict>
 			</dict>
 			<key>comment</key>
@@ -186,7 +159,7 @@
 				<key>1</key>
 				<dict>
 					<key>name</key>
-					<string>constant.language</string>
+					<string>markup.italic</string>
 				</dict>
 			</dict>
 			<key>comment</key>
@@ -238,7 +211,7 @@
 				<key>1</key>
 				<dict>
 					<key>name</key>
-					<string>markup.italic</string>
+					<string>constant.numeric</string>
 				</dict>
 			</dict>
 			<key>comment</key>
@@ -258,7 +231,7 @@
 			<key>comment</key>
 			<string>Numbers, possibly with scientific notation</string>
 			<key>match</key>
-			<string>\b(?:[+-]?\.?\d[\d_]*[eE]?)(?:\.\d+[eE]?\d*)?\b</string>
+			<string>\b(?:[+-]?\.?\d[\d_eE]*)(?:\.\d+[\deE]*)?\b</string>
 			<key>name</key>
 			<string>constant.numeric</string>
 		</dict>

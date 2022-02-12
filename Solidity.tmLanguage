@@ -122,18 +122,20 @@
 			<string>\.(length|selector)\b</string>
 		</dict>
 		<dict>
-			<key>captures</key>
-			<dict>
-				<key>1</key>
-				<dict>
-					<key>name</key>
-					<string>support.type</string>
-				</dict>
-			</dict>
+			<key>comment</key>
+			<string>this</string>
+			<key>match</key>
+			<string>\bthis\b</string>
+			<key>name</key>
+			<string>markup.italic</string>
+		</dict>
+		<dict>
 			<key>comment</key>
 			<string>Special treatment for "super"</string>
 			<key>match</key>
-			<string>\b(super)\b</string>
+			<string>\bsuper\b</string>
+			<key>name</key>
+			<string>markup.italic</string>
 		</dict>
 		<dict>
 			<key>captures</key>
@@ -256,9 +258,17 @@
 		</dict>
 		<dict>
 			<key>comment</key>
+			<string>import</string>
+			<key>match</key>
+			<string>\b(import)\b</string>
+			<key>name</key>
+			<string>keyword</string>
+		</dict>
+		<dict>
+			<key>comment</key>
 			<string>Langauge keywords</string>
 			<key>match</key>
-			<string>\b(var|solidity|constant|pragma experimental|pragma|mapping|payable|storage|memory|calldata|if|else|for|while|do|break|continue|return|try|catch|private|public|pure|view|internal|immutable|external|virtual|override|abstract|this|suicide|selfdestruct|delegatecall|emit|new|is|throw|revert|assert|require|receive|delete)\b</string>
+			<string>\b(var|solidity|constant|pragma experimental|pragma|mapping|payable|storage|memory|calldata|if|else|for|while|do|break|continue|returns?|try|catch|private|public|pure|view|internal|immutable|external|virtual|override|abstract|suicide|emit|new|is|throw|revert|assert|require|receive|delete)\b</string>
 			<key>name</key>
 			<string>keyword</string>
 		</dict>
@@ -266,9 +276,9 @@
 			<key>comment</key>
 			<string>Operators</string>
 			<key>match</key>
-			<string>(=|!|&gt;|&lt;|\||&amp;|\?|:|\^|~|\*|\+|\-|\/|\%|\bhex\b|\bunicode\b)</string>
+			<string>(=|:=|!|&gt;|&lt;|\||&amp;|\?|\^|~|\*|\+|\-|\/|\%|\bhex\b|\bunicode\b)</string>
 			<key>name</key>
-			<string>keyword</string>
+			<string>keyword.operator</string>
 		</dict>
 		<dict>
 			<key>comment</key>
@@ -279,17 +289,25 @@
 			<string>support.type</string>
 		</dict>
 		<dict>
+			<key>comment</key>
+			<string>modifier placeholder statement</string>
+			<key>match</key>
+			<string>\b_;</string>
+			<key>name</key>
+			<string>keyword</string>
+		</dict>
+		<dict>
 			<key>captures</key>
 			<dict>
 				<key>1</key>
 				<dict>
 					<key>name</key>
-					<string>markup.list</string>
+					<string>support.type</string>
 				</dict>
 				<key>2</key>
 				<dict>
 					<key>name</key>
-					<string>markup.list</string>
+					<string>support.type</string>
 				</dict>
 			</dict>
 			<key>comment</key>
@@ -303,7 +321,7 @@
 			<key>match</key>
 			<string>\b(abi)\.([A-Za-z_]\w*)\b</string>
 			<key>name</key>
-			<string>entity.name.function</string>
+			<string>markup.italic</string>
 		</dict>
 		<dict>
 			<key>captures</key>
@@ -311,13 +329,27 @@
 				<key>1</key>
 				<dict>
 					<key>name</key>
-					<string>entity.name.function</string>
+					<string>markup.italic</string>
 				</dict>
 			</dict>
 			<key>comment</key>
 			<string>Function call - built-in functions</string>
 			<key>match</key>
 			<string>\b(blockhash|gasleft|addmod|mulmod|keccak256|sha256|sha3|ripemd160|ecrecover)\s*\(</string>
+		</dict>
+		<dict>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>markup.italic</string>
+				</dict>
+			</dict>
+			<key>comment</key>
+			<string>Function call - smart contract calls</string>
+			<key>match</key>
+			<string>\b(call|delegatecall|staticcall|selfdestruct)\s*\(</string>
 		</dict>
 		<dict>
 			<key>captures</key>
@@ -349,21 +381,13 @@
 				<key>1</key>
 				<dict>
 					<key>name</key>
-					<string>markup.italic</string>
+					<string>support.type</string>
 				</dict>
 			</dict>
 			<key>comment</key>
 			<string>Ether and time units</string>
 			<key>match</key>
 			<string>\b(wei|gwei|ether|seconds|minutes|hours|days|weeks)\b</string>
-		</dict>
-		<dict>
-			<key>comment</key>
-			<string>Event</string>
-			<key>match</key>
-			<string>\breturns\b</string>
-			<key>name</key>
-			<string>markup.italic</string>
 		</dict>
 		<dict>
 			<key>comment</key>
@@ -409,7 +433,7 @@
 			<key>comment</key>
 			<string>Numbers, possibly with scientific notation</string>
 			<key>match</key>
-			<string>\b(?:[+-]?\.?\d[\d_]*[eE]?)(?:\.\d+[eE]?\d*)?\b</string>
+			<string>\b(?:[+-]?\.?\d[\d_eE]*)(?:\.\d+[\deE]*)?\b</string>
 			<key>name</key>
 			<string>constant.numeric</string>
 		</dict>

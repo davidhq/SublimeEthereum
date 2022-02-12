@@ -32,7 +32,7 @@ Cairo is a programming language for writing provable programs, where one party c
 2. Select: Install Package
 3. Type **Ethereum** and press ENTER
 
-This will provide **Solidity** `.sol` and **Vyper** `.vy` syntax highlighting.
+This will provide **Solidity** `.sol`, **Vyper** `.vy` and **Cairo** `.cairo` syntax highlighting.
 
 [SublimeEthereum](https://packagecontrol.io/packages/Ethereum) on Package Control. 
 
@@ -53,7 +53,7 @@ This will provide **Solidity** `.sol` and **Vyper** `.vy` syntax highlighting.
 
 All of Sublime Ethereum is licensed under the MIT license.
 
-Copyright Ⓒ 2015-2021 [uniqpath](https://github.com/uniqpath)
+Copyright Ⓒ 2015-2222 [uniqpath](https://github.com/uniqpath)
 
 > Permission is hereby granted, free of charge, to any person obtaining a copy
 > of this software and associated documentation files (the "Software"), to deal
