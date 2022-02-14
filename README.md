@@ -2,7 +2,7 @@
 
 <img src="./img/logos.svg">
 
-Version of syntax that GitHub is [using](https://github.com/github/linguist/tree/master/vendor/grammars) for [Solidity grammar](https://docs.soliditylang.org/en/latest/grammar.html) is in [linguist branch](https://github.com/davidhq/SublimeEthereum/tree/linguist). This grammar gives all `.sol` files ([example](https://github.com/ethereum/consensus-specs/blob/dev/solidity_deposit_contract/deposit_contract.sol)) its colors (= does _syntax highlighting_).
+Version of syntax that GitHub is [using](https://github.com/github/linguist/tree/master/vendor/grammars) for [Solidity grammar](https://docs.soliditylang.org/en/latest/grammar.html) and [Vyper](https://vyper.readthedocs.io) is in [linguist branch](https://github.com/davidhq/SublimeEthereum/tree/linguist). This grammar gives all `.sol` / `.vy` files ([example](https://github.com/ethereum/consensus-specs/blob/dev/solidity_deposit_contract/deposit_contract.sol)) its colors (= does _syntax highlighting_).
 
 ### Ethereum
 
@@ -32,7 +32,7 @@ Cairo is a programming language for writing provable programs, where one party c
 2. Select: Install Package
 3. Type **Ethereum** and press ENTER
 
-This will provide **Solidity** `.sol` and **Vyper** `.vy` syntax highlighting.
+This will provide **Solidity** `.sol`, **Vyper** `.vy` and **Cairo** `.cairo` syntax highlighting.
 
 [SublimeEthereum](https://packagecontrol.io/packages/Ethereum) on Package Control. 
 
@@ -53,7 +53,7 @@ This will provide **Solidity** `.sol` and **Vyper** `.vy` syntax highlighting.
 
 All of Sublime Ethereum is licensed under the MIT license.
 
-Copyright Ⓒ 2015-2021 [uniqpath](https://github.com/uniqpath)
+Copyright Ⓒ 2015-2222 [uniqpath](https://github.com/uniqpath)
 
 > Permission is hereby granted, free of charge, to any person obtaining a copy
 > of this software and associated documentation files (the "Software"), to deal
