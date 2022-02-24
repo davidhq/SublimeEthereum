@@ -213,34 +213,6 @@
 			<string>\b([A-Za-z_]\w*)(?:\[(\d*)\])?(?:\[(\d*)\])?\(</string>
 		</dict>
 		<dict>
-			<key>captures</key>
-			<dict>
-				<key>1</key>
-				<dict>
-					<key>name</key>
-					<string>storage.type</string>
-				</dict>
-			</dict>
-			<key>comment</key>
-			<string>Special treatment for length and .selector</string>
-			<key>match</key>
-			<string>\b\.(length|selector)\b</string>
-		</dict>
-		<dict>
-			<key>captures</key>
-			<dict>
-				<key>1</key>
-				<dict>
-					<key>name</key>
-					<string>storage.type</string>
-				</dict>
-			</dict>
-			<key>comment</key>
-			<string>Ether and time units</string>
-			<key>match</key>
-			<string>\b(wei|gwei|ether|seconds|minutes|hours|days|weeks)\b</string>
-		</dict>
-		<dict>
 			<key>comment</key>
 			<string>Strings</string>
 			<key>match</key>

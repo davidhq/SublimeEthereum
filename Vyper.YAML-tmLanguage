@@ -68,14 +68,6 @@ patterns:
     '2': {name: constant.numeric}
     '3': {name: constant.numeric}
   comment: Function call, also for example - uint[] memory a = new uint[332](7); or uint[2][] memory arrayOfPairs = new uint[2][](size);
-- match: \b\.(length|selector)\b
-  captures:
-    '1': {name: storage.type}
-  comment: Special treatment for length and .selector
-- match: \b(wei|gwei|ether|seconds|minutes|hours|days|weeks)\b
-  captures:
-    '1': {name: storage.type}
-  comment: Ether and time units
 - match: ([\"\'].*?[\"\'])
   name: string.quoted
   comment: Strings

@@ -668,7 +668,7 @@ contexts:
     - match: \b({{number}})\s+({{ether_units}}|{{time_units}})\b
       captures:
         1: constant.numeric
-        2: storage.type
+        2: constant.numeric
     - match: \(
       scope: punctuation.section.block.begin.sol
       push: tuple-content
