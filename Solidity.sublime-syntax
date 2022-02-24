@@ -163,9 +163,10 @@ contexts:
   pragma:
     - include: version_pragma
     - include: experimental_pragma
+    - include: abicoder_pragma
 
   version_pragma:
-    - match: (\bpragma\b)\s+(\bsolidity\b)
+    - match: (\bpragma\b)\s+(solidity)\b
       captures:
         1: keyword.sol
         2: keyword.sol
@@ -182,7 +183,13 @@ contexts:
     - include: else-pop
 
   experimental_pragma:
-    - match: (\bpragma\b)\s+(\bexperimental\b)
+    - match: (\bpragma\b)\s+(experimental)\b
+      captures:
+        1: keyword.other.sol
+        2: keyword.other.sol
+
+  abicoder_pragma:
+    - match: (\bpragma\b)\s+(abicoder)\b
       captures:
         1: keyword.other.sol
         2: keyword.other.sol
@@ -658,8 +665,6 @@ contexts:
     - include: function-call
     - include: string-literals
     - include: expression-keyword
-    - include: '{{expression_keyword_main}}'
-      scope: variable.parameter
     - match: \b({{number}})\s+({{ether_units}}|{{time_units}})\b
       captures:
         1: constant.numeric
@@ -757,10 +762,43 @@ contexts:
         1: storage.type
       push: function-call-arguments
     - match: '({{identifier}})\s*(\()'
+    #- match: '({{identifier}})\s*(?:\{.*?\})?\s*(\()'
       captures:
         1: support.function
         2: punctuation.section.block.begin.sol
       push: function-call-arguments
+    # https://docs.soliditylang.org/en/v0.8.11/control-structures.html#external-function-calls , https://docs.soliditylang.org/en/v0.8.11/control-structures.html#creating-contracts-via-new
+    # (bool success, ) = recipient.call{ value: amount }("");
+    # impl.delegatecall{gas: gasleft()}(msg.data);
+    - match: '\.({{contract_functions}})\s*\{'
+      captures:
+        1: storage.type
+      push:
+        - function-call-arguments
+        - function-call-named-arguments
+    # bentoBox.deposit{value: value}(token, msg.sender, to, uint256(amount), uint256(share));
+    - match: '\.({{identifier}})\s*\{'
+      captures:
+        1: support.function
+      push:
+        - function-call-arguments
+        - function-call-named-arguments
+    # pool = address(new UniswapV3Pool{salt: keccak256(abi.encode(token0, token1, fee))}());
+    - match: '\b(?<=new)\s+({{identifier}})\s*\{'
+      captures:
+        1: support.function
+      push:
+        - function-call-arguments
+        - function-call-named-arguments
+
+  function-call-named-arguments:
+    - include: expression-include
+    - match: ','
+    - match: '\}'
+      scope: punctuation.section.block.end.sol
+      pop: true
+    - match: \;
+      pop: true
 
   function-call-arguments:
     - include: expression-include
@@ -917,13 +955,13 @@ contexts:
       push: function-returns-arguments
     - include: function-modifier-with-arguments
     - match: \b{{identifier}}\b
-      scope: entity.name.class # misuse of syntax type but ok for the stand-out effect we want
+      scope: support.type # modifier names - no syntax
     - include: else-pop
 
   function-modifier-with-arguments:
     - match: '({{identifier}})\s*(\()'
       captures:
-        1: entity.name.class # misuse of syntax type but ok for the stand-out effect we want
+        1: support.type # modifier names - no syntax
         2: punctuation.section.block.begin.sol
       push: function-call-arguments
 
@@ -1163,7 +1201,7 @@ contexts:
 
   assembly-opcode:
     - match: '\b({{opcode}})\b'
-      scope: support.function
+      scope: storage.type
 
   # function call
   # ⚠️ keep in sync with assembly-call!
