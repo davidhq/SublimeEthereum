@@ -45,7 +45,9 @@
 			<string>keyword</string>
 		</dict>
 		<dict>
-			<key>captures</key>
+			<key>begin</key>
+			<string>\b(contract|interface|library)\s+([A-Za-z_]\w*)(?:\s+(is)\s+)?</string>
+			<key>beginCaptures</key>
 			<dict>
 				<key>1</key>
 				<dict>
@@ -62,18 +64,24 @@
 					<key>name</key>
 					<string>keyword</string>
 				</dict>
-				<key>4</key>
+			</dict>
+			<key>end</key>
+			<string>\{</string>
+			<key>name</key>
+			<string>scope</string>
+			<key>patterns</key>
+			<array>
 				<dict>
+					<key>match</key>
+					<string>[A-Za-z_]\w*</string>
 					<key>name</key>
 					<string>entity.name.function</string>
 				</dict>
-			</dict>
-			<key>comment</key>
-			<string>Structures, function, event definitions</string>
-			<key>match</key>
-			<string>\b(contract|interface|library)\s+([A-Za-z_]\w*)(?:\s+(is)\s+((?:[A-Za-z_]\w*\,?\s*)*))?\b</string>
-			<key>name</key>
-			<string>keyword</string>
+				<dict>
+					<key>include</key>
+					<string>#numbers</string>
+				</dict>
+			</array>
 		</dict>
 		<dict>
 			<key>captures</key>
@@ -113,13 +121,13 @@
 				<key>1</key>
 				<dict>
 					<key>name</key>
-					<string>support.type</string>
+					<string>markup.italic</string>
 				</dict>
 			</dict>
 			<key>comment</key>
 			<string>Special treatment for length and .selector</string>
 			<key>match</key>
-			<string>\.(length|selector)\b</string>
+			<string>\.(selector)\b</string>
 		</dict>
 		<dict>
 			<key>comment</key>
@@ -235,7 +243,21 @@
 			<key>comment</key>
 			<string>Variable definitions - bytes data; | uint x = uint(y); BUT also just appearances of basic types anywhere... good example -- "using SafeMath for uint256;"</string>
 			<key>match</key>
-			<string>\b(address|payable|string|bytes?\d*|int\d*|uint\d*|bool|u?fixed\d+x\d+)\b(?:(?:\s*\[(\d*)\])?(?:\s*\[(\d*)\])?(?:\s*\[(\d*)\])?\s*((?:private\s|public\s|internal\s|external\s|constant\s|immutable\s|memory\s|storage\s)*)\s*(?:[A-Za-z_]\w*)\s*(\=))?</string>
+			<string>\b(address(?:\s*payable)?|string|bytes?\d*|int\d*|uint\d*|bool|u?fixed\d+x\d+)\b(?:(?:\s*\[(\d*)\])?(?:\s*\[(\d*)\])?(?:\s*\[(\d*)\])?\s*((?:private\s|public\s|internal\s|external\s|constant\s|immutable\s|memory\s|storage\s)*)\s*(?:[A-Za-z_]\w*)\s*(\=))?</string>
+		</dict>
+		<dict>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>constant.language</string>
+				</dict>
+			</dict>
+			<key>comment</key>
+			<string>Type conversion payable(...)</string>
+			<key>match</key>
+			<string>\b(payable)\s*\(</string>
 		</dict>
 		<dict>
 			<key>captures</key>
@@ -245,7 +267,30 @@
 					<key>name</key>
 					<string>keyword</string>
 				</dict>
-				<key>2</key>
+			</dict>
+			<key>comment</key>
+			<string>import ... from</string>
+			<key>match</key>
+			<string>\b(from)\s*(?=[\'\"])</string>
+		</dict>
+		<dict>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>keyword</string>
+				</dict>
+			</dict>
+			<key>comment</key>
+			<string>import {Unauthorized, add as func, Point} from "./Foo.sol";</string>
+			<key>match</key>
+			<string>\b(?:[A-Za-z_]\w*)\s+(as)\s+(?:[A-Za-z_]\w*)</string>
+		</dict>
+		<dict>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
 				<dict>
 					<key>name</key>
 					<string>keyword</string>
@@ -254,29 +299,49 @@
 			<key>comment</key>
 			<string>import ... from</string>
 			<key>match</key>
-			<string>\b(import).*?(from)\b</string>
-		</dict>
-		<dict>
-			<key>comment</key>
-			<string>import</string>
-			<key>match</key>
-			<string>\b(import)\b</string>
-			<key>name</key>
-			<string>keyword</string>
+			<string>\b(global);</string>
 		</dict>
 		<dict>
 			<key>comment</key>
 			<string>Langauge keywords</string>
 			<key>match</key>
-			<string>\b(var|solidity|constant|pragma experimental|pragma|mapping|payable|storage|memory|calldata|if|else|for|while|do|break|continue|returns?|try|catch|private|public|pure|view|internal|immutable|external|virtual|override|abstract|suicide|emit|new|is|throw|revert|assert|require|receive|delete)\b</string>
+			<string>\b(var|import|solidity|constant|pragma\s*(?:experimental|abicoder)?|mapping|payable|storage|memory|calldata|if|else|for|while|do|break|continue|returns?|try|catch|private|public|pure|view|internal|immutable|external|virtual|override|abstract|suicide|emit|is|throw|revert|assert|require|receive|delete)\b</string>
 			<key>name</key>
 			<string>keyword</string>
+		</dict>
+		<dict>
+			<key>include</key>
+			<string>#numbers</string>
+		</dict>
+		<dict>
+			<key>comment</key>
+			<string>Hexadecimal</string>
+			<key>match</key>
+			<string>\b(0[xX][a-fA-F0-9]+)\b</string>
+			<key>name</key>
+			<string>constant.numeric</string>
 		</dict>
 		<dict>
 			<key>comment</key>
 			<string>Operators</string>
 			<key>match</key>
-			<string>(=|:=|!|&gt;|&lt;|\||&amp;|\?|\^|~|\*|\+|\-|\/|\%|\bhex\b|\bunicode\b)</string>
+			<string>(=|:=|!|&gt;|&lt;|\||&amp;|\?|\^|~|\*|\+|\-|\/|\%)</string>
+			<key>name</key>
+			<string>keyword.operator</string>
+		</dict>
+		<dict>
+			<key>comment</key>
+			<string>Operators</string>
+			<key>match</key>
+			<string>(\bhex\b|\bunicode\b)</string>
+			<key>name</key>
+			<string>markup.italic</string>
+		</dict>
+		<dict>
+			<key>comment</key>
+			<string>Ternary colon</string>
+			<key>match</key>
+			<string>\s\:\s</string>
 			<key>name</key>
 			<string>keyword.operator</string>
 		</dict>
@@ -321,7 +386,7 @@
 			<key>match</key>
 			<string>\b(abi)\.([A-Za-z_]\w*)\b</string>
 			<key>name</key>
-			<string>markup.italic</string>
+			<string>support.type</string>
 		</dict>
 		<dict>
 			<key>captures</key>
@@ -329,27 +394,13 @@
 				<key>1</key>
 				<dict>
 					<key>name</key>
-					<string>markup.italic</string>
+					<string>support.type</string>
 				</dict>
 			</dict>
 			<key>comment</key>
-			<string>Function call - built-in functions</string>
+			<string>Function call - some special built-in functions</string>
 			<key>match</key>
-			<string>\b(blockhash|gasleft|addmod|mulmod|keccak256|sha256|sha3|ripemd160|ecrecover)\s*\(</string>
-		</dict>
-		<dict>
-			<key>captures</key>
-			<dict>
-				<key>1</key>
-				<dict>
-					<key>name</key>
-					<string>markup.italic</string>
-				</dict>
-			</dict>
-			<key>comment</key>
-			<string>Function call - smart contract calls</string>
-			<key>match</key>
-			<string>\b(call|delegatecall|staticcall|selfdestruct)\s*\(</string>
+			<string>\b(blockhash|gasleft)\s*\(</string>
 		</dict>
 		<dict>
 			<key>captures</key>
@@ -371,9 +422,28 @@
 				</dict>
 			</dict>
 			<key>comment</key>
-			<string>Function call, also for example - uint[] memory a = new uint[332](7); or uint[2][] memory arrayOfPairs = new uint[2][](size);</string>
+			<string>Function call, also for example - info.factories = new Factory[](factoryAddresses.length);</string>
 			<key>match</key>
-			<string>\b([A-Za-z_]\w*)(?:\[(\d*)\])?(?:\[(\d*)\])?\(</string>
+			<string>\b([A-Za-z_]\w*)(?:\s*\[(\d*)\]\s*)?(?:\s*\[(\d*)\]\s*)?\(</string>
+		</dict>
+		<dict>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>keyword</string>
+				</dict>
+				<key>2</key>
+				<dict>
+					<key>name</key>
+					<string>entity.name.function</string>
+				</dict>
+			</dict>
+			<key>comment</key>
+			<string>Special parameters IWETH(wavaxTokenAddress).deposit{ ... }(); ... new UniswapV3Pool{...}() https://docs.soliditylang.org/en/v0.8.11/control-structures.html#external-function-calls , https://docs.soliditylang.org/en/v0.8.11/control-structures.html#creating-contracts-via-new</string>
+			<key>match</key>
+			<string>(?:\.|(new\s+))([A-Za-z_]\w*)\{</string>
 		</dict>
 		<dict>
 			<key>captures</key>
@@ -388,6 +458,14 @@
 			<string>Ether and time units</string>
 			<key>match</key>
 			<string>\b(wei|gwei|ether|seconds|minutes|hours|days|weeks)\b</string>
+		</dict>
+		<dict>
+			<key>comment</key>
+			<string>New</string>
+			<key>match</key>
+			<string>\bnew\b</string>
+			<key>name</key>
+			<string>keyword</string>
 		</dict>
 		<dict>
 			<key>comment</key>
@@ -429,23 +507,24 @@
 			<key>name</key>
 			<string>string.quoted</string>
 		</dict>
-		<dict>
-			<key>comment</key>
-			<string>Numbers, possibly with scientific notation</string>
-			<key>match</key>
-			<string>\b(?:[+-]?\.?\d[\d_eE]*)(?:\.\d+[\deE]*)?\b</string>
-			<key>name</key>
-			<string>constant.numeric</string>
-		</dict>
-		<dict>
-			<key>comment</key>
-			<string>Hexadecimal</string>
-			<key>match</key>
-			<string>\b(0[xX][a-fA-F0-9]+)\b</string>
-			<key>name</key>
-			<string>constant.numeric</string>
-		</dict>
 	</array>
+	<key>repository</key>
+	<dict>
+		<key>numbers</key>
+		<dict>
+			<key>patterns</key>
+			<array>
+				<dict>
+					<key>comment</key>
+					<string>Numbers, possibly with scientific notation</string>
+					<key>match</key>
+					<string>\b(?:[+-]?\.?\d[\d_eE]*)(?:\.\d+[\deE]*)?\b</string>
+					<key>name</key>
+					<string>constant.numeric</string>
+				</dict>
+			</array>
+		</dict>
+	</dict>
 	<key>scopeName</key>
 	<string>source.solidity</string>
 	<key>uuid</key>

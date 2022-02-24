@@ -55,24 +55,16 @@ patterns:
     '1': {name: support.type}
     '2': {name: support.type}
   comment: msg and block special usage
-- match: \b(blockhash|gasleft|addmod|mulmod|keccak256|sha256|sha3|ripemd160|ecrecover)\s*\(
+- match: \b(blockhash|gasleft)\s*\(
   captures:
     '1': {name: markup.italic}
-  comment: Function call - built-in functions
+  comment: Special built-in functions
 - match: \b([A-Za-z_]\w*)(?:\[(\d*)\])?(?:\[(\d*)\])?\(
   captures:
     '1': {name: entity.name.function}
     '2': {name: constant.numeric}
     '3': {name: constant.numeric}
   comment: Function call, also for example - uint[] memory a = new uint[332](7); or uint[2][] memory arrayOfPairs = new uint[2][](size);
-- match: \b\.(length|selector)\b
-  captures:
-    '1': {name: support.type}
-  comment: Special treatment for length and .selector
-- match: \b(wei|gwei|ether|seconds|minutes|hours|days|weeks)\b
-  captures:
-    '1': {name: constant.numeric}
-  comment: Ether and time units
 - match: ([\"\'].*?[\"\'])
   name: string.quoted
   comment: Strings

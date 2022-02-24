@@ -163,9 +163,9 @@
 				</dict>
 			</dict>
 			<key>comment</key>
-			<string>Function call - built-in functions</string>
+			<string>Special built-in functions</string>
 			<key>match</key>
-			<string>\b(blockhash|gasleft|addmod|mulmod|keccak256|sha256|sha3|ripemd160|ecrecover)\s*\(</string>
+			<string>\b(blockhash|gasleft)\s*\(</string>
 		</dict>
 		<dict>
 			<key>captures</key>
@@ -190,34 +190,6 @@
 			<string>Function call, also for example - uint[] memory a = new uint[332](7); or uint[2][] memory arrayOfPairs = new uint[2][](size);</string>
 			<key>match</key>
 			<string>\b([A-Za-z_]\w*)(?:\[(\d*)\])?(?:\[(\d*)\])?\(</string>
-		</dict>
-		<dict>
-			<key>captures</key>
-			<dict>
-				<key>1</key>
-				<dict>
-					<key>name</key>
-					<string>support.type</string>
-				</dict>
-			</dict>
-			<key>comment</key>
-			<string>Special treatment for length and .selector</string>
-			<key>match</key>
-			<string>\b\.(length|selector)\b</string>
-		</dict>
-		<dict>
-			<key>captures</key>
-			<dict>
-				<key>1</key>
-				<dict>
-					<key>name</key>
-					<string>constant.numeric</string>
-				</dict>
-			</dict>
-			<key>comment</key>
-			<string>Ether and time units</string>
-			<key>match</key>
-			<string>\b(wei|gwei|ether|seconds|minutes|hours|days|weeks)\b</string>
 		</dict>
 		<dict>
 			<key>comment</key>
