@@ -12,7 +12,9 @@ variables:
   math_operator: '(?:\+|\+\+|\-|\-\-|\*|\*\*|\/|\^|\%)'
   logical_operator: '(?:\!|\&|\||\~)'
   question_mark: '(?:\?)'
-  comparison_operator: '(?:\>(?:\=)?|\<(?:\=)?|\=\=|\!\=)' # todo
+  comparison_operator: '(?:\>(?:\=)?|\<(?:\=)?|\=\=|\!\=)'
+
+  #operator: '{{math_operator}}|{{logical_operator}}|{{question_mark}}|{{comparison_operator}}'
 
   contract: contract
   abstract_keyword: abstract
@@ -914,7 +916,7 @@ contexts:
     - include: else-pop
 
   elementary-function-argument:
-    - match: '\b(?:({{elementary_type}})|({{identifier_path}}))(?:\[(\d*)\])?(?:\s+({{data_location}}))?(?:\s+({{identifier}}))?'
+    - match: '\b(?:({{elementary_type}})|({{identifier_path}}))(?:\[(\d*)\])?(?:\s+({{data_location}}\b))?(?:\s+({{identifier}}))?'
       captures:
         1: constant.language
         2: scope
@@ -997,21 +999,26 @@ contexts:
   function-returns-argument:
     # function GetTrie() internal pure returns (mapping(bytes32 => bytes) storage trie) {
     - include: mapping-function-argument
-    - match: '(?:({{elementary_type}})|({{identifier_path}}))(?:\[(\d*)\])*\s*((?:{{type_modifier}})+\s*)?({{identifier}})?'
+    # returns (uint256[PROGRAM_SIZE] memory) -> \[(\d*)|.*?\] -> PROGRAM_SIZE will be part of .*? and won't have syntax
+    # what's missing: general expresisons, for example: 2*PROGRAM_SIZE won't work
+    - match: '(?:({{elementary_type}})|{{identifier_path}})(?:\[(?:(\d+)|.*?)\])?(?:\[(?:(\d+)|.*?)\])?(?:\[(?:(\d+)|.*?)\])?(?:\s+({{type_modifier}})\b)?(?:\s+({{identifier}}))?'
       captures:
         1: constant.language
-        2: scope
-        3: constant.numeric # same small issue with multi-dimensional arrays as above - seems like a bug in sublime parser, only the last number will get constant.numeric
-        4: storage.modifier
-        5: variable.parameter
+        2: constant.numeric
+        3: constant.numeric
+        4: constant.numeric
+        5: storage.modifier
+        6: variable.parameter
       pop: true
-    - match: '({{identifier}})(?:\[(\d*)\])*\s*((?:{{type_modifier}})+\s*)?({{identifier}})?'
-      captures:
-        1: constant.language
-        2: constant.numeric # see the problem description above - won't solve this, not a big issue and is probably a bug with parser
-        3: storage.modifier
-        4: variable.parameter
-      pop: true
+    # - match: '({{identifier}})(?:\[(\d*)|.*?\])?\s*(?:\[(\d*)|.*?\])?\s*(?:\[(\d*)|.*?\])?\s*({{type_modifier}})?({{identifier}})?'
+    #   captures:
+    #     1: constant.language
+    #     2: constant.numeric
+    #     3: constant.numeric
+    #     4: constant.numeric
+    #     5: storage.modifier
+    #     6: variable.parameter
+    #   pop: true
     - include: else-pop
 
     ## curly-brackets-body

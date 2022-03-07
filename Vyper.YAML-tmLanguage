@@ -58,10 +58,10 @@ patterns:
     '1': {name: storage.type}
     '2': {name: storage.type}
   comment: msg and block special usage
-- match: \b(blockhash|gasleft|addmod|mulmod|keccak256|sha256|sha3|ripemd160|ecrecover)\s*\(
-  captures:
-    '1': {name: constant.language}
-  comment: Function call - built-in functions
+# - match: \b(blockhash|gasleft|addmod|mulmod|keccak256|sha256|sha3|ripemd160|ecrecover)\s*\(
+#   captures:
+#     '1': {name: constant.language}
+#   comment: Function call - built-in functions
 - match: \b([A-Za-z_]\w*)(?:\[(\d*)\])?(?:\[(\d*)\])?\(
   captures:
     '1': {name: support.function}

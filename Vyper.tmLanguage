@@ -180,20 +180,6 @@
 				<key>1</key>
 				<dict>
 					<key>name</key>
-					<string>constant.language</string>
-				</dict>
-			</dict>
-			<key>comment</key>
-			<string>Function call - built-in functions</string>
-			<key>match</key>
-			<string>\b(blockhash|gasleft|addmod|mulmod|keccak256|sha256|sha3|ripemd160|ecrecover)\s*\(</string>
-		</dict>
-		<dict>
-			<key>captures</key>
-			<dict>
-				<key>1</key>
-				<dict>
-					<key>name</key>
 					<string>support.function</string>
 				</dict>
 				<key>2</key>
