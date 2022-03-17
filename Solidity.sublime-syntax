@@ -123,8 +123,6 @@ contexts:
     - include: struct
     - include: function
     - include: error
-    # supposedly we can define "using" outside of contract scope.. it is not yet in language grammar though
-    # https://docs.soliditylang.org/en/latest/grammar.html#a4.SolidityParser.usingDirective
     - include: using-directive
     - include: user-defined-type
     - include: assembly
@@ -335,7 +333,7 @@ contexts:
   # todo?: using {add as +, addInt as +} for UncheckedInt8;
   # it is not yet in docs, saw it here: https://blog.soliditylang.org/2021/09/27/user-defined-value-types/
   using-directive:
-    - match: \b(using)\s+({{identifier_path}})\s+(for)\b
+    - match: \b(using)\s+(.*?)\s+(for)\b
       captures:
         1: keyword
         2: scope
@@ -345,13 +343,19 @@ contexts:
   using-declaration:
     - include: function
     - include: mapping
-    - include: elementary-function-argument # works ok here, has some redudancy but it's fine
-    # identifier is optional for cases like this: function bar(bytes memory, ...
+    - include: using-argument
     - match: '\*'
       scope: keyword
     - match: \;
       pop: true
     - include: else-pop
+
+  using-argument:
+    - match: '\b(?:({{elementary_type}})|({{identifier_path}}))(\s+global)?'
+      captures:
+        1: constant.language
+        2: scope
+        3: keyword
 
   # variables
 
@@ -1130,7 +1134,15 @@ contexts:
     - match: \b(assembly)\s*
       captures:
         1: keyword
-      push: assembly-body
+      push:
+        - assembly-body
+        - assembly-memory-safe
+
+  assembly-memory-safe:
+    - match: \((\".*?\")\) # for example: assembly ("memory-safe") {
+      captures:
+          1: string.quoted
+    - include: else-pop
 
   assembly-body:
     - include: assembly-body-include
