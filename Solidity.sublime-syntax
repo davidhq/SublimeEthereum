@@ -948,6 +948,8 @@ contexts:
   constructor-modifiers:
     - match: \b{{func_modifier}}\b
       scope: storage.modifier
+    - match: \b{{identifier}}(?!\()\b # negative lookahead on bracket - avoid matching base consutrctor call public ERC20(name, symbol) {
+      scope: support.type # modifier names - no syntax
     - include: else-pop
 
   function-modifiers:
