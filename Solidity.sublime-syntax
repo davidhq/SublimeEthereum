@@ -24,7 +24,7 @@ variables:
   func_modifier_override: override
 
   elementary_type: '(?:address(?:\s+payable)?|string|bytes?\d*|int\d*|uint\d*|bool|u?fixed(?:\d+x\d+)?)'
-  type_modifier: '(?:private|public|internal|external|constant|immutable|memory|storage|override)'
+  type_modifier: '(?:private|public|internal|external|constant|immutable|memory|calldata|storage|override)'
   data_location: '(?:memory|storage|calldata)'
   event_attributes: '(?:indexed)'
 
@@ -949,7 +949,7 @@ contexts:
     - match: \b{{func_modifier}}\b
       scope: storage.modifier
     - match: \b{{identifier}}(?!\()\b # negative lookahead on bracket - avoid matching base consutrctor call public ERC20(name, symbol) {
-      scope: support.type # modifier names - no syntax
+      scope: support.type # custom modifier
     - include: else-pop
 
   function-modifiers:
@@ -963,13 +963,13 @@ contexts:
       push: function-returns-arguments
     - include: function-modifier-with-arguments
     - match: \b{{identifier}}\b
-      scope: support.type # modifier names - no syntax
+      scope: support.type # custom modifier
     - include: else-pop
 
   function-modifier-with-arguments:
     - match: '({{identifier}})\s*(\()'
       captures:
-        1: support.type # modifier names - no syntax
+        1: support.type # modifier
         2: punctuation.section.block.begin.sol
       push: function-call-arguments
 
