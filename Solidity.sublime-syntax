@@ -919,14 +919,19 @@ contexts:
     - include: elementary-function-argument
     - include: else-pop
 
+  # function testWithoutConstant(uint256[10] calldata _param) public pure (?:\[(\d*)\])?
+  # function testWithConstant(uint256[MY_CONST] calldata _param) public pure (?:\[({{identifier}})\])?
+  # ⚠️ still not working:
+  # function testWithConstant(uint256[2 * MY_CONST] calldata _param) public pure
   elementary-function-argument:
-    - match: '\b(?:({{elementary_type}})|({{identifier_path}}))(?:\[(\d*)\])?(?:\s+({{data_location}}\b))?(?:\s+({{identifier}}))?'
+    - match: '\b(?:({{elementary_type}})|({{identifier_path}}))(?:\[(\d*)\])?(?:\[({{identifier}})\])?(?:\s+({{data_location}}\b))?(?:\s+({{identifier}}))?'
       captures:
         1: constant.language
         2: scope
         3: constant.numeric
-        4: storage.modifier
-        5: variable.parameter
+        4: scope
+        5: storage.modifier
+        6: variable.parameter
       pop: true
 
   ## function-modifiers
