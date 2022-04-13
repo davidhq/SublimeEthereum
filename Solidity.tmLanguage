@@ -127,7 +127,7 @@
 			<key>comment</key>
 			<string>Special treatment for length and .selector</string>
 			<key>match</key>
-			<string>\.(selector)\b</string>
+			<string>\.(length|selector)\b</string>
 		</dict>
 		<dict>
 			<key>comment</key>

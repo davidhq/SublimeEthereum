@@ -54,8 +54,7 @@ patterns:
   captures:
     '2': {name: entity.name.function}
   comment: Structures, function, event definitions
-# - match: \.(length|selector)\b
-- match: \.(selector)\b
+- match: \.(length|selector)\b
   captures:
     '1': {name: markup.italic}
   comment: Special treatment for length and .selector
