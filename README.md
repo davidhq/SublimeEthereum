@@ -1,8 +1,8 @@
-## SublimeText syntax highlighting for Solidity, Vyper and Cairo
+## SublimeText syntax highlighting for Solidity, Vyper, Yul and Cairo
 
 <img src="./img/logos.svg">
 
-Version of syntax that GitHub is [using](https://github.com/github/linguist/tree/master/vendor/grammars) for [Solidity grammar](https://docs.soliditylang.org/en/latest/grammar.html) is in [linguist branch](https://github.com/davidhq/SublimeEthereum/tree/linguist). This grammar gives all `.sol` files ([example](https://github.com/ethereum/consensus-specs/blob/dev/solidity_deposit_contract/deposit_contract.sol)) its colors (= does _syntax highlighting_).
+Version of syntax that GitHub is [using](https://github.com/github/linguist/tree/master/vendor/grammars) for [Solidity grammar](https://docs.soliditylang.org/en/latest/grammar.html) and [Vyper](https://vyper.readthedocs.io) is in [linguist branch](https://github.com/davidhq/SublimeEthereum/tree/linguist). This grammar gives all `.sol` / `.vy` files ([example](https://github.com/ethereum/consensus-specs/blob/dev/solidity_deposit_contract/deposit_contract.sol)) its colors (= does _syntax highlighting_).
 
 ### Ethereum
 
@@ -14,11 +14,13 @@ Version of syntax that GitHub is [using](https://github.com/github/linguist/tree
 
 ### Included grammars
 
-This package contains syntax highlighting for Ethereum's Smart Contract languages [Solidity](https://soliditylang.org) and [Vyper](https://vyper.readthedocs.io) as well as StarkNet [Cairo](https://www.cairo-lang.org/docs/index.html) language.
+This package contains syntax highlighting for Ethereum's Smart Contract languages [Solidity](https://soliditylang.org), [Vyper](https://vyper.readthedocs.io), [Yul](https://docs.soliditylang.org/en/latest/yul.html) as well as StarkNet [Cairo](https://www.cairo-lang.org/docs/index.html) language.
 
 Solidity is the biggest Ethereum language and has similarity to JavaScript. Solidity was initially proposed in August 2014 by [dr. Gavin Wood](https://en.wikipedia.org/wiki/Gavin_Wood). The language was later developed by the Ethereum project's Solidity team, led by Christian Reitwiessner.
 
 Vyper is a contract-oriented, pythonic programming language that targets the Ethereum Virtual Machine (EVM) as well. It lacks some general features and through this strives to be more secure by default.
+
+Yul is an intermediate EVM programming language that is compiled to bytecode for addressing the needs of different backends. The Solidity compiler has an experimental implementation that uses Yul as an intermediate language.
 
 Cairo is a programming language for writing provable programs, where one party can prove to another that a certain computation was executed correctly. Cairo and similar proof systems can be used to provide scalability to blockchains.
 
@@ -45,6 +47,8 @@ This will provide **Solidity** `.sol`, **Vyper** `.vy` and **Cairo** `.cairo` sy
    * [vscode-solidity](https://github.com/juanfranblanco/vscode-solidity) is another good grammar implementation, it was originally derived from SublimeEthereum
 * Vyper.YAML-tmLanguage: syntax rules for Ethereum Vyper language
    * Ethereum plugin automatically uses *Vyper language syntax* when you are in a Vyper (.vy) file
+* Yul.YAML-tmLanguage: syntax rules for Ethereum Yul language
+   * Ethereum plugin automatically uses *Yul language syntax* when you are in a Yul (.yul) or Yul+ (.yulp) file
 * Cairo.YAML-tmLanguage: syntax rules for StarkNet Cairo language
    * Ethereum plugin automatically uses *Cairo language syntax* when you are in a Cairo (.cairo) file
    * Cairo language grammar is derived from Atom grammar in [this repository](https://github.com/xshitaka/atom-language-cairo) by GitHub user _xshitaka_.
