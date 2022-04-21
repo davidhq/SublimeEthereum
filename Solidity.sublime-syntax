@@ -24,6 +24,8 @@ variables:
   func_modifier_override: override
 
   elementary_type: '(?:address(?:\s+payable)?|string|bytes?\d*|int\d*|uint\d*|bool|u?fixed(?:\d+x\d+)?)'
+  erc_type: '(?:I?ERC[\dA-Za-z_]\w*)'
+
   type_modifier: '(?:private|public|internal|external|constant|immutable|memory|calldata|storage|override)'
   data_location: '(?:memory|storage|calldata)'
   event_attributes: '(?:indexed)'
@@ -35,15 +37,19 @@ variables:
   special_accessors: '\b(?:this|super)\b'
   special_members_keywords: '\.(length|timestamp)\b'
 
-  special_functions: '\b(?:blockhash|gasleft)\b'
-  special_functions_abi: '\b(?:(abi)\.(decode|encode|encodePacked|encodeWithSelector|encodeWithSignature))\b'
-  # now was removed in solidity v0.4 but we still include it
-  special_object_block: '\b(?:(block)\.(coinbase|difficulty|gaslimit|number|timestamp))\b'
-  special_object_msg: '\b(?:(msg)\.(data|sender|sigvalue|gas))\b'
+  special_object_abi: '\b(?:(abi)\.(decode|encode|encodePacked|encodeWithSelector|encodeWithSignature|encodeCall))\b'
+  special_object_block: '\b(?:(block)\.(basefee|chainid|coinbase|difficulty|gaslimit|number|timestamp))\b'
+  special_object_msg: '\b(?:(msg)\.(data|sender|sig|value))\b'
   special_object_tx: '\b(?:(tx)\.(gasprice|origin))\b'
+  special_object_elementary: '\b(?:(string|bytes)\.({{identifier}}))\b'
 
-  contract_functions: '\b(selfdestruct|call|delegatecall|staticcall)\b'
-  crypto_functions: '\b(addmod|mulmod|sha256|keccak256|ripemd160|ecrecover)\b'
+  # standalone special functions
+  special_functions_crypto: '\b(?:addmod|mulmod|sha256|keccak256|ripemd160|ecrecover)\b'
+  special_contract_functions: '\b(?:selfdestruct|call|delegatecall|staticcall)\b'
+  special_functions_other: '\b(?:blockhash|gasleft)\b'
+  # ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+  special_functions_standalone: '{{special_functions_crypto}}|{{special_contract_functions}}|{{special_functions_other}}'
+
   string_literals: '\b(hex|unicode)\b'
 
   # var keyword was deprecated in solidity 0.4.20 but we still highlight it for older contracts!
@@ -234,6 +240,8 @@ contexts:
     - match: '\{'
       scope: punctuation.section.block.begin.sol
       set: contract-body-contents
+    - match: '{{erc_type}}'
+      scope: storage.type
     - match: '{{identifier}}'
       scope: support.function
     - match: '\('
@@ -320,12 +328,13 @@ contexts:
 
   # https://docs.soliditylang.org/en/latest/grammar.html#a4.SolidityParser.userDefinedValueTypeDefinition
   user-defined-type:
-    - match: '\b(type)\s+({{identifier}})\s+(is)\s+({{elementary_type}})'
+    - match: '\b(type)\s+({{identifier}})\s+(is)\s+(?:({{elementary_type}})|({{erc_type}}))'
       captures:
         1: keyword
         2: scope
         3: keyword
         4: constant.language
+        5: storage.type
 
   # using
 
@@ -351,11 +360,12 @@ contexts:
     - include: else-pop
 
   using-argument:
-    - match: '\b(?:({{elementary_type}})|({{identifier_path}}))(\s+global)?'
+    - match: '\b(?:({{elementary_type}})|({{erc_type}})|({{identifier_path}}))(\s+global)?'
       captures:
         1: constant.language
-        2: scope
-        3: keyword
+        2: storage.type
+        3: scope
+        4: keyword
 
   # variables
 
@@ -435,10 +445,11 @@ contexts:
   # extracted out to be used for nested mappings definitions:
   # mapping (address => mapping(uint256 => uint256)) internal my_mapping;
   mapping-from:
-    - match: (?:({{elementary_type}})|({{identifier_path}}))
+    - match: (?:({{elementary_type}})|({{erc_type}})|({{identifier_path}}))
       captures:
         1: constant.language
-        2: scope
+        2: storage.type
+        3: scope
     - match: '{{identifier}}'
       scope: constant.language
 
@@ -446,8 +457,10 @@ contexts:
 
   variable-declaration:
     - include: mapping
-    - match: \b{{elementary_type}}\b # uint256[3][257][16] private precomputedGenerators;
-      scope: constant.language
+    - match: \b({{elementary_type}})|({{erc_type}})\b # uint256[3][257][16] private precomputedGenerators;
+      captures:
+        1: constant.language
+        2: storage.type
       push:
         #- variable-identifier
         - variable-type
@@ -702,12 +715,13 @@ contexts:
 
   # type information - https://docs.soliditylang.org/en/latest/units-and-global-variables.html?highlight=type#type-information
   type-information-inquiry:
-    - match: \b(type)\s*\((?:({{elementary_type}})|({{identifier_path}}))?\)\.({{identifier}})\b # type conversion, ex: uint(-1)
+    - match: \b(type)\s*\((?:({{elementary_type}})|({{erc_type}})|({{identifier_path}}))?\)\.({{identifier}})\b # type conversion, ex: uint(-1)
       captures:
         1: keyword
         2: constant.language
-        3: scope
-        4: storage.type
+        3: storage.type
+        4: scope
+        5: storage.type
 
   # string literals
   # https://docs.soliditylang.org/en/latest/types.html#unicode-literals
@@ -738,22 +752,31 @@ contexts:
   # function call
   # keep in sync with assembly-function-call!
   function-call:
+    # string.concat(hiMom, missYou);
+    # has to be before variable-declaration otherwise
+    # "string" gets parsed as elementary type first and we don't detect string.concat as a group anymore
+    - match: '{{special_object_elementary}}\s*\('
+      captures:
+        1: constant.numeric
+        2: storage.type
+      push: function-call-arguments
     # r.limbs = new uint[](max(_a.limbs.length, _b.limbs.length));
     # uint[] memory newLimbs = new uint[](r.limbs.length + 1);
     # we do this because of:
     # uint[](...)
     - include: variable-declaration
     # Conversions from address to address payable are now possible via payable(x), where x must be of type address
-    - match: '({{elementary_type}}|payable)\s*(\()' # type conversion, ex: uint(-1)
+    - match: '(?:({{elementary_type}}|payable)|({{erc_type}}))\s*(\()' # type conversion, ex: uint(-1)
       captures:
         1: constant.language
-        2: punctuation.section.block.begin.sol
+        2: storage.type
+        3: punctuation.section.block.begin.sol
       push: function-call-arguments
-    - match: '({{special_functions}}|{{crypto_functions}}|{{contract_functions}})\s*\('
+    - match: '({{special_functions_standalone}})\s*\('
       captures:
         1: storage.type
       push: function-call-arguments
-    - match: '{{special_functions_abi}}\s*\('
+    - match: '{{special_object_abi}}\s*\('
       captures:
         1: storage.type
         2: storage.type
@@ -772,7 +795,7 @@ contexts:
     # https://docs.soliditylang.org/en/v0.8.11/control-structures.html#external-function-calls , https://docs.soliditylang.org/en/v0.8.11/control-structures.html#creating-contracts-via-new
     # (bool success, ) = recipient.call{ value: amount }("");
     # impl.delegatecall{gas: gasleft()}(msg.data);
-    - match: '\.({{contract_functions}})\s*\{'
+    - match: '\.({{special_contract_functions}})\s*\{'
       captures:
         1: storage.type
       push:
@@ -922,14 +945,15 @@ contexts:
   # ⚠️ still not working:
   # function testWithConstant(uint256[2 * MY_CONST] calldata _param) public pure
   elementary-function-argument:
-    - match: '\b(?:({{elementary_type}})|({{identifier_path}}))(?:\[(\d*)\])?(?:\[({{identifier}})\])?(?:\s+({{data_location}}\b))?(?:\s+({{identifier}}))?'
+    - match: '\b(?:({{elementary_type}})|({{erc_type}})|({{identifier_path}}))(?:\[(\d*)\])?(?:\[({{identifier}})\])?(?:\s+({{data_location}}\b))?(?:\s+({{identifier}}))?'
       captures:
         1: constant.language
-        2: scope
-        3: constant.numeric
-        4: scope
-        5: storage.modifier
-        6: variable.parameter
+        2: storage.type
+        3: scope
+        4: constant.numeric
+        5: scope
+        6: storage.modifier
+        7: variable.parameter
       pop: true
 
   ## function-modifiers
@@ -952,7 +976,7 @@ contexts:
     - match: \b{{func_modifier}}\b
       scope: storage.modifier
     - match: \b{{identifier}}(?!\()\b # negative lookahead on bracket - avoid matching base consutrctor call public ERC20(name, symbol) {
-      scope: support.type # custom modifier
+      scope: storage.type # custom modifier
     - include: else-pop
 
   function-modifiers:
@@ -966,13 +990,13 @@ contexts:
       push: function-returns-arguments
     - include: function-modifier-with-arguments
     - match: \b{{identifier}}\b
-      scope: support.type # custom modifier
+      scope: storage.type # custom modifier
     - include: else-pop
 
   function-modifier-with-arguments:
     - match: '({{identifier}})\s*(\()'
       captures:
-        1: support.type # modifier
+        1: storage.type # modifier
         2: punctuation.section.block.begin.sol
       push: function-call-arguments
 
@@ -1010,14 +1034,15 @@ contexts:
     - include: mapping-function-argument
     # returns (uint256[PROGRAM_SIZE] memory) -> \[(\d*)|.*?\] -> PROGRAM_SIZE will be part of .*? and won't have syntax
     # what's missing: general expresisons, for example: 2*PROGRAM_SIZE won't work
-    - match: '(?:({{elementary_type}})|{{identifier_path}})(?:\[(?:(\d+)|.*?)\])?(?:\[(?:(\d+)|.*?)\])?(?:\[(?:(\d+)|.*?)\])?(?:\s+({{type_modifier}})\b)?(?:\s+({{identifier}}))?'
+    - match: '(?:({{elementary_type}})|({{erc_type}})|{{identifier_path}})|({{erc_type}})(?:\[(?:(\d+)|.*?)\])?(?:\[(?:(\d+)|.*?)\])?(?:\[(?:(\d+)|.*?)\])?(?:\s+({{type_modifier}})\b)?(?:\s+({{identifier}}))?'
       captures:
         1: constant.language
-        2: constant.numeric
+        2: storage.type
         3: constant.numeric
         4: constant.numeric
-        5: storage.modifier
-        6: variable.parameter
+        5: constant.numeric
+        6: storage.modifier
+        7: variable.parameter
       pop: true
     # - match: '({{identifier}})(?:\[(\d*)|.*?\])?\s*(?:\[(\d*)|.*?\])?\s*(?:\[(\d*)|.*?\])?\s*({{type_modifier}})?({{identifier}})?'
     #   captures:
@@ -1052,11 +1077,11 @@ contexts:
     - include: return-statement
     - include: lvalue-statement
     - include: control-structure
+    - include: assembly
     - include: function-call
     - include: string-literals
     - include: variables
     - include: emit-event
-    - include: assembly
     - include: unchecked-arithmetic
     - match: \bcontinue|break\b # only actually applies inside control structures (which use this syntax context as well)
       scope: keyword
@@ -1115,13 +1140,14 @@ contexts:
         - include: else-pop
 
   elementary-event-argument:
-    - match: '\b(?:({{elementary_type}})|({{identifier_path}}))(?:\[(\d*)\])?(?:\s+({{event_attributes}}))?(?:\s+({{identifier}}))?'
+    - match: '\b(?:({{elementary_type}})|({{erc_type}})|({{identifier_path}}))(?:\[(\d*)\])?(?:\s+({{event_attributes}}))?(?:\s+({{identifier}}))?'
       captures:
         1: constant.language
-        2: scope
-        3: constant.numeric
-        4: storage.modifier
-        5: variable.parameter
+        2: storage.type
+        3: scope
+        4: constant.numeric
+        5: storage.modifier
+        6: variable.parameter
       pop: true
 
   # unchecked-arithmetic
@@ -1146,7 +1172,7 @@ contexts:
   assembly-memory-safe:
     - match: \((\".*?\")\) # for example: assembly ("memory-safe") {
       captures:
-          1: string.quoted
+        1: string.quoted
     - include: else-pop
 
   assembly-body:
@@ -1225,29 +1251,38 @@ contexts:
 
   assembly-opcode:
     - match: '\b({{opcode}})\b'
-      scope: storage.type
+      scope: support.function
 
   # assembly function call
   # ⚠️ keep in sync with function-call!
   # let expected := mod(keccak256(0x2e0, sub(b, 0x2e0)), gen_order)
   #
   assembly-function-call:
+    # string.concat(hiMom, missYou);
+    # has to be before variable-declaration otherwise
+    # "string" gets parsed as elementary type first and we don't detect string.concat as a group anymore
+    - match: '{{special_object_elementary}}\s*\('
+      captures:
+        1: constant.numeric
+        2: storage.type
+      push: function-call-arguments
     # r.limbs = new uint[](max(_a.limbs.length, _b.limbs.length));
     # uint[] memory newLimbs = new uint[](r.limbs.length + 1);
     # we do this because of:
     # uint[](...)
     - include: variable-declaration
     # Conversions from address to address payable are now possible via payable(x), where x must be of type address
-    - match: '({{elementary_type}}|payable)\s*(\()' # type conversion, ex: uint(-1)
+    - match: '(?:({{elementary_type}}|payable)|({{erc_type}}))\s*(\()' # type conversion, ex: uint(-1)
       captures:
         1: constant.language
-        2: punctuation.section.block.begin.sol
+        2: storage.type
+        3: punctuation.section.block.begin.sol
       push: function-call-assembly-arguments
-    - match: '({{special_functions}}|{{crypto_functions}})\s*\('
+    - match: '({{special_functions_standalone}})\s*\('
       captures:
         1: storage.type
       push: function-call-assembly-arguments
-    - match: '{{special_functions_abi}}\s*\('
+    - match: '{{special_object_abi}}\s*\('
       captures:
         1: storage.type
         2: storage.type
