@@ -33,6 +33,8 @@ Cairo is a programming language for writing provable programs, where one party c
 1. SublimeText menu / Preferences / Package Control
 2. Select: Install Package
 3. Type **Ethereum** and press ENTER
+4. With a `.sol` / `.vy` / `.cairo` file open, select: View -> Syntax (-> Open all with current extension as) -> Ethereum -> Cairo / Solidity / Vyper / Yul
+5. Close and re-open any files to activate the syntax highlighting
 
 This will provide **Solidity** `.sol`, **Vyper** `.vy` and **Cairo** `.cairo` syntax highlighting.
 
