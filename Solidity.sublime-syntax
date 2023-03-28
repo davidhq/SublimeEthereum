@@ -763,10 +763,6 @@ contexts:
         1: keyword
         2: punctuation.section.block.begin.sol
       push: function-call-arguments
-    - match: '({{special_accessors}})\s*\('
-      captures:
-        1: storage.type
-      push: function-call-arguments
     - match: '({{identifier}})\s*(\()'
     #- match: '({{identifier}})\s*(?:\{.*?\})?\s*(\()'
       captures:
@@ -800,8 +796,10 @@ contexts:
   function-call-named-arguments:
     - include: expression-include
     - match: ','
-    - match: '\}'
-      scope: punctuation.section.block.end.sol
+    - match: '(\})\s*(\()'
+      captures:
+        1: punctuation.section.block.end.sol
+        2: punctuation.section.block.begin.sol
       pop: true
     - match: \;
       pop: true
@@ -1229,8 +1227,8 @@ contexts:
     - match: '\b({{opcode}})\b'
       scope: storage.type
 
-  # function call
-  # ⚠️ keep in sync with assembly-call!
+  # assembly function call
+  # ⚠️ keep in sync with function-call!
   # let expected := mod(keccak256(0x2e0, sub(b, 0x2e0)), gen_order)
   #
   assembly-function-call:
@@ -1258,10 +1256,6 @@ contexts:
       captures:
         1: keyword
         2: punctuation.section.block.begin.sol
-      push: function-call-assembly-arguments
-    - match: '({{special_accessors}})\s*\('
-      captures:
-        1: storage.type
       push: function-call-assembly-arguments
     - match: '({{identifier}})\s*(\()'
       captures:
