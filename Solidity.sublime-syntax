@@ -107,6 +107,10 @@ contexts:
     - match: \"
       scope: string.quoted
       pop: true
+    - match: \\"
+      scope: constant.character.escape
+    - match: \\'
+      scope: constant.character.escape
     - match: \S
       scope: string.quoted
     - include: eol-pop
@@ -116,6 +120,10 @@ contexts:
     - match: \'
       scope: string.quoted
       pop: true
+    - match: \\"
+      scope: constant.character.escape
+    - match: \\'
+      scope: constant.character.escape
     - match: \S
       scope: string.quoted
     - include: eol-pop
