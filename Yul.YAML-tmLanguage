@@ -177,12 +177,14 @@ patterns:
 - match: \b(assembly|switch|let|case|default)\b
   name: keyword
   comment: Assembly stuff
-- match: ([\"].*?[\"])
-  name: string.quoted
-  comment: Strings
-- match: ([\'].*?[\'])
-  name: string.quoted
-  comment: Strings
+
+# strings
+- name: string.quoted
+  # match quotes without leading escape characters
+  begin: (?<!\\)[\"\']
+  end: (?<!\\)[\"\']
+  patterns:
+  - include: "#string"
 
 repository:
   numbers:
@@ -190,3 +192,14 @@ repository:
     - match: \b(?:[+-]?\.?\d[\d_eE]*)(?:\.\d+[\deE]*)?\b
       name: constant.numeric
       comment: Numbers, possibly with scientific notation
+  string:
+    patterns:
+    - match: \\"
+      name: constant.character.escape
+      comment: Strings
+    - match: \\'
+      name: constant.character.escape
+      comment: Strings
+    - match: .
+      name: string.quoted
+      comment: Strings

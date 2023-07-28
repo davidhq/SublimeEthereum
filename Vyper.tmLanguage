@@ -193,14 +193,6 @@
 		</dict>
 		<dict>
 			<key>comment</key>
-			<string>Strings</string>
-			<key>match</key>
-			<string>([\"\'].*?[\"\'])</string>
-			<key>name</key>
-			<string>string.quoted</string>
-		</dict>
-		<dict>
-			<key>comment</key>
 			<string>Numbers, possibly with scientific notation</string>
 			<key>match</key>
 			<string>\b(?:[+-]?\.?\d[\d_eE]*)(?:\.\d+[\deE]*)?\b</string>
@@ -215,7 +207,55 @@
 			<key>name</key>
 			<string>constant.numeric</string>
 		</dict>
+		<dict>
+			<key>begin</key>
+			<string>(?&lt;!\\)[\"\']</string>
+			<key>end</key>
+			<string>(?&lt;!\\)[\"\']</string>
+			<key>name</key>
+			<string>string.quoted</string>
+			<key>patterns</key>
+			<array>
+				<dict>
+					<key>include</key>
+					<string>#string</string>
+				</dict>
+			</array>
+		</dict>
 	</array>
+	<key>repository</key>
+	<dict>
+		<key>string</key>
+		<dict>
+			<key>patterns</key>
+			<array>
+				<dict>
+					<key>comment</key>
+					<string>Strings</string>
+					<key>match</key>
+					<string>\\"</string>
+					<key>name</key>
+					<string>constant.character.escape</string>
+				</dict>
+				<dict>
+					<key>comment</key>
+					<string>Strings</string>
+					<key>match</key>
+					<string>\\'</string>
+					<key>name</key>
+					<string>constant.character.escape</string>
+				</dict>
+				<dict>
+					<key>comment</key>
+					<string>Strings</string>
+					<key>match</key>
+					<string>.</string>
+					<key>name</key>
+					<string>string.quoted</string>
+				</dict>
+			</array>
+		</dict>
+	</dict>
 	<key>scopeName</key>
 	<string>source.vyper</string>
 	<key>uuid</key>

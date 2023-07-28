@@ -67,7 +67,7 @@
 						<key>1</key>
 						<dict>
 							<key>name</key>
-							<string>keyword</string>
+							<string>entity.name.function</string>
 						</dict>
 					</dict>
 					<key>match</key>
@@ -609,20 +609,19 @@
 					<string>keyword</string>
 				</dict>
 				<dict>
-					<key>comment</key>
-					<string>Strings</string>
-					<key>match</key>
-					<string>([\"].*?[\"])</string>
+					<key>begin</key>
+					<string>(?&lt;!\\)[\"\']</string>
+					<key>end</key>
+					<string>(?&lt;!\\)[\"\']</string>
 					<key>name</key>
 					<string>string.quoted</string>
-				</dict>
-				<dict>
-					<key>comment</key>
-					<string>Strings</string>
-					<key>match</key>
-					<string>([\'].*?[\'])</string>
-					<key>name</key>
-					<string>string.quoted</string>
+					<key>patterns</key>
+					<array>
+						<dict>
+							<key>include</key>
+							<string>#string</string>
+						</dict>
+					</array>
 				</dict>
 			</array>
 		</dict>
@@ -637,6 +636,36 @@
 					<string>\b(?:[+-]?\.?\d[\d_eE]*)(?:\.\d+[\deE]*)?\b</string>
 					<key>name</key>
 					<string>constant.numeric</string>
+				</dict>
+			</array>
+		</dict>
+		<key>string</key>
+		<dict>
+			<key>patterns</key>
+			<array>
+				<dict>
+					<key>comment</key>
+					<string>Strings</string>
+					<key>match</key>
+					<string>\\"</string>
+					<key>name</key>
+					<string>constant.character.escape</string>
+				</dict>
+				<dict>
+					<key>comment</key>
+					<string>Strings</string>
+					<key>match</key>
+					<string>\\'</string>
+					<key>name</key>
+					<string>constant.character.escape</string>
+				</dict>
+				<dict>
+					<key>comment</key>
+					<string>Strings</string>
+					<key>match</key>
+					<string>.</string>
+					<key>name</key>
+					<string>string.quoted</string>
 				</dict>
 			</array>
 		</dict>

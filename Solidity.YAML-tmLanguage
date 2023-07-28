@@ -211,10 +211,32 @@ repository:
     - match: \bunchecked\b
       name: keyword
       comment: Unchecked
-    - match: ([\"].*?[\"])
-      name: string.quoted
+
+    - name: string.quoted
+      # match quotes without leading escape characters
+      begin: (?<!\\)[\"\']
+      end: (?<!\\)[\"\']
+      patterns:
+      - include: "#string"
+
+    # old code - does not work correctly with escaped quotes inside strings
+    # for example: "lala\"la"
+    # - match: ([\"].*?[\"])
+    #   name: string.quoted
+    #   comment: Strings
+    # - match: ([\'].*?[\'])
+    #   name: string.quoted
+    #   comment: Strings
+
+  string:
+    patterns:
+    - match: \\"
+      name: constant.character.escape
       comment: Strings
-    - match: ([\'].*?[\'])
+    - match: \\'
+      name: constant.character.escape
+      comment: Strings
+    - match: .
       name: string.quoted
       comment: Strings
 

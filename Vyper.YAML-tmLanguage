@@ -13,64 +13,100 @@ patterns:
   end: (\"\"\")
   name: comment
   comment: Multiline comments
+
 - match: \b(event|indexed)\b
   name: keyword.control
   comment: Events
+
 - match: \b(contract|interface|library|using|struct|constructor|modifier)(\s+[A-Za-z_]\w*)?(?:\s+is\s+((?:[A-Za-z_][\,\s]*)*))?\b
   name: keyword.control
   captures:
     '2': {name: entity.name.function}
     '3': {name: entity.name.function}
   comment: Structures, event definitions
+
 - match: \b(def)(\s+[A-Za-z_]\w*)?\b
   name: keyword
   captures:
     '2': {name: entity.name.function}
     '3': {name: entity.name.function}
   comment: function
+
 - match: \b(True|False)\b
   name: constant.language
   comment: True and false keywords
+
 - match: \bself\b
   name: markup.italic
   comment: self variable
 #- match: \b(address\s*payable|address|string|bytes?\d*|int\d*|uint\d*|bool|u?fixed\d+x\d+)(?:\s*\[(\d*)\])?(?:\s*\[(\d*)\])?\s*(private|public|internal|external|constant|memory|storage)?\s+(?:[A-Za-z_]\w*)\s*[\;\=]
+
 - match: \b(address(?:\s+payable)?|string|bytes?\d*|int\d*|uint\d*|bool|u?fixed\d+x\d+)\b
   name: support.type
   comment: Types
+
 - match: \b(import|constant|map|raise|payable|storage|memory|calldata|if|else|for|while|do|break|continue|return|private|public|immutable|pure|view|internal|external|this|suicide|selfdestruct|delegatecall|emit|new|is|throw|revert|assert|require|\_)\b
   name: keyword.control
   comment: Langauge keywords
+
 - match: \b(not|and|or|pass|from|import|as)\b
   name: keyword
   comment: Vyper specific keywords
+
 - match: (@[A-Za-z_]\w*)\b
   name: markup.italic
   comment: Vyper decorators
+
 - match: (=|!|>|<|\||&|\?|\^|~|\*|\+|\-|\/|\%|\bhex\b)
   name: keyword.operator
   comment: Operators
+
 - match: \b(msg|block|tx)\.([A-Za-z_]\w*)\b
   captures:
     '1': {name: support.type}
     '2': {name: support.type}
   comment: msg and block special usage
+
 - match: \b(blockhash|gasleft)\s*\(
   captures:
     '1': {name: markup.italic}
   comment: Special built-in functions
+
 - match: \b([A-Za-z_]\w*)(?:\[(\d*)\])?(?:\[(\d*)\])?\(
   captures:
     '1': {name: entity.name.function}
     '2': {name: constant.numeric}
     '3': {name: constant.numeric}
   comment: Function call, also for example - uint[] memory a = new uint[332](7); or uint[2][] memory arrayOfPairs = new uint[2][](size);
-- match: ([\"\'].*?[\"\'])
-  name: string.quoted
-  comment: Strings
+# - match: ([\"\'].*?[\"\'])
+#   name: string.quoted
+#   comment: Strings
+
 - match: \b(?:[+-]?\.?\d[\d_eE]*)(?:\.\d+[\deE]*)?\b
   name: constant.numeric
   comment: Numbers, possibly with scientific notation
+
 - match: \b(0[xX][a-fA-F0-9]+)\b
   name: constant.numeric
   comment: Hexadecimal
+
+# strings
+- name: string.quoted
+  # match quotes without leading escape characters
+  begin: (?<!\\)[\"\']
+  end: (?<!\\)[\"\']
+  patterns:
+  - include: "#string"
+
+repository:
+  string:
+    patterns:
+    - match: \\"
+      name: constant.character.escape
+      comment: Strings
+    - match: \\'
+      name: constant.character.escape
+      comment: Strings
+    - match: .
+      name: string.quoted
+      comment: Strings
