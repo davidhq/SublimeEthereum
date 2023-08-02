@@ -465,7 +465,7 @@ contexts:
 
   variable-declaration:
     - include: mapping
-    - match: \b({{elementary_type}})|({{erc_type}})\b # uint256[3][257][16] private precomputedGenerators;
+    - match: \b({{elementary_type}}|{{erc_type}})\b # uint256[3][257][16] private precomputedGenerators;
       captures:
         1: constant.language
         2: storage.type
