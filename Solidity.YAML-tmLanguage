@@ -214,8 +214,15 @@ repository:
 
     - name: string.quoted
       # match quotes without leading escape characters
-      begin: (?<!\\)[\"\']
-      end: (?<!\\)[\"\']
+      begin: (?<!\\)[\"]
+      end: (?<!\\)[\"]
+      patterns:
+      - include: "#string"
+
+    - name: string.quoted
+      # match quotes without leading escape characters
+      begin: (?<!\\)[\']
+      end: (?<!\\)[\']
       patterns:
       - include: "#string"
 

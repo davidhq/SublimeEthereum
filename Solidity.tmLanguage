@@ -610,9 +610,24 @@
 				</dict>
 				<dict>
 					<key>begin</key>
-					<string>(?&lt;!\\)[\"\']</string>
+					<string>(?&lt;!\\)[\"]</string>
 					<key>end</key>
-					<string>(?&lt;!\\)[\"\']</string>
+					<string>(?&lt;!\\)[\"]</string>
+					<key>name</key>
+					<string>string.quoted</string>
+					<key>patterns</key>
+					<array>
+						<dict>
+							<key>include</key>
+							<string>#string</string>
+						</dict>
+					</array>
+				</dict>
+				<dict>
+					<key>begin</key>
+					<string>(?&lt;!\\)[\']</string>
+					<key>end</key>
+					<string>(?&lt;!\\)[\']</string>
 					<key>name</key>
 					<string>string.quoted</string>
 					<key>patterns</key>
