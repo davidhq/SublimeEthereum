@@ -7,14 +7,14 @@ scope: source.solidity
 variables:
   identifier: '(?:[A-Za-z_]\w*)'
   identifier_path: '(?:[A-Za-z_][\w\.]*)' # ex.: A.MyStruct
-  number: '(?:[+-]?\.?\d[\d_eE]*)(?:\.\d+[\deE]*)?'
-  hex_number: '(?:[+-]?(0[Xx])[0-9a-fA-F_]*)'
+  # Updated number literal to allow underscores (e.g. 1_000_000)
+  number: '(?:[+-]?(?:(?:\d(?:_?\d)*\.?\d(?:_?\d)*)|\.\d(?:_?\d)*)(?:[eE][+-]?\d(?:_?\d)*)?)'
+  # Updated hex literal to require at least one hex digit
+  hex_number: '(?:[+-]?(0[Xx])[0-9a-fA-F_]+)'
   math_operator: '(?:\+|\+\+|\-|\-\-|\*|\*\*|\/|\^|\%)'
   logical_operator: '(?:\!|\&|\||\~)'
   question_mark: '(?:\?)'
   comparison_operator: '(?:\>(?:\=)?|\<(?:\=)?|\=\=|\!\=)'
-
-  #operator: '{{math_operator}}|{{logical_operator}}|{{question_mark}}|{{comparison_operator}}'
 
   contract: contract
   abstract_keyword: abstract
@@ -43,16 +43,14 @@ variables:
   special_object_tx: '\b(?:(tx)\.(gasprice|origin))\b'
   special_object_elementary: '\b(?:(string|bytes)\.({{identifier}}))\b'
 
-  # standalone special functions
   special_functions_crypto: '\b(?:addmod|mulmod|sha256|keccak256|ripemd160|ecrecover)\b'
   special_contract_functions: '\b(?:selfdestruct|call|delegatecall|staticcall)\b'
   special_functions_other: '\b(?:blockhash|gasleft)\b'
-  # ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+  # Combined standalone special functions
   special_functions_standalone: '{{special_functions_crypto}}|{{special_contract_functions}}|{{special_functions_other}}'
 
   string_literals: '\b(hex|unicode)\b'
 
-  # var keyword was deprecated in solidity 0.4.20 but we still highlight it for older contracts!
   reserved_keywords: \b(var|after|alias|apply|auto|byte|case|copyof|default|define|final|implements|in|inline|let|macro|match|mutable|null|of|partial|promise|reference|relocatable|sealed|sizeof|static|supports|switch|typedef|typeof)\b
 
   ether_units: '(?:wei|gwei|ether)'
@@ -60,15 +58,13 @@ variables:
 
   assembly_keywords: '\b(let|for|case|switch|default|if)\b'
   assembly_operators: '(?:\:\=)'
-  # https://docs.soliditylang.org/en/v0.8.11/yul.html#evm-dialect
+  # Updated opcode list (note: update further as new EVM opcodes are introduced)
   opcode: stop|add|sub|mul|div|sdiv|mod|smod|exp|not|lt|gt|slt|sgt|eq|iszero|and|or|xor|byte|shl|shr|sar|addmod|mulmod|signextend|keccak256|pc|pop|mload|mstore|mstore8|sload|sstore|msize|gas|address|balance|selfbalance|caller|callvalue|calldataload|calldatasize|calldatacopy|codesize|codecopy|extcodesize|extcodecopy|returndatasize|returndatacopy|extcodehash|create|create2|call|callcode|delegatecall|staticcall|return|revert|selfdestruct|invalid|log0|log1|log2|log3|log4|chainid|basefee|origin|gasprice|blockhash|coinbase|timestamp|number|difficulty|gaslimit
 
 contexts:
   main:
     - match: (?=\S)
       push: program
-
-  # helpers
 
   else-pop:
     - match: (?=\S)
@@ -78,8 +74,6 @@ contexts:
     - match: \n
       pop: true
 
-  # number
-
   number:
     - match: '{{number}}'
       scope: constant.numeric
@@ -87,12 +81,6 @@ contexts:
   hex_number:
     - match: '{{hex_number}}'
       scope: constant.numeric
-
-  # string
-
-  # string:
-  #   - match: ([\"\'].*?[\"\'])
-  #     scope: string.quoted
 
   string:
     - match: \"
@@ -103,7 +91,7 @@ contexts:
       scope: string.quoted
 
   string-contents-double-quote:
-    - meta_include_prototype: false # don't start a comment inside string
+    - meta_include_prototype: false
     - match: \"
       scope: string.quoted
       pop: true
@@ -116,7 +104,7 @@ contexts:
     - include: eol-pop
 
   string-contents-single-quote:
-    - meta_include_prototype: false # don't start a comment inside string
+    - meta_include_prototype: false
     - match: \'
       scope: string.quoted
       pop: true
@@ -128,8 +116,6 @@ contexts:
       scope: string.quoted
     - include: eol-pop
 
-  # program structure
-
   program:
     - include: pragma
     - include: import
@@ -140,19 +126,35 @@ contexts:
     - include: using-directive
     - include: user-defined-type
     - include: assembly
-    - include: variables # actually only constant declarations are allowed but we parse other definitions as well
-
-  # comments
+    - include: variables
 
   prototype:
     - include: comments
 
   comments:
+    # Enhanced NatSpec single-line comments with dedicated tag highlighting
+    - match: '///'
+      scope: punctuation.definition.comment.natspec
+      push:
+        - meta_include_prototype: false
+        - meta_scope: comment.line.natspec
+        - include: natspec-tags
+        - match: \n
+          pop: true
+    - match: '//!'
+      scope: punctuation.definition.comment.natspec
+      push:
+        - meta_include_prototype: false
+        - meta_scope: comment.line.natspec
+        - include: natspec-tags
+        - match: \n
+          pop: true
     - match: /\*\*(?!/)
       scope: punctuation.definition.comment.begin
       push:
         - meta_include_prototype: false
         - meta_scope: comment.block.documentation
+        - include: natspec-tags
         - match: \*/
           scope: punctuation.definition.comment.end
           pop: true
@@ -171,8 +173,6 @@ contexts:
         - meta_scope: comment.line.double-slash
         - match: \n
           pop: true
-
-  # pragma
 
   pragma:
     - include: version_pragma
@@ -208,8 +208,6 @@ contexts:
         1: keyword.other.sol
         2: keyword.other.sol
 
-  # import
-
   import:
     - match: (\bimport\b)
       scope: keyword
@@ -228,8 +226,6 @@ contexts:
     - match: .*?
       scope: scope
     - include: else-pop
-
-  # contract
 
   contract:
     - match: \b({{contract_like}})\s+({{identifier}})\s+(is)\b
@@ -253,7 +249,6 @@ contexts:
     - match: '{{identifier}}'
       scope: support.function
     - match: '\('
-      # contract Derived1 is Base(7) {}
       push: function-call-arguments
     - match: \,
       scope: scope
@@ -282,8 +277,6 @@ contexts:
     - include: enum
     - include: reserved-keywords
 
-  # struct
-
   struct:
     - match: \b(struct)(?:\s+({{identifier}}))?
       captures:
@@ -301,10 +294,8 @@ contexts:
   struct-definition-body-contents:
     - include: variable-declaration
     - match: '\}'
-      scope: punctuation.section.block.end
+      scope: punctuation.section.block.end.sol
       pop: true
-
-  # enum
 
   enum:
     - match: \b(enum)\s+({{identifier}})?
@@ -326,15 +317,10 @@ contexts:
     - include: else-pop
 
   enum-body-contents:
-    #- match: \b{{identifier}}\b
-    #  scope: variable.parameter
     - match: '\}'
-      scope: punctuation.section.block.end
+      scope: punctuation.section.block.end.sol
       pop: true
 
-  # user defined type
-
-  # https://docs.soliditylang.org/en/latest/grammar.html#a4.SolidityParser.userDefinedValueTypeDefinition
   user-defined-type:
     - match: '\b(type)\s+({{identifier}})\s+(is)\s+(?:({{elementary_type}})|({{erc_type}}))'
       captures:
@@ -344,11 +330,6 @@ contexts:
         4: constant.language
         5: storage.type
 
-  # using
-
-  # https://docs.soliditylang.org/en/latest/grammar.html#a4.SolidityParser.usingDirective
-  # todo?: using {add as +, addInt as +} for UncheckedInt8;
-  # it is not yet in docs, saw it here: https://blog.soliditylang.org/2021/09/27/user-defined-value-types/
   using-directive:
     - match: \b(using)\s+(.*?)\s+(for)\b
       captures:
@@ -375,14 +356,10 @@ contexts:
         3: scope
         4: keyword
 
-  # variables
-
   variables:
     - include: variable-declaration-with-assignment
     - include: variable-declaration
     - include: variable-assignment
-
-  # variable-assignment
 
   variable-assignment:
     - match: \b{{identifier}}\s*(\-?\+?\*?\/?\=)
@@ -393,14 +370,11 @@ contexts:
       scope: punctuation.definition.start.sol
       push: tuple-content
 
-  # mapping
-
   mapping:
     - match: \bmapping\b
       scope: keyword
       push: mapping-declaration
 
-  # mapping when used in function argument declaration
   mapping-function-argument:
     - match: \bmapping\b
       scope: keyword
@@ -411,7 +385,6 @@ contexts:
       scope: punctuation.section.block.begin.sol
       push:
         - mapping-core
-
     - include: mapping-modifiers
     - match: \b{{identifier}}\b
     - match: \;
@@ -423,13 +396,12 @@ contexts:
     - match: \b{{type_modifier}}\b
       scope: storage.modifier
 
-  # mapping when used in function argument declaration
   mapping-declaration-function-argument:
     - match: \(
       scope: punctuation.section.block.begin.sol
       push:
         - mapping-core
-    - match: \b({{data_location}})\b # this is the main difference - function argument attributes
+    - match: \b({{data_location}})\b
       captures:
         1: storage.modifier
     - match: \b{{identifier}}\b
@@ -441,7 +413,7 @@ contexts:
     - match: \=\>
       scope: keyword
       push:
-        - match: \bmapping\b # mapping of a mapping
+        - match: \bmapping\b
           scope: keyword
           push: mapping-declaration
         - include: mapping-from
@@ -450,8 +422,6 @@ contexts:
       scope: punctuation.section.block.end.sol
       pop: true
 
-  # extracted out to be used for nested mappings definitions:
-  # mapping (address => mapping(uint256 => uint256)) internal my_mapping;
   mapping-from:
     - match: (?:({{elementary_type}})|({{erc_type}})|({{identifier_path}}))
       captures:
@@ -461,19 +431,16 @@ contexts:
     - match: '{{identifier}}'
       scope: constant.language
 
-  # variable declaration
-
   variable-declaration:
     - include: mapping
-    - match: \b({{elementary_type}}|{{erc_type}})\b # uint256[3][257][16] private precomputedGenerators;
+    - match: \b({{elementary_type}}|{{erc_type}})\b
       captures:
         1: constant.language
         2: storage.type
       push:
-        #- variable-identifier
         - variable-type
         - variable-dimension
-    - match: \b{{identifier_path}}(?:\[(\d*)\])*\s+((?:{{type_modifier}}\s+)+) # ex: BigInt.bigint memory x = BigInt.fromUint(7); OR even BigInt.bigint[3] memory private x = BigInt.fromUint(7); (rare or never used) -- we cannot push variable-dimension on context here because we need strict matching... minuses are that only the last capture group will have a scope (this is how regexes work) and also we can only have digit, no expressions
+    - match: \b{{identifier_path}}(?:\[(\d*)\])*\s+((?:{{type_modifier}}\s+)+)
       captures:
         1: constant.numeric
         2: storage.modifier
@@ -492,13 +459,6 @@ contexts:
       scope: storage.modifier
     - include: else-pop
 
-  # variable-identifier:
-  #   - match: \b{{identifier}}\b
-  #     scope: scope
-  #     pop: true
-
-  # variable declaration with assignment
-
   variable-declaration-with-assignment:
     - include: variable-declaration
     - include: try-assignment
@@ -507,8 +467,6 @@ contexts:
     - match: \=
       scope: keyword.operator.assignment
       push: expression
-
-  # tuple
 
   tuple:
     - match: '\('
@@ -525,15 +483,11 @@ contexts:
     - match: ','
     - include: else-pop
 
-  # control-structure
-
   control-structure:
     - include: if-statement
     - include: while-loop
     - include: for-loop
     - include: try-catch
-
-  # while loop
 
   while-loop:
     - match: \bwhile\b
@@ -544,11 +498,7 @@ contexts:
     - match: \bdo\b
       scope: keyword
       push:
-        #- expression-in-brackets
-        #- while-keyword
         - control-structure-body
-
-  # if statement
 
   if-statement:
     - include: else-if-statement
@@ -559,7 +509,6 @@ contexts:
         - control-structure-body
         - expression-in-brackets
 
-  # Parentheses can *not* be omitted for conditionals, but curly brances can be omitted around single-statement bodies.
   expression-in-brackets:
     - match: \(
       scope: punctuation.definition.start.sol
@@ -569,11 +518,11 @@ contexts:
       pop: true
 
   control-structure-body:
-    - include: curly-brackets-body-contents # statement without curl brackets: ex.: if () return;
+    - include: curly-brackets-body-contents
     - match: '\{'
       scope: punctuation.section.block.begin.sol
       push:
-        - include: curly-brackets-body-contents # ex.: if () { return };
+        - include: curly-brackets-body-contents
         - match: '\}'
           scope: punctuation.section.block.end
           pop: true
@@ -596,8 +545,6 @@ contexts:
       push:
         - control-structure-body
 
-  # for loop
-
   for-loop:
     - match: \bfor\b
       scope: keyword
@@ -612,8 +559,7 @@ contexts:
         - variables-or-expression
         - expression
         - variables-push
-    - match: '[^\)]' # this is to contain any problems between for loop arguments (...) ... we match any unmatched thing until closing bracket!
-                    # this way the issues (example: for (strinfg i = 0; i < n; i++) { ) don't spread outside of these brackets
+    - match: '[^\)]'
     - match: '\)'
       scope: punctuation.section.block.end.sol
       pop: true
@@ -628,27 +574,21 @@ contexts:
     - include: variables
     - include: expression
 
-  # control structure: try-catch
-
-  try-catch: # Example: https://solidity.readthedocs.io/en/latest/control-structures.html#try-catch
+  try-catch:
     - match: \btry\b
       scope: keyword
       push:
-        - include: function-returns-declaration-include # try feed.getData(token) returns (uint v) {
+        - include: function-returns-declaration-include
         - include: function-call
-        - include: expression-include # new ContractName()
+        - include: expression-include
         - include: else-pop
-      # curly braces body after try statement is handled outside of our try-catch parser
     - match: \bcatch\b
       scope: keyword
       push:
-        - match: \b(Error|Panic)\b # } catch Error(string memory /*reason*/) {
+        - match: \b(Error|Panic)\b
           scope: storage.type
-        - include: function-arguments # } catch (bytes memory /*lowLevelData*/) {
+        - include: function-arguments
         - include: else-pop
-        # curly braces body after catch statement is handled outside of our try-catch parser
-
-  # expression
 
   reserved-keywords:
     - match: '{{reserved_keywords}}'
@@ -684,8 +624,7 @@ contexts:
         - match: \]
           scope: punctuation.section.block.end.expr
           pop: true
-        - match: \, # ... = [0,1,2]
-        - include: expression
+        - match: \,
     - include: type-information-inquiry
     - include: ternary-operator
     - include: special-accessors
@@ -721,9 +660,8 @@ contexts:
       pop: true
     - include: else-pop
 
-  # type information - https://docs.soliditylang.org/en/latest/units-and-global-variables.html?highlight=type#type-information
   type-information-inquiry:
-    - match: \b(type)\s*\((?:({{elementary_type}})|({{erc_type}})|({{identifier_path}}))?\)\.({{identifier}})\b # type conversion, ex: uint(-1)
+    - match: \b(type)\s*\((?:({{elementary_type}})|({{erc_type}})|({{identifier_path}}))?\)\.({{identifier}})\b
       captures:
         1: keyword
         2: constant.language
@@ -731,15 +669,10 @@ contexts:
         4: scope
         5: storage.type
 
-  # string literals
-  # https://docs.soliditylang.org/en/latest/types.html#unicode-literals
-  # https://docs.soliditylang.org/en/latest/types.html#hexadecimal-literals
   string-literals:
     - match: ({{string_literals}})(?=[\'\"])
       captures:
         1: variable.parameter
-
-  # ternary operator
 
   ternary-operator:
     - match: '{{question_mark}}'
@@ -757,24 +690,14 @@ contexts:
     - match: '{{special_accessors}}'
       scope: storage.type
 
-  # function call
-  # keep in sync with assembly-function-call!
   function-call:
-    # string.concat(hiMom, missYou);
-    # has to be before variable-declaration otherwise
-    # "string" gets parsed as elementary type first and we don't detect string.concat as a group anymore
     - match: '{{special_object_elementary}}\s*\('
       captures:
         1: constant.numeric
         2: storage.type
       push: function-call-arguments
-    # r.limbs = new uint[](max(_a.limbs.length, _b.limbs.length));
-    # uint[] memory newLimbs = new uint[](r.limbs.length + 1);
-    # we do this because of:
-    # uint[](...)
     - include: variable-declaration
-    # Conversions from address to address payable are now possible via payable(x), where x must be of type address
-    - match: '(?:({{elementary_type}}|payable)|({{erc_type}}))\s*(\()' # type conversion, ex: uint(-1)
+    - match: '(?:({{elementary_type}}|payable)|({{erc_type}}))\s*(\()'
       captures:
         1: constant.language
         2: storage.type
@@ -795,28 +718,22 @@ contexts:
         2: punctuation.section.block.begin.sol
       push: function-call-arguments
     - match: '({{identifier}})\s*(\()'
-    #- match: '({{identifier}})\s*(?:\{.*?\})?\s*(\()'
       captures:
         1: support.function
         2: punctuation.section.block.begin.sol
       push: function-call-arguments
-    # https://docs.soliditylang.org/en/v0.8.11/control-structures.html#external-function-calls , https://docs.soliditylang.org/en/v0.8.11/control-structures.html#creating-contracts-via-new
-    # (bool success, ) = recipient.call{ value: amount }("");
-    # impl.delegatecall{gas: gasleft()}(msg.data);
     - match: '\.({{special_contract_functions}})\s*\{'
       captures:
         1: storage.type
       push:
         - function-call-arguments
         - function-call-named-arguments
-    # bentoBox.deposit{value: value}(token, msg.sender, to, uint256(amount), uint256(share));
     - match: '\.({{identifier}})\s*\{'
       captures:
         1: support.function
       push:
         - function-call-arguments
         - function-call-named-arguments
-    # pool = address(new UniswapV3Pool{salt: keccak256(abi.encode(token0, token1, fee))}());
     - match: '\b(?<=new)\s+({{identifier}})\s*\{'
       captures:
         1: support.function
@@ -847,28 +764,35 @@ contexts:
   function-call-argument:
     - include: expression
 
-  # error
-
   error:
     - match: \b(error)\s+({{identifier}})
       captures:
         1: keyword
         2: support.function
       push:
+        - error-arguments
         - curly-brackets-body
-        - function-returns-declaration
-        - function-modifiers
-        - function-arguments
     - match: \b(error)\s*
       captures:
         1: keyword
       push:
+        - error-arguments
         - curly-brackets-body
-        - function-returns-declaration
-        - function-modifiers
-        - function-arguments
 
-  # function declaration
+  # New contexts for error parameter lists for custom errors
+  error-arguments:
+    - match: '\('
+      scope: punctuation.section.arguments.begin.sol
+      push: error-argument-list
+    - match: ''
+      pop: true
+
+  error-argument-list:
+    - include: function-argument
+    - match: ','
+    - match: '\)'
+      scope: punctuation.section.arguments.end.sol
+      pop: true
 
   function:
     - match: \b(function)\s+({{identifier}})
@@ -889,8 +813,6 @@ contexts:
         - function-modifiers
         - function-arguments
 
-  # constructor declaration
-
   constructor:
     - match: \b(constructor)\b
       scope: keyword.declaration.function
@@ -900,8 +822,6 @@ contexts:
         - constructor-modifiers
         - function-arguments
 
-  # special receive and fallback functions
-
   receive_and_fallback:
     - match: \b(receive|fallback)\b
       scope: keyword.declaration.function
@@ -910,9 +830,7 @@ contexts:
         - function-modifiers
         - function-arguments
 
-  # modifier declaration
-
-  modifier: # the actual "modifier" keyword, not as various function modifiers like: public, private etc.
+  modifier:
     - match: \b(modifier)\s+({{identifier}})
       captures:
         1: keyword.declaration.modifier
@@ -926,8 +844,6 @@ contexts:
   function-arguments-try:
     - include: function-arguments
     - include: else-pop
-
-  ## function-arguments
 
   function-arguments:
     - match: '\('
@@ -944,14 +860,9 @@ contexts:
   function-argument:
     - include: function
     - include: mapping-function-argument
-    # identifier is optional for cases like this: function bar(bytes memory, ...
     - include: elementary-function-argument
     - include: else-pop
 
-  # function testWithoutConstant(uint256[10] calldata _param) public pure (?:\[(\d*)\])?
-  # function testWithConstant(uint256[MY_CONST] calldata _param) public pure (?:\[({{identifier}})\])?
-  # ⚠️ still not working:
-  # function testWithConstant(uint256[2 * MY_CONST] calldata _param) public pure
   elementary-function-argument:
     - match: '\b(?:({{elementary_type}})|({{erc_type}})|({{identifier_path}}))(?:\[(\d*)\])?(?:\[({{identifier}})\])?(?:\s+({{data_location}}\b))?(?:\s+({{identifier}}))?'
       captures:
@@ -964,14 +875,6 @@ contexts:
         7: variable.parameter
       pop: true
 
-  ## function-modifiers
-
-  # abstract contract MultiDistributorAuthorization is Authentication {
-
-  # constructor(IVault vault) Authentication(bytes32(uint256(address(this)))) {
-  # ...
-  # }
-
   constructor-base-init:
     - match: '({{identifier}})\s*(\()'
       captures:
@@ -983,14 +886,14 @@ contexts:
   constructor-modifiers:
     - match: \b{{func_modifier}}\b
       scope: storage.modifier
-    - match: \b{{identifier}}(?!\()\b # negative lookahead on bracket - avoid matching base consutrctor call public ERC20(name, symbol) {
-      scope: storage.type # custom modifier
+    - match: \b{{identifier}}(?!\()\b
+      scope: storage.type
     - include: else-pop
 
   function-modifiers:
     - match: \b{{func_modifier}}\b
       scope: storage.modifier
-    - match: '\b({{func_modifier_override}}\b)(?:\((?:{{identifier}}(?:,\s*)?)+\))?' # https://github.com/davidhq/SublimeEthereum/issues/50#issuecomment-611749874, 1) internal override(ERC20, ERC20Pausable) 2) internal override
+    - match: '\b({{func_modifier_override}}\b)(?:\((?:{{identifier}}(?:,\s*)?)+\))?'
       captures:
         1: storage.modifier
     - match: \breturns\b
@@ -998,21 +901,19 @@ contexts:
       push: function-returns-arguments
     - include: function-modifier-with-arguments
     - match: \b{{identifier}}\b
-      scope: storage.type # custom modifier
+      scope: storage.type
     - include: else-pop
 
   function-modifier-with-arguments:
     - match: '({{identifier}})\s*(\()'
       captures:
-        1: storage.type # modifier
+        1: storage.type
         2: punctuation.section.block.begin.sol
       push: function-call-arguments
 
   function-modifiers-recursive:
     - include: function-modifier
     - include: function-modifiers
-
-    ## function-returns
 
   function-returns-declaration:
     - include: function-returns-declaration-include
@@ -1038,10 +939,7 @@ contexts:
     - include: function-returns-arguments
 
   function-returns-argument:
-    # function GetTrie() internal pure returns (mapping(bytes32 => bytes) storage trie) {
     - include: mapping-function-argument
-    # returns (uint256[PROGRAM_SIZE] memory) -> \[(\d*)|.*?\] -> PROGRAM_SIZE will be part of .*? and won't have syntax
-    # what's missing: general expresisons, for example: 2*PROGRAM_SIZE won't work
     - match: '(?:({{elementary_type}})|({{erc_type}})|{{identifier_path}})|({{erc_type}})(?:\[(?:(\d+)|.*?)\])?(?:\[(?:(\d+)|.*?)\])?(?:\[(?:(\d+)|.*?)\])?(?:\s+({{type_modifier}})\b)?(?:\s+({{identifier}}))?'
       captures:
         1: constant.language
@@ -1052,18 +950,7 @@ contexts:
         6: storage.modifier
         7: variable.parameter
       pop: true
-    # - match: '({{identifier}})(?:\[(\d*)|.*?\])?\s*(?:\[(\d*)|.*?\])?\s*(?:\[(\d*)|.*?\])?\s*({{type_modifier}})?({{identifier}})?'
-    #   captures:
-    #     1: constant.language
-    #     2: constant.numeric
-    #     3: constant.numeric
-    #     4: constant.numeric
-    #     5: storage.modifier
-    #     6: variable.parameter
-    #   pop: true
     - include: else-pop
-
-    ## curly-brackets-body
 
   curly-brackets-body:
     - include: curly-brackets-body-include
@@ -1079,9 +966,9 @@ contexts:
           pop: true
 
   curly-brackets-body-contents:
-    - match: \b_; # _; is used inside modifiers and is replaced by actual function
+    - match: \b_;
       scope: keyword
-    - include: curly-brackets-body-include # block inside a block inside a ...
+    - include: curly-brackets-body-include
     - include: return-statement
     - include: lvalue-statement
     - include: control-structure
@@ -1091,7 +978,7 @@ contexts:
     - include: variables
     - include: emit-event
     - include: unchecked-arithmetic
-    - match: \bcontinue|break\b # only actually applies inside control structures (which use this syntax context as well)
+    - match: \bcontinue|break\b
       scope: keyword
     - include: expression-include
 
@@ -1106,8 +993,6 @@ contexts:
     - match: \bdelete\b
       scope: keyword
       push: expression
-
-  # event
 
   event:
     - match: (event)\s+({{identifier}})
@@ -1135,9 +1020,7 @@ contexts:
   event-argument:
     - include: function
     - include: mapping-function-argument
-    # identifier is optional for cases like this: function bar(bytes memory, ...
     - include: elementary-event-argument
-    #- include: identifier_path
     - include: else-pop
 
   emit-event:
@@ -1158,16 +1041,11 @@ contexts:
         6: variable.parameter
       pop: true
 
-  # unchecked-arithmetic
-  # https://docs.soliditylang.org/en/latest/control-structures.html?#checked-or-unchecked-arithmetic
-
   unchecked-arithmetic:
     - match: \b(unchecked)\s*
       captures:
         1: keyword
       push: curly-brackets-body
-
-  # assembly
 
   assembly:
     - match: \b(assembly)\s*
@@ -1178,7 +1056,7 @@ contexts:
         - assembly-memory-safe
 
   assembly-memory-safe:
-    - match: \((\".*?\")\) # for example: assembly ("memory-safe") {
+    - match: \((\".*?\")\)
       captures:
         1: string.quoted
     - include: else-pop
@@ -1191,8 +1069,8 @@ contexts:
     - match: '\{'
       scope: punctuation.section.block.begin.sol
       push:
-        - include: assembly-end-bracket
-        - include: assembly-body-contents
+        - assembly-end-bracket
+        - assembly-body-contents
 
   assembly-end-bracket:
     - match: '\}'
@@ -1200,7 +1078,7 @@ contexts:
       pop: true
 
   assembly-body-contents:
-    - include: assembly-function # example: aztec.sol - function defined inside assembly block, this function in turn has assembly written directly without the assembly block
+    - include: assembly-function
     - include: string-literals
     - include: assembly-statements
     - include: assembly-body-include
@@ -1213,30 +1091,17 @@ contexts:
         2: entity.name.function
       push:
         - assembly-body
-        # assembly function returns declaration will work as a nice side effect of other patterns :)
-        #
-        # function alloc_bytes(size) -> ptr
-        # { ...
-        #
-        # because assembly-body will not match \{ but instead "->" and this will make it pop
-        # "->" will be colored as operator correctly, "ptr" will be ignored and \{ ... \} will be parsed as assembly body
-        #
-        #- function-returns-declaration
-        #- function-modifiers
         - function-arguments
     - match: \b(function)\b
       captures:
         1: keyword
       push:
         - assembly-body
-        #- function-returns-declaration
-        #- function-modifiers
         - function-arguments
 
   assembly-statements:
     - match: '\:\='
       scope: keyword
-    #- match: '[\(\)\,\.]' # ignore these, but try to list all that are relevant
     - match: '\b({{assembly_keywords}})\b'
       scope: keyword
     - include: assembly-opcode
@@ -1249,7 +1114,6 @@ contexts:
     - match: '{{identifier}}'
     - match: '{{expression_keyword_main}}'
       scope: keyword
-    #- match: '\.'
     - match: '{{comparison_operator}}'
       scope: keyword.operator.logical
     - match: '{{logical_operator}}'
@@ -1260,27 +1124,16 @@ contexts:
   assembly-opcode:
     - match: '\b({{opcode}})\b'
       scope: support.function
+      # Note: Update opcode list as needed for newer EVM versions.
 
-  # assembly function call
-  # ⚠️ keep in sync with function-call!
-  # let expected := mod(keccak256(0x2e0, sub(b, 0x2e0)), gen_order)
-  #
   assembly-function-call:
-    # string.concat(hiMom, missYou);
-    # has to be before variable-declaration otherwise
-    # "string" gets parsed as elementary type first and we don't detect string.concat as a group anymore
     - match: '{{special_object_elementary}}\s*\('
       captures:
         1: constant.numeric
         2: storage.type
       push: function-call-arguments
-    # r.limbs = new uint[](max(_a.limbs.length, _b.limbs.length));
-    # uint[] memory newLimbs = new uint[](r.limbs.length + 1);
-    # we do this because of:
-    # uint[](...)
     - include: variable-declaration
-    # Conversions from address to address payable are now possible via payable(x), where x must be of type address
-    - match: '(?:({{elementary_type}}|payable)|({{erc_type}}))\s*(\()' # type conversion, ex: uint(-1)
+    - match: '(?:({{elementary_type}}|payable)|({{erc_type}}))\s*(\()'
       captures:
         1: constant.language
         2: storage.type
@@ -1316,3 +1169,19 @@ contexts:
       pop: true
     - match: \;
       pop: true
+
+# ------------------------------------------------------------------
+# New NatSpec Tags context with dedicated highlighting for common tags
+natspec-tags:
+  - match: '(@param)'
+    scope: keyword.other.documentation.natspec.param
+  - match: '(@return)'
+    scope: keyword.other.documentation.natspec.return
+  - match: '(@dev)'
+    scope: keyword.other.documentation.natspec.dev
+  - match: '(@notice)'
+    scope: keyword.other.documentation.natspec.notice
+  - match: '(@inheritdoc)'
+    scope: keyword.other.documentation.natspec.inheritdoc
+  - match: '(@[\w]+)'
+    scope: keyword.other.documentation.natspec
